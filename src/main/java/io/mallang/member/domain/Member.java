@@ -1,5 +1,6 @@
 package io.mallang.member.domain;
 
+import io.mallang.domain.common.IdGenerator;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,8 @@ import static org.springframework.util.Assert.state;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member {
+
+    private MemberId id;
 
     private Email email;
 
@@ -24,9 +27,10 @@ public class Member {
 
     private LocalDateTime withdrawnAt;
 
-    public static Member create(MemberCreateCommand createCommand, PasswordEncoder passwordEncoder) {
+    public static Member create(MemberCreateCommand createCommand, PasswordEncoder passwordEncoder, IdGenerator idGenerator) {
         Member member = new Member();
 
+        member.id = new MemberId(idGenerator.nextId());
         member.email = new Email(createCommand.email());
         member.nickname = new Nickname(createCommand.nickname());
         member.password = Password.encode(createCommand.password(), passwordEncoder);

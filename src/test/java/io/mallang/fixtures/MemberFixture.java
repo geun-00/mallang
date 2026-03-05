@@ -1,5 +1,6 @@
 package io.mallang.fixtures;
 
+import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberCreateCommand;
 import io.mallang.member.domain.PasswordEncoder;
@@ -22,6 +23,10 @@ public class MemberFixture {
         };
     }
 
+    public static IdGenerator generateIdGenerator() {
+        return () -> UUID.randomUUID().toString();
+    }
+
     public static MemberCreateCommand generateCreateCommand() {
         return generateCreateCommand("password12@");
     }
@@ -35,10 +40,10 @@ public class MemberFixture {
     }
 
     public static Member generateMember() {
-        return Member.create(generateCreateCommand(), generatePasswordEncoder());
+        return Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator());
     }
 
     public static Member generateMember(String password) {
-        return Member.create(generateCreateCommand(password), generatePasswordEncoder());
+        return Member.create(generateCreateCommand(password), generatePasswordEncoder(), generateIdGenerator());
     }
 }

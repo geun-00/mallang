@@ -6,6 +6,7 @@ import io.mallang.member.domain.MemberStatus;
 import org.junit.jupiter.api.Test;
 
 import static io.mallang.fixtures.MemberFixture.generateCreateCommand;
+import static io.mallang.fixtures.MemberFixture.generateIdGenerator;
 import static io.mallang.fixtures.MemberFixture.generateMember;
 import static io.mallang.fixtures.MemberFixture.generatePasswordEncoder;
 import static io.mallang.member.domain.Member.create;
@@ -20,7 +21,7 @@ class MemberTest {
         MemberCreateCommand createCommand = generateCreateCommand();
 
         // when
-        Member member = create(createCommand, generatePasswordEncoder());
+        Member member = create(createCommand, generatePasswordEncoder(), generateIdGenerator());
 
         // then
         assertThat(member.isActive()).isTrue();
@@ -57,13 +58,32 @@ class MemberTest {
     }
 
     @Test
+    void 식별자에_null이나_공백이_할당될_수_없다() {
+        assertThatThrownBy(() -> create(generateCreateCommand(), generatePasswordEncoder(), () -> null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> create(generateCreateCommand(), generatePasswordEncoder(), () -> "   "))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 회원이_생성되면_식별자가_할당된다() {
+        // given
+        Member member = create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator());
+
+        // when
+        // then
+        assertThat(member.getId()).isNotNull();
+        assertThat(member.getId().value()).isNotNull();
+    }
+
+    @Test
     void 회원을_생성하면_비밀번호가_해싱되어_저장된다() {
         // given
         MemberCreateCommand createCommand = generateCreateCommand();
         String rawPassword = createCommand.password();
 
         // when
-        Member member = create(createCommand, generatePasswordEncoder());
+        Member member = create(createCommand, generatePasswordEncoder(), generateIdGenerator());
 
         // then
         assertThat(member.getPassword().value()).isNotEqualTo(rawPassword);
@@ -80,20 +100,20 @@ class MemberTest {
         // then
         assertThat(member.getStatus()).isEqualTo(MemberStatus.WITHDRAWN);
     }
-    
+
     @Test
     void 탈퇴_시_탈퇴_시간이_기록된다() {
         // given
         Member member = generateMember();
         assertThat(member.getWithdrawnAt()).isNull();
-        
+
         // when
         member.withdraw();
-        
+
         // then
         assertThat(member.getWithdrawnAt()).isNotNull();
     }
-    
+
     @Test
     void 이미_탈퇴한_회원은_다시_탈퇴할_수_없다() {
         // given
@@ -105,7 +125,7 @@ class MemberTest {
         assertThatThrownBy(member::withdraw)
                 .isInstanceOf(IllegalStateException.class);
     }
-    
+
     @Test
     void ACTIVE_회원은_주문_할_수_있다() {
         // given
