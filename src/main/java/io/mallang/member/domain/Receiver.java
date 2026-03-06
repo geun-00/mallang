@@ -10,7 +10,7 @@ public record Receiver(String name, String phoneNumber) {
         if (name == null || name.isBlank())
             throw new IllegalArgumentException("이름을 입력해주세요.");
 
-        if (name.startsWith(" ") ||  name.endsWith(" "))
+        if (!name.equals(name.strip()))
             throw new IllegalArgumentException("이름은 앞뒤 공백이 없어야 합니다.");
 
         if (name.length() < 2 || name.length() > 10)

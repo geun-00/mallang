@@ -2,6 +2,9 @@ package io.mallang.test.member.domain;
 
 import io.mallang.member.domain.Address;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,21 +29,23 @@ class AddressTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
-    void 우편번호는_5자리_숫자여야_한다() {
-        assertThatThrownBy(() -> new Address("1234", "서울시 강남구 테헤란로 1", "101호"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new Address("123456", "서울시 강남구 테헤란로 1", "101호"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new Address("1234a", "서울시 강남구 테헤란로 1", "101호"))
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "1234",     // 4자리
+            "123456",   // 6자리
+            "1234a",    // 숫자 + 문자
+            "abcde"     // 문자만
+    })
+    void 우편번호는_5자리_숫자여야_한다(String invalidZipcode) {
+        assertThatThrownBy(() -> new Address(invalidZipcode, "서울시 강남구 테헤란로 1", "101호"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
-    void 주소는_null_또는_공백이_아니어야_한다() {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"   "})
+    void 주소는_null_또는_공백이_아니어야_한다(String invalidMainAddress) {
         assertThatThrownBy(() -> new Address("12345", null, "101호"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new Address("12345", "  ", "101호"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -10,7 +10,7 @@ public record Nickname(String value) {
     public Nickname {
         if (value == null || value.isBlank())
             throw new IllegalArgumentException("닉네임은 비어 있을 수 없습니다.");
-        if (value.startsWith(" ") ||  value.endsWith(" "))
+        if (!value.equals(value.strip()))
             throw new IllegalArgumentException("닉네임은 공백으로 시작하거나 끝날 수 없습니다.");
         if (value.length() < 2 || value.length() > 20)
             throw new IllegalArgumentException("닉네임은 2자 이상 20자 이하여야 합니다.");

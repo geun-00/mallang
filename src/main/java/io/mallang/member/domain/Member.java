@@ -63,6 +63,7 @@ public class Member {
 
     public ShippingAddress addShippingAddress(AddShippingAddressCommand addCommand, IdGenerator idGenerator) {
         state(this.status == MemberStatus.ACTIVE, "ACTIVE 상태에서만 배송지를 추가할 수 있습니다.");
+        state(this.shippingAddresses.size() < 5, "배송지는 최대 5개까지 등록할 수 있습니다.");
 
         boolean isDefault = shippingAddresses.isEmpty();
         ShippingAddress shippingAddress = ShippingAddress.create(addCommand, isDefault, idGenerator);

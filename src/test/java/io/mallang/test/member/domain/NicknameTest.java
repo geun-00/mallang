@@ -2,7 +2,9 @@ package io.mallang.test.member.domain;
 
 import io.mallang.member.domain.Nickname;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,37 +13,41 @@ class NicknameTest {
     
     @Nested
     class 유효하지_않은_형식으로_닉네임을_생성할_수_없다 {
-        
-        @Test
-        void 닉네임은_null_또는_공백으로_생성할_수_없다() {
-            assertThatThrownBy(() -> new Nickname(null)).isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> new Nickname("  ")).isInstanceOf(IllegalArgumentException.class);
+
+        @ParameterizedTest
+        @NullSource
+        @ValueSource(strings = {"   "})
+        void 닉네임은_null_또는_공백으로_생성할_수_없다(String invalidNickname) {
+            assertThatThrownBy(() -> new Nickname(invalidNickname)).isInstanceOf(IllegalArgumentException.class);
         }
         
-        @Test
-        void 닉네임은_앞뒤_공백이_없어야_한다() {
-            assertThatThrownBy(() -> new Nickname(" test")).isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> new Nickname("test ")).isInstanceOf(IllegalArgumentException.class);
+        @ParameterizedTest
+        @ValueSource(strings = {" test", "test "})
+        void 닉네임은_앞뒤_공백이_없어야_한다(String invalidNickname) {
+            assertThatThrownBy(() -> new Nickname(invalidNickname)).isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"1", "111111111111111111111"})
+        void 닉네임은_2자_이상_20자_이하여야_한다(String invalidNickname) {
+            assertThatThrownBy(() -> new Nickname(invalidNickname)).isInstanceOf(IllegalArgumentException.class);
         }
         
-        @Test
-        void 닉네임은_2자_이상_20자_이하여야_한다() {
-            assertThatThrownBy(() -> new Nickname("a")).isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> new Nickname("a".repeat(21))).isInstanceOf(IllegalArgumentException.class);
-        }
-        
-        @Test
-        void 닉네임은_허용된_특수문자만_포함할_수_있다() {
-            assertThatThrownBy(() -> new Nickname("#nickname")).isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> new Nickname("@nickname")).isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> new Nickname("!nickname")).isInstanceOf(IllegalArgumentException.class);
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "nickname!", "nickname@", "nickname#", "nickname$", "nickname%", "nickname^",
+                "nickname&", "nickname*", "nickname(", "nickname)", "nickname+", "nickname=",
+                "nickname|", "nickname\\", "nickname/", "nickname?", "nickname<", "nickname>",
+                "nickname~", "nickname`"
+        })
+        void 닉네임은_허용된_특수문자만_포함할_수_있다(String invalidNickname) {
+            assertThatThrownBy(() -> new Nickname(invalidNickname)).isInstanceOf(IllegalArgumentException.class);
         }
     }
 
-    @Test
-    void 유효한_닉네임으로_생성할_수_있다() {
-        assertThatCode(() -> new Nickname("홍길동")).doesNotThrowAnyException();
-        assertThatCode(() -> new Nickname("test_123")).doesNotThrowAnyException();
-        assertThatCode(() -> new Nickname("hong gil")).doesNotThrowAnyException();
+    @ParameterizedTest
+    @ValueSource(strings = {"홍길동", "test_123", "hong gil"})
+    void 유효한_닉네임으로_생성할_수_있다(String validNickname) {
+        assertThatCode(() -> new Nickname(validNickname)).doesNotThrowAnyException();
     }
 }

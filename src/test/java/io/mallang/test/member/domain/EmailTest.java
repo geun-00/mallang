@@ -1,8 +1,8 @@
 package io.mallang.test.member.domain;
 
 import io.mallang.member.domain.Email;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -31,10 +31,11 @@ class EmailTest {
                  .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
-    void 이메일은_null이나_빈_문자열이_될_수_없다() {
-        assertThatThrownBy(() -> new Email(null)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new Email("   ")).isInstanceOf(IllegalArgumentException.class);
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"   "})
+    void 이메일은_null이나_빈_문자열이_될_수_없다(String invalidEmail) {
+        assertThatThrownBy(() -> new Email(invalidEmail)).isInstanceOf(IllegalArgumentException.class);
     }
     
     @ParameterizedTest

@@ -64,4 +64,30 @@ public class MemberFixture {
                 "2층"
         );
     }
+
+    public static Member generateMemberWithShippingAddress() {
+        return generateMemberWithShippingAddress(1);
+    }
+
+    public static Member generateMemberWithShippingAddress(int count) {
+        Member member = generateMember();
+        for (int i = 0; i < count; i++) {
+            member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+        }
+
+        return member;
+    }
+
+    public static Member generateWithdrawnMember() {
+        Member member = generateMember();
+        member.withdraw();
+        return member;
+    }
+
+    public static Member generateWithdrawnMemberWithShippingAddress() {
+        Member member = generateMemberWithShippingAddress();
+        member.withdraw();
+
+        return member;
+    }
 }
