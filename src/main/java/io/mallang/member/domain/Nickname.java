@@ -8,7 +8,7 @@ public record Nickname(String value) {
             Pattern.compile("^[가-힣a-zA-Z0-9_.\\-]([가-힣a-zA-Z0-9_.\\- ]*[가-힣a-zA-Z0-9_.\\-])?$");
 
     public Nickname {
-        if (value == null || value.isEmpty())
+        if (value == null || value.isBlank())
             throw new IllegalArgumentException("닉네임은 비어 있을 수 없습니다.");
         if (value.startsWith(" ") ||  value.endsWith(" "))
             throw new IllegalArgumentException("닉네임은 공백으로 시작하거나 끝날 수 없습니다.");

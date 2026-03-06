@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.util.Assert.state;
 
@@ -26,6 +29,8 @@ public class Member {
     private LocalDateTime joinedAt;
 
     private LocalDateTime withdrawnAt;
+
+    private List<ShippingAddress> shippingAddresses = new ArrayList<>();
 
     public static Member create(MemberCreateCommand createCommand, PasswordEncoder passwordEncoder, IdGenerator idGenerator) {
         Member member = new Member();
@@ -54,5 +59,53 @@ public class Member {
 
         this.status = MemberStatus.WITHDRAWN;
         this.withdrawnAt = LocalDateTime.now();
+    }
+
+    public ShippingAddress addShippingAddress(AddShippingAddressCommand addCommand, IdGenerator idGenerator) {
+        state(this.status == MemberStatus.ACTIVE, "ACTIVE 상태에서만 배송지를 추가할 수 있습니다.");
+
+        boolean isDefault = shippingAddresses.isEmpty();
+        ShippingAddress shippingAddress = ShippingAddress.create(addCommand, isDefault, idGenerator);
+
+        shippingAddresses.add(shippingAddress);
+
+        return shippingAddress;
+    }
+
+    public void setDefaultShippingAddress(ShippingAddressId shippingAddressId) {
+        state(this.status == MemberStatus.ACTIVE, "ACTIVE 상태에서만 기본 배송지를 변경할 수 있습니다.");
+
+        ShippingAddress newDefaultAddress = getShippingAddress(shippingAddressId);
+
+        shippingAddresses.forEach(ShippingAddress::unsetDefault);
+        newDefaultAddress.setDefault();
+    }
+
+    public ShippingAddress modifyShippingAddress(ShippingAddressId originId, ModifyShippingAddressCommand modifyCommand) {
+        state(this.status == MemberStatus.ACTIVE, "ACTIVE 상태에서만 배송지를 수정할 수 있습니다.");
+
+        ShippingAddress originShippingAddress = getShippingAddress(originId);
+
+        originShippingAddress.modify(modifyCommand);
+        return originShippingAddress;
+    }
+
+    public void removeShippingAddress(ShippingAddressId removeId) {
+        state(this.status == MemberStatus.ACTIVE, "ACTIVE 상태에서만 배송지를 삭제할 수 있습니다.");
+
+        ShippingAddress removeShippingAddress = getShippingAddress(removeId);
+
+        shippingAddresses.remove(removeShippingAddress);
+    }
+
+    private ShippingAddress getShippingAddress(ShippingAddressId originId) {
+        return shippingAddresses.stream()
+                                .filter(shippingAddress -> shippingAddress.getId().equals(originId))
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("해당 배송지 ID를 가진 배송지가 존재하지 않습니다."));
+    }
+
+    public List<ShippingAddress> getShippingAddresses() {
+        return Collections.unmodifiableList(shippingAddresses);
     }
 }

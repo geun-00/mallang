@@ -1,9 +1,7 @@
 package io.mallang.fixtures;
 
 import io.mallang.domain.common.IdGenerator;
-import io.mallang.member.domain.Member;
-import io.mallang.member.domain.MemberCreateCommand;
-import io.mallang.member.domain.PasswordEncoder;
+import io.mallang.member.domain.*;
 
 import java.util.UUID;
 
@@ -45,5 +43,25 @@ public class MemberFixture {
 
     public static Member generateMember(String password) {
         return Member.create(generateCreateCommand(password), generatePasswordEncoder(), generateIdGenerator());
+    }
+
+    public static AddShippingAddressCommand generateAddShippingAddressCommand() {
+        return new AddShippingAddressCommand(
+                "홍길동",
+                "01011112222",
+                "12345",
+                "서울시 강남구 테헤란로 1",
+                "101호"
+        );
+    }
+
+    public static ModifyShippingAddressCommand generateModifyShippingAddressCommand() {
+        return new ModifyShippingAddressCommand(
+                "이순신",
+                "01022223333",
+                "13579",
+                "경기도 부천시 원미구",
+                "2층"
+        );
     }
 }
