@@ -15,6 +15,6 @@ public record Nickname(String value) {
         if (value.length() < 2 || value.length() > 20)
             throw new IllegalArgumentException("닉네임은 2자 이상 20자 이하여야 합니다.");
         if (!NICKNAME_PATTERN.matcher(value).matches())
-            throw new IllegalArgumentException("닉네임은 한글, 영문자, 숫자, 밑줄(_), 점(.), 하이픈(-)만 사용할 수 있습니다.");
+            throw new IllegalArgumentException("닉네임은 한글, 영문자, 숫자, 밑줄(_), 점(.), 하이픈(-), 공백만 사용할 수 있습니다.");
     }
 }

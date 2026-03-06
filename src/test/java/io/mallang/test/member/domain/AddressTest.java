@@ -45,7 +45,7 @@ class AddressTest {
     @NullSource
     @ValueSource(strings = {"   "})
     void 주소는_null_또는_공백이_아니어야_한다(String invalidMainAddress) {
-        assertThatThrownBy(() -> new Address("12345", null, "101호"))
+        assertThatThrownBy(() -> new Address("12345", invalidMainAddress, "101호"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

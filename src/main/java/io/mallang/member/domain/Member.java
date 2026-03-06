@@ -16,6 +16,8 @@ import static org.springframework.util.Assert.state;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member {
 
+    private static final int MAX_SHIPPING_ADDRESSES = 5;
+
     private MemberId id;
 
     private Email email;
@@ -63,7 +65,7 @@ public class Member {
 
     public ShippingAddress addShippingAddress(AddShippingAddressCommand addCommand, IdGenerator idGenerator) {
         state(this.status == MemberStatus.ACTIVE, "ACTIVE 상태에서만 배송지를 추가할 수 있습니다.");
-        state(this.shippingAddresses.size() < 5, "배송지는 최대 5개까지 등록할 수 있습니다.");
+        state(this.shippingAddresses.size() < MAX_SHIPPING_ADDRESSES, "배송지는 최대 5개까지 등록할 수 있습니다.");
 
         boolean isDefault = shippingAddresses.isEmpty();
         ShippingAddress shippingAddress = ShippingAddress.create(addCommand, isDefault, idGenerator);
@@ -99,9 +101,9 @@ public class Member {
         shippingAddresses.remove(removeShippingAddress);
     }
 
-    private ShippingAddress getShippingAddress(ShippingAddressId originId) {
+    private ShippingAddress getShippingAddress(ShippingAddressId shippingAddressId) {
         return shippingAddresses.stream()
-                                .filter(shippingAddress -> shippingAddress.getId().equals(originId))
+                                .filter(shippingAddress -> shippingAddress.getId().equals(shippingAddressId))
                                 .findFirst()
                                 .orElseThrow(() -> new IllegalArgumentException("해당 배송지 ID를 가진 배송지가 존재하지 않습니다."));
     }

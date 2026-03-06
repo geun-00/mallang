@@ -16,7 +16,7 @@ public class MemberFixture {
 
             @Override
             public boolean matches(String rawPassword, String hashedPassword) {
-                return encode(rawPassword).equals(hashedPassword);
+                return (rawPassword.toUpperCase() + "encoded").equals(hashedPassword);
             }
         };
     }
