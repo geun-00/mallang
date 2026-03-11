@@ -30,6 +30,12 @@ class ProductNameTest {
         assertThatThrownBy(() -> new ProductName(longName)).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void 상품명은_정확히_100자이면_정상_생성된다() {
+        String boundaryName = "a".repeat(100);
+        assertThatCode(() -> new ProductName(boundaryName)).doesNotThrowAnyException();
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"상품명", "Valid Product Name 123", "상품명!@#$%^&*()"})
     void 유효한_형식으로_상품명을_생성할_수_있다(String validName) {

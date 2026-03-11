@@ -1,15 +1,14 @@
 package io.mallang.test.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
-import io.mallang.fixtures.ProductFixture;
 import io.mallang.product.domain.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static io.mallang.ProductAssertions.isDerivedFrom;
 import static io.mallang.fixtures.ProductFixture.*;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -202,12 +201,7 @@ class ProductTest {
 
     @Test
     void 대표이미지_외_이미지가_10개를_초과하면_예외가_발생한다() {
-        List<ProductImageCommand> images = new ArrayList<>();
-        images.add(new ProductImageCommand("https://test.com/thumbnail.jpg", true));
-        for (int i = 0; i < 11; i++) {
-            images.add(new ProductImageCommand("https://test.com/image" + i + ".jpg", false));
-        }
-        ProductCreateCommand createCommand = generateProductCreateCommand(images);
+        ProductCreateCommand createCommand = generateProductCreateCommandWithImages(11);
 
         assertThatThrownBy(() -> Product.create(createCommand, generateIdGenerator()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -234,23 +228,210 @@ class ProductTest {
         product.addImages(List.of(new AddProductImageCommand(imageUrl)), generateIdGenerator());
 
         // then
-        assertThat(product.getImages()).hasSize(1);
-        assertThat(product.getImages().getFirst().id()).isNotNull();
-        assertThat(product.getImages().getFirst().imageUrl().value()).isEqualTo(imageUrl);
+        ProductImage productImage = product.getThumbnailImage();
+        assertThat(productImage).isNotNull();
+        assertThat(productImage.id()).isNotNull();
+        assertThat(productImage.imageUrl().value()).isEqualTo(imageUrl);
     }
-    
+
     @Test
-    void 대표이미지가_없는_상태에서_이미지_목록을_추가하면_첫_번째_이미지가_자동으로_대표이미지가_된다() {
+    void 이미지가_없는_상태에서_이미지_목록을_추가하면_첫_번째_이미지가_대표이미지가_된다() {
         // given
         Product product = generateProduct();
-        List<AddProductImageCommand> addImageCommands = ProductFixture.generateAddProductImageCommand(3);
+        List<AddProductImageCommand> addImageCommands = generateAddProductImageCommand(3);
 
         // when
         product.addImages(addImageCommands, generateIdGenerator());
-        
+
         // then
         assertThat(product.getThumbnailImage()).isNotNull();
         assertThat(product.getThumbnailImage().imageUrl().value()).isEqualTo(addImageCommands.getFirst().imageUrl());
     }
 
+    @Test
+    void 대표이미지가_있는_상태에서_이미지_목록을_추가하면_모든_이미지는_일반_이미지로_추가된다() {
+        // given
+        Product product = generateProductWithImages();
+        ProductImage originalThumbnail = product.getThumbnailImage();
+        int originalImageCount = product.getImages().size();
+
+        // when
+        List<AddProductImageCommand> addImageCommands = generateAddProductImageCommand(3);
+        product.addImages(addImageCommands, generateIdGenerator());
+
+        // then
+        assertThat(product.getThumbnailImage()).isEqualTo(originalThumbnail);
+
+        assertThat(product.getImages()).hasSize(originalImageCount + addImageCommands.size());
+
+        assertThat(product.getImages())
+                .extracting(ProductImage::imageUrl)
+                .extracting(ImageUrl::value)
+                .containsAll(addImageCommands.stream().map(AddProductImageCommand::imageUrl).toList());
+    }
+
+    @Test
+    void 대표이미지_외_이미지는_최대_10개까지만_추가할_수_있다() {
+        Product product = generateProductWithImages(8);
+        List<AddProductImageCommand> addImageCommands = generateAddProductImageCommand(3);
+
+        // when & then
+        assertThatThrownBy(() -> product.addImages(addImageCommands, generateIdGenerator()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 빈_이미지_목록을_추가하면_아무_변화가_없다() {
+        Product product = generateProductWithImages();
+        ProductImage originalThumbnail = product.getThumbnailImage();
+        int originalSize = product.getImages().size();
+
+        product.addImages(List.of(), generateIdGenerator());
+
+        assertThat(product.getThumbnailImage()).isEqualTo(originalThumbnail);
+        assertThat(product.getImages()).hasSize(originalSize);
+    }
+
+    @Test
+    void DISCONTINUED_상품은_이미지를_추가할_수_없다() {
+        // given
+        Product product = generateDiscontinuedProduct();
+
+        // when
+        // then
+        assertThatThrownBy(() -> product.addImages(generateAddProductImageCommand(1), generateIdGenerator()))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void 일반_이미지를_삭제할_수_있다() {
+        // given
+        Product product = generateProductWithImages();
+        int originalSize = product.getImages().size();
+
+        ProductImage targetImage = product.getImages().getFirst();
+        ProductImageId targetId = targetImage.id();
+
+        // when
+        product.removeImage(targetId);
+
+        // then
+        assertThat(product.getImages()).hasSize(originalSize - 1);
+        assertThat(product.getImages()).doesNotContain(targetImage);
+    }
+
+    @Test
+    void 대표이미지만_있는_상태에서_대표이미지를_삭제하면_이미지가_없는_상태가_된다() {
+        // given
+        Product product = generateProductWithImages(0);
+        ProductImage targetImage = product.getThumbnailImage();
+
+        // when
+        product.removeImage(targetImage.id());
+
+        // then
+        assertThat(product.getThumbnailImage()).isNull();
+        assertThat(product.getImages()).isEmpty();
+    }
+
+    @Test
+    void 대표이미지를_삭제하면_남은_이미지_중_첫_번째가_대표이미지가_된다() {
+        // given
+        Product product = generateProductWithImages(3);
+        int originalImagesCount = product.getImages().size();
+        ProductImage originalThumbnailImage = product.getThumbnailImage();
+        ProductImage expectedNextThumbnailImage = product.getImages().getFirst();
+
+        // when
+        product.removeImage(originalThumbnailImage.id());
+
+        // then
+        assertThat(product.getThumbnailImage()).isNotNull();
+        assertThat(product.getThumbnailImage()).isNotEqualTo(originalThumbnailImage);
+        assertThat(product.getThumbnailImage()).isEqualTo(expectedNextThumbnailImage);
+        assertThat(product.getImages()).hasSize(originalImagesCount - 1);
+        assertThat(product.getImages()).doesNotContain(expectedNextThumbnailImage);
+    }
+
+    @Test
+    void 존재하지_않는_이미지_ID로_삭제하면_예외가_발생한다() {
+        // given
+        Product product = generateProductWithImages(3);
+        ProductImageId wrongTargetId = new ProductImageId(randomUUID().toString());
+
+        // when
+        // then
+        assertThatThrownBy(() -> product.removeImage(wrongTargetId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void DISCONTINUED_상품은_이미지를_삭제할_수_없다() {
+        // given
+        Product product = generateProductWithImages();
+        ProductImageId targetId = product.getThumbnailImage().id();
+
+        // when
+        product.discontinue();
+
+        // then
+        assertThatThrownBy(() -> product.removeImage(targetId))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void 대표이미지를_변경하면_기존_대표이미지는_일반_이미지로_전환된다() {
+        // given
+        Product product = generateProductWithImages(5);
+        ProductImage originalThumbnail = product.getThumbnailImage();
+        ProductImage targetImage = product.getImages().getFirst();
+
+        // when
+        product.changeThumbnailImage(targetImage.id());
+
+        // then
+        assertThat(product.getThumbnailImage()).isNotNull();
+        assertThat(product.getThumbnailImage()).isNotEqualTo(originalThumbnail);
+        assertThat(product.getThumbnailImage()).isEqualTo(targetImage);
+        assertThat(product.getImages()).contains(originalThumbnail);
+        assertThat(product.getImages()).doesNotContain(targetImage);
+    }
+
+    @Test
+    void 대표이미지로_변경하려는_이미지가_존재하지_않으면_예외가_발생한다() {
+        // given
+        Product product = generateProductWithImages(5);
+
+        // when
+        // then
+        assertThatThrownBy(() -> product.changeThumbnailImage(new ProductImageId(randomUUID().toString())))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 이미_대표이미지인_이미지를_대표이미지로_변경하면_상태는_그대로_유지된다() {
+        // given
+        Product product = generateProductWithImages(5);
+        ProductImage originalThumbnail = product.getThumbnailImage();
+
+        // when
+        product.changeThumbnailImage(originalThumbnail.id());
+
+        // then
+        assertThat(product.getThumbnailImage()).isNotNull();
+        assertThat(product.getThumbnailImage()).isEqualTo(originalThumbnail);
+    }
+
+    @Test
+    void DISCONTINUED_상품은_대표이미지를_변경할_수_없다() {
+        // given
+        Product product = generateProductWithImages(5);
+        ProductImage targetImage = product.getThumbnailImage();
+        product.discontinue();
+
+        // when
+        // then
+        assertThatThrownBy(() -> product.changeThumbnailImage(targetImage.id()))
+                .isInstanceOf(IllegalStateException.class);
+    }
 }

@@ -57,15 +57,42 @@ public class ProductFixture {
         return Product.create(generateProductCreateCommand(stockQuantity), generateIdGenerator());
     }
 
-    public static Product generateProduct(List<ProductImageCommand> images) {
-        return Product.create(generateProductCreateCommand(images), generateIdGenerator());
-    }
-
     public static Product generateDiscontinuedProduct() {
         Product product = generateProduct();
         product.discontinue();
 
         return product;
+    }
+
+    public static Product generateProductWithImages() {
+        return Product.create(generateProductCreateCommandWithImages(), generateIdGenerator());
+    }
+
+    public static Product generateProductWithImages(int nonThumbnailCount) {
+        List<ProductImageCommand> images = generateProductImageCommand(nonThumbnailCount);
+
+        return Product.create(generateProductCreateCommand(images), generateIdGenerator());
+    }
+
+    private static List<ProductImageCommand> generateProductImageCommand(int nonThumbnailCount) {
+        List<ProductImageCommand> images = new ArrayList<>();
+        images.add(new ProductImageCommand(generateProductImageUrl(), true));
+
+        for (int i = 0; i < nonThumbnailCount; i++) {
+            images.add(new ProductImageCommand(generateProductImageUrl(), false));
+        }
+        return images;
+    }
+
+    public static ProductCreateCommand generateProductCreateCommandWithImages(int nonThumbnailCount) {
+        return new ProductCreateCommand(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                generateProductImageCommand(nonThumbnailCount)
+        );
     }
 
     public static ProductCreateCommand generateProductCreateCommandWithImages() {
@@ -81,6 +108,15 @@ public class ProductFixture {
                         new ProductImageCommand(generateProductImageUrl(), false)
                 )
         );
+    }
+
+    public static List<AddProductImageCommand> generateAddProductImageCommand(int count) {
+        List<AddProductImageCommand> addImageCommands = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            addImageCommands.add(new AddProductImageCommand(generateProductImageUrl()));
+        }
+
+        return addImageCommands;
     }
 
     private static String generateProductName() {
@@ -103,14 +139,5 @@ public class ProductFixture {
 
     private static String generateProductImageUrl() {
         return "https://test.com/images/" + UUID.randomUUID();
-    }
-
-    public static List<AddProductImageCommand> generateAddProductImageCommand(int count) {
-        List<AddProductImageCommand> addImageCommands = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            addImageCommands.add(new AddProductImageCommand(generateProductImageUrl()));
-        }
-
-        return addImageCommands;
     }
 }

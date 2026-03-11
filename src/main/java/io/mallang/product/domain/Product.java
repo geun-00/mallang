@@ -43,7 +43,7 @@ public class Product {
 
         product.status = ProductStatus.of(stockQuantity);
         product.category = ProductCategory.valueOf(createCommand.category());
-        product.productImages = ProductImages.from(createCommand, idGenerator);
+        product.productImages = ProductImages.from(createCommand.images(), idGenerator);
 
         return product;
     }
@@ -87,6 +87,19 @@ public class Product {
 
     public void addImages(List<AddProductImageCommand> addCommands, IdGenerator idGenerator) {
         state(this.status != ProductStatus.DISCONTINUED, "이미지를 추가할 수 없는 상품입니다.");
+
         this.productImages.add(addCommands, idGenerator);
+    }
+
+    public void removeImage(ProductImageId imageId) {
+        state(this.status != ProductStatus.DISCONTINUED, "이미지를 제거할 수 없는 상품입니다.");
+
+        this.productImages.removeImage(imageId);
+    }
+
+    public void changeThumbnailImage(ProductImageId imageId) {
+        state(this.status != ProductStatus.DISCONTINUED, "대표 이미지를 변경할 수 없는 상품입니다.");
+
+        this.productImages.changeThumbnailImage(imageId);
     }
 }

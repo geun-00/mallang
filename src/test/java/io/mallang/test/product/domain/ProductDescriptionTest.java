@@ -29,4 +29,10 @@ class ProductDescriptionTest {
         assertThat(description.value().isBlank()).isTrue();
         assertThat(description.value()).isEqualTo("");
     }
+
+    @Test
+    void 상품_설명의_앞뒤_공백은_제거된다() {
+        ProductDescription description = new ProductDescription("  설명  ");
+        assertThat(description.value()).isEqualTo("설명");
+    }
 }
