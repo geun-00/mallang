@@ -5,6 +5,7 @@ import io.mallang.domain.common.IdGenerator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class ProductImages {
@@ -25,25 +26,24 @@ class ProductImages {
             return new ProductImages(null, new ArrayList<>());
         }
 
-        long thumbnailCount = images.stream().filter(ProductImageCommand::isThumbnail).count();
-        if (thumbnailCount != 1)
+        Map<Boolean, List<ProductImageCommand>> partitioned = images.stream()
+                                                                    .collect(Collectors.partitioningBy(ProductImageCommand::isThumbnail));
+
+        List<ProductImageCommand> thumbnail = partitioned.get(true);
+        List<ProductImageCommand> others = partitioned.get(false);
+
+        if (thumbnail.size() != 1)
             throw new IllegalArgumentException("이미지가 있는 경우 대표 이미지는 반드시 하나여야 합니다.");
 
-        long nonThumbnailCount = images.size() - 1;
-        if (nonThumbnailCount > MAX_OTHER_IMAGES)
+        if (others.size() > MAX_OTHER_IMAGES)
             throw new IllegalArgumentException("대표 이미지 외 이미지는 최대 10개까지 등록할 수 있습니다.");
 
-        ProductImage thumbnailImage = images.stream()
-                                            .filter(ProductImageCommand::isThumbnail)
-                                            .findFirst()
-                                            .map(imageCommand -> new ProductImage(
-                                                    new ProductImageId(idGenerator.nextId()),
-                                                    new ImageUrl(imageCommand.imageUrl())
-                                            ))
-                                            .orElse(null);
+        ProductImage thumbnailImage = new ProductImage(
+                new ProductImageId(idGenerator.nextId()),
+                new ImageUrl(thumbnail.getFirst().imageUrl())
+        );
 
-        List<ProductImage> otherImages = images.stream()
-                                               .filter(imageCommand -> !imageCommand.isThumbnail())
+        List<ProductImage> otherImages = others.stream()
                                                .map(imageCommand -> new ProductImage(
                                                        new ProductImageId(idGenerator.nextId()),
                                                        new ImageUrl(imageCommand.imageUrl())
