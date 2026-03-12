@@ -1,0 +1,61 @@
+package io.mallang.fixtures;
+
+import io.mallang.domain.common.IdGenerator;
+import io.mallang.order.domain.Order;
+import io.mallang.order.domain.OrderItemCommand;
+import io.mallang.order.domain.PlaceOrderCommand;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
+public class OrderFixture {
+
+    public static IdGenerator generateIdGenerator() {
+        return () -> UUID.randomUUID().toString();
+    }
+
+    public static PlaceOrderCommand generatePlaceOrderCommand() {
+        return generatePlaceOrderCommand(generateOrderItemCommands(1));
+    }
+
+    public static PlaceOrderCommand generatePlaceOrderCommand(List<OrderItemCommand> items) {
+        return new PlaceOrderCommand(
+                UUID.randomUUID().toString(),
+                items,
+                "홍길동",
+                "01012345678",
+                "12345",
+                "서울시 강남구 테헤란로 1",
+                "101호"
+        );
+    }
+
+    public static List<OrderItemCommand> generateOrderItemCommands(int count) {
+        List<OrderItemCommand> items = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            items.add(generateOrderItemCommand());
+        }
+        return items;
+    }
+
+    public static OrderItemCommand generateOrderItemCommand() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new OrderItemCommand(
+                UUID.randomUUID().toString(),
+                random.nextInt(1, 10),
+                random.nextInt(1000, 100000)
+        );
+    }
+
+    public static Order generateOrder() {
+        return Order.place(generatePlaceOrderCommand(), generateIdGenerator());
+    }
+
+    public static Order generateCanceledOrder() {
+        Order order = generateOrder();
+        order.cancel();
+        return order;
+    }
+}

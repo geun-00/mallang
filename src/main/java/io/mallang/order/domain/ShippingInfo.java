@@ -1,7 +1,7 @@
 package io.mallang.order.domain;
 
-import io.mallang.member.domain.Address;
-import io.mallang.member.domain.Receiver;
+import io.mallang.domain.common.Address;
+import io.mallang.domain.common.Receiver;
 
 public record ShippingInfo(Receiver receiver, Address address) {
 

@@ -1,5 +1,7 @@
 package io.mallang.member.domain;
 
+import io.mallang.domain.common.Address;
+import io.mallang.domain.common.Receiver;
 import io.mallang.domain.common.IdGenerator;
 import lombok.AccessLevel;
 import lombok.Getter;

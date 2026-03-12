@@ -1,6 +1,6 @@
 package io.mallang.test.member.domain;
 
-import io.mallang.member.domain.Address;
+import io.mallang.domain.common.Address;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
