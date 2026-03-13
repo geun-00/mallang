@@ -1,5 +1,6 @@
 package io.mallang.test.order.domain;
 
+import io.mallang.domain.common.ClockHolder;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderItemCommand;
 import io.mallang.order.domain.OrderStatus;
@@ -33,15 +34,16 @@ class OrderTest {
 
     @Test
     void 주문을_생성하면_주문_시간이_기록된다() {
-        Order order = generateOrder();
+        ClockHolder clockHolder = generateClockHolder();
+        Order order = Order.place(generatePlaceOrderCommand(), generateIdGenerator(), clockHolder);
 
-        assertThat(order.getOrderedAt()).isNotNull();
+        assertThat(order.getOrderedAt()).isEqualTo(clockHolder.now());
     }
 
     @Test
     void 주문을_생성하면_주문자_정보가_저장된다() {
         PlaceOrderCommand command = generatePlaceOrderCommand();
-        Order order = Order.place(command, generateIdGenerator());
+        Order order = Order.place(command, generateIdGenerator(), generateClockHolder());
 
         assertThat(order.getMemberId().value()).isEqualTo(command.memberId());
     }
@@ -49,7 +51,7 @@ class OrderTest {
     @Test
     void 주문을_생성하면_배송지_정보가_스냅샷으로_저장된다() {
         PlaceOrderCommand command = generatePlaceOrderCommand();
-        Order order = Order.place(command, generateIdGenerator());
+        Order order = Order.place(command, generateIdGenerator(), generateClockHolder());
 
         assertThat(order.getShippingInfo()).satisfies(isDerivedFrom(command));
     }
@@ -57,7 +59,7 @@ class OrderTest {
     @Test
     void 주문을_생성하면_주문_상품_목록이_저장된다() {
         List<OrderItemCommand> itemCommands = generateOrderItemCommands(3);
-        Order order = Order.place(generatePlaceOrderCommand(itemCommands), generateIdGenerator());
+        Order order = Order.place(generatePlaceOrderCommand(itemCommands), generateIdGenerator(), generateClockHolder());
 
         assertThat(order.getItems()).hasSize(3);
     }
@@ -77,12 +79,12 @@ class OrderTest {
     void 주문을_생성하면_총_가격은_주문_상품들의_단가와_수량의_합산이다() {
         // given
         List<OrderItemCommand> items = List.of(
-                new OrderItemCommand("product-1", 2, 10000),
-                new OrderItemCommand("product-2", 3, 20000)
+                new OrderItemCommand("product-1", 2, BigDecimal.valueOf(10000)),
+                new OrderItemCommand("product-2", 3, BigDecimal.valueOf(20000))
         );
 
         // when
-        Order order = Order.place(generatePlaceOrderCommand(items), generateIdGenerator());
+        Order order = Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder());
 
         // then
         assertThat(order.getTotalPrice().value()).isEqualByComparingTo(BigDecimal.valueOf(80000));
@@ -93,25 +95,24 @@ class OrderTest {
         List<OrderItemCommand> invalidOrderItems = List.of();
         PlaceOrderCommand command = generatePlaceOrderCommand(invalidOrderItems);
 
-        assertThatThrownBy(() -> Order.place(command, generateIdGenerator()))
+        assertThatThrownBy(() -> Order.place(command, generateIdGenerator(), generateClockHolder()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 주문_상품_가격이_0원이면_예외가_발생한다() {
-        int invalidPrice = 0;
-        List<OrderItemCommand> items = List.of(new OrderItemCommand("product-1", 1, invalidPrice));
+        List<OrderItemCommand> items = List.of(new OrderItemCommand("product-1", 1, BigDecimal.ZERO));
 
-        assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator()))
+        assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 주문_상품_수량이_0_이하이면_예외가_발생한다() {
         int invalidQuantity = 0;
-        List<OrderItemCommand> items = List.of(new OrderItemCommand("product-1", invalidQuantity, 10000));
+        List<OrderItemCommand> items = List.of(new OrderItemCommand("product-1", invalidQuantity, BigDecimal.valueOf(10000)));
 
-        assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator()))
+        assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -127,7 +128,7 @@ class OrderTest {
     @Test
     void PREPARING_상태에서_주문을_취소할_수_있다() {
         Order order = generateOrder();
-        order.nextStatus();
+        order.nextStatus(); // PREPARING
 
         order.cancel();
 
@@ -137,8 +138,8 @@ class OrderTest {
     @Test
     void SHIPPED_상태에서_주문을_취소하면_예외가_발생한다() {
         Order order = generateOrder();
-        order.nextStatus();
-        order.nextStatus();
+        order.nextStatus(); // PREPARING
+        order.nextStatus(); // SHIPPED
 
         assertThatThrownBy(order::cancel).isInstanceOf(IllegalStateException.class);
     }
@@ -146,9 +147,9 @@ class OrderTest {
     @Test
     void DELIVERING_상태에서_주문을_취소하면_예외가_발생한다() {
         Order order = generateOrder();
-        order.nextStatus();
-        order.nextStatus();
-        order.nextStatus();
+        order.nextStatus(); // PREPARING
+        order.nextStatus(); // SHIPPED
+        order.nextStatus(); // DELIVERING
 
         assertThatThrownBy(order::cancel).isInstanceOf(IllegalStateException.class);
     }
@@ -156,10 +157,10 @@ class OrderTest {
     @Test
     void DELIVERY_COMPLETED_상태에서_주문을_취소하면_예외가_발생한다() {
         Order order = generateOrder();
-        order.nextStatus();
-        order.nextStatus();
-        order.nextStatus();
-        order.nextStatus();
+        order.nextStatus(); // PREPARING
+        order.nextStatus(); // SHIPPED
+        order.nextStatus(); // DELIVERING
+        order.nextStatus(); // DELIVERY_COMPLETED
 
         assertThatThrownBy(order::cancel).isInstanceOf(IllegalStateException.class);
     }

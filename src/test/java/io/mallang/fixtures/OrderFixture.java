@@ -1,10 +1,13 @@
 package io.mallang.fixtures;
 
+import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderItemCommand;
 import io.mallang.order.domain.PlaceOrderCommand;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +17,10 @@ public class OrderFixture {
 
     public static IdGenerator generateIdGenerator() {
         return () -> UUID.randomUUID().toString();
+    }
+
+    public static ClockHolder generateClockHolder() {
+        return () -> LocalDateTime.of(2024, 1, 1, 0, 0, 0);
     }
 
     public static PlaceOrderCommand generatePlaceOrderCommand() {
@@ -45,12 +52,12 @@ public class OrderFixture {
         return new OrderItemCommand(
                 UUID.randomUUID().toString(),
                 random.nextInt(1, 10),
-                random.nextInt(1000, 100000)
+                BigDecimal.valueOf(random.nextInt(1000, 100000))
         );
     }
 
     public static Order generateOrder() {
-        return Order.place(generatePlaceOrderCommand(), generateIdGenerator());
+        return Order.place(generatePlaceOrderCommand(), generateIdGenerator(), generateClockHolder());
     }
 
     public static Order generateCanceledOrder() {

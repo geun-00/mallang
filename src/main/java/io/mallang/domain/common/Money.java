@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public record Money(BigDecimal value) {
 
+    public static final Money ZERO =  new Money(BigDecimal.ZERO);
+
     public Money {
         if (value == null)
             throw new IllegalArgumentException("금액은 null이 될 수 없습니다.");
