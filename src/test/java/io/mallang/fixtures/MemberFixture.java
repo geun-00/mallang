@@ -1,8 +1,10 @@
 package io.mallang.fixtures;
 
+import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class MemberFixture {
@@ -25,6 +27,10 @@ public class MemberFixture {
         return () -> UUID.randomUUID().toString();
     }
 
+    public static ClockHolder generateClockHolder() {
+        return () -> LocalDateTime.of(2024, 1, 1, 0, 0, 0);
+    }
+
     public static MemberCreateCommand generateCreateCommand() {
         return generateCreateCommand("password12@");
     }
@@ -38,11 +44,11 @@ public class MemberFixture {
     }
 
     public static Member generateMember() {
-        return Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator());
+        return Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
     }
 
     public static Member generateMember(String password) {
-        return Member.create(generateCreateCommand(password), generatePasswordEncoder(), generateIdGenerator());
+        return Member.create(generateCreateCommand(password), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
     }
 
     public static AddShippingAddressCommand generateAddShippingAddressCommand() {
@@ -74,20 +80,18 @@ public class MemberFixture {
         for (int i = 0; i < count; i++) {
             member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
         }
-
         return member;
     }
 
     public static Member generateWithdrawnMember() {
         Member member = generateMember();
-        member.withdraw();
+        member.withdraw(generateClockHolder());
         return member;
     }
 
     public static Member generateWithdrawnMemberWithShippingAddress() {
         Member member = generateMemberWithShippingAddress();
-        member.withdraw();
-
+        member.withdraw(generateClockHolder());
         return member;
     }
 }

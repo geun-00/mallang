@@ -1,6 +1,6 @@
 package io.mallang.test.member.domain;
 
-import io.mallang.member.domain.Receiver;
+import io.mallang.domain.common.Receiver;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;

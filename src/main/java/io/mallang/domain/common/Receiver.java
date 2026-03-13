@@ -1,4 +1,4 @@
-package io.mallang.member.domain;
+package io.mallang.domain.common;
 
 import java.util.regex.Pattern;
 
