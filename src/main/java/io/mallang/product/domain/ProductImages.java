@@ -12,9 +12,9 @@ class ProductImages {
 
     private static final int MAX_OTHER_IMAGES = 10;
 
-    private ProductImage thumbnailImage;
+    private final List<ProductImage> images;
 
-    private List<ProductImage> images;
+    private ProductImage thumbnailImage;
 
     private ProductImages(ProductImage thumbnailImage, List<ProductImage> images) {
         this.thumbnailImage = thumbnailImage;

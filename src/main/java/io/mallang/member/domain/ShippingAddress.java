@@ -3,15 +3,12 @@ package io.mallang.member.domain;
 import io.mallang.domain.common.Address;
 import io.mallang.domain.common.Receiver;
 import io.mallang.domain.common.IdGenerator;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShippingAddress {
 
-    private ShippingAddressId id;
+    private final ShippingAddressId id;
 
     private Receiver receiver;
 
@@ -19,15 +16,20 @@ public class ShippingAddress {
 
     private boolean isDefault;
 
+    private ShippingAddress(ShippingAddressId id, Receiver receiver, Address address, boolean isDefault) {
+        this.id = id;
+        this.receiver = receiver;
+        this.address = address;
+        this.isDefault = isDefault;
+    }
+
     static ShippingAddress create(AddShippingAddressCommand command, boolean isDefault, IdGenerator idGenerator) {
-        ShippingAddress shippingAddress = new ShippingAddress();
-
-        shippingAddress.id = new ShippingAddressId(idGenerator.nextId());
-        shippingAddress.receiver = new Receiver(command.receiverName(), command.receiverPhoneNumber());
-        shippingAddress.address = new Address(command.zipCode(), command.mainAddress(), command.detailAddress());
-        shippingAddress.isDefault = isDefault;
-
-        return shippingAddress;
+        return new ShippingAddress(
+                new ShippingAddressId(idGenerator.nextId()),
+                new Receiver(command.receiverName(), command.receiverPhoneNumber()),
+                new Address(command.zipCode(), command.mainAddress(), command.detailAddress()),
+                isDefault
+        );
     }
 
     void modify(ModifyShippingAddressCommand command) {

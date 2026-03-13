@@ -3,6 +3,7 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.product.domain.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -127,9 +128,9 @@ public class ProductFixture {
         return "description" + UUID.randomUUID();
     }
 
-    private static int generateProductPriceAmount() {
+    private static BigDecimal generateProductPriceAmount() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        return random.nextInt(10000, 100000);
+        return BigDecimal.valueOf(random.nextInt(10000, 100000));
     }
 
     private static int generateProductStockQuantity() {

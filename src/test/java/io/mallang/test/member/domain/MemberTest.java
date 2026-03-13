@@ -1,6 +1,7 @@
 package io.mallang.test.member.domain;
 
 import io.mallang.domain.common.Address;
+import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.Receiver;
 import io.mallang.member.domain.*;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
+import static io.mallang.MemberAssertions.isDerivedFrom;
 import static io.mallang.fixtures.MemberFixture.*;
 import static io.mallang.member.domain.Member.create;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,20 +25,35 @@ class MemberTest {
         MemberCreateCommand createCommand = generateCreateCommand();
 
         // when
-        Member member = create(createCommand, generatePasswordEncoder(), generateIdGenerator());
+        Member member = create(createCommand, generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
 
         // then
         assertThat(member.isActive()).isTrue();
     }
 
     @Test
-    void 회원을_생성하면_가입_시간이_기록된다() {
+    void 회원을_생성하면_커맨드의_정보가_저장된다() {
         // given
-        Member member = generateMember();
+        MemberCreateCommand command = generateCreateCommand();
+        PasswordEncoder passwordEncoder = generatePasswordEncoder();
 
         // when
+        Member member = create(command, passwordEncoder, generateIdGenerator(), generateClockHolder());
+
         // then
-        assertThat(member.getJoinedAt()).isNotNull();
+        assertThat(member).satisfies(isDerivedFrom(command, passwordEncoder));
+    }
+
+    @Test
+    void 회원을_생성하면_가입_시간이_기록된다() {
+        // given
+        ClockHolder clockHolder = generateClockHolder();
+
+        // when
+        Member member = create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), clockHolder);
+
+        // then
+        assertThat(member.getJoinedAt()).isEqualTo(clockHolder.now());
     }
 
     @ParameterizedTest
@@ -75,14 +92,14 @@ class MemberTest {
     @NullSource
     @ValueSource(strings = {"   "})
     void 식별자에_null이나_공백이_할당될_수_없다(String invalidId) {
-        assertThatThrownBy(() -> create(generateCreateCommand(), generatePasswordEncoder(), () -> invalidId))
+        assertThatThrownBy(() -> create(generateCreateCommand(), generatePasswordEncoder(), () -> invalidId, generateClockHolder()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 회원이_생성되면_식별자가_할당된다() {
         // given
-        Member member = create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator());
+        Member member = Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
 
         // when
         // then
@@ -97,7 +114,7 @@ class MemberTest {
         String rawPassword = createCommand.password();
 
         // when
-        Member member = create(createCommand, generatePasswordEncoder(), generateIdGenerator());
+        Member member = Member.create(createCommand, generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
 
         // then
         assertThat(member.getPassword().value()).isNotEqualTo(rawPassword);
@@ -116,13 +133,14 @@ class MemberTest {
     void 탈퇴_시_탈퇴_시간이_기록된다() {
         // given
         Member member = generateMember();
+        ClockHolder clockHolder = generateClockHolder();
         assertThat(member.getWithdrawnAt()).isNull();
 
         // when
-        member.withdraw();
+        member.withdraw(clockHolder);
 
         // then
-        assertThat(member.getWithdrawnAt()).isNotNull();
+        assertThat(member.getWithdrawnAt()).isEqualTo(clockHolder.now());
     }
 
     @Test
@@ -132,7 +150,7 @@ class MemberTest {
 
         // when
         // then
-        assertThatThrownBy(member::withdraw)
+        assertThatThrownBy(() -> member.withdraw(generateClockHolder()))
                 .isInstanceOf(IllegalStateException.class);
     }
 
