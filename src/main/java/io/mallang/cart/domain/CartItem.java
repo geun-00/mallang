@@ -1,0 +1,48 @@
+package io.mallang.cart.domain;
+
+import io.mallang.domain.common.IdGenerator;
+import io.mallang.product.domain.ProductId;
+import lombok.Getter;
+
+@Getter
+public class CartItem {
+
+    private final CartItemId id;
+
+    private final ProductId productId;
+
+    private int quantity;
+
+    private CartItem(CartItemId id, ProductId productId, int quantity) {
+        validateQuantity(quantity);
+
+        this.id = id;
+        this.productId = productId;
+        this.quantity = quantity;
+    }
+
+    static CartItem create(ProductId productId, int quantity, IdGenerator idGenerator) {
+        return new CartItem(
+                new CartItemId(idGenerator.nextId()),
+                productId,
+                quantity
+        );
+    }
+
+    void addQuantity(int quantity) {
+        validateQuantity(quantity);
+
+        this.quantity += quantity;
+    }
+
+    void changeQuantity(int quantity) {
+        validateQuantity(quantity);
+
+        this.quantity = quantity;
+    }
+
+    private static void validateQuantity(int quantity) {
+        if (quantity <= 0)
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+    }
+}
