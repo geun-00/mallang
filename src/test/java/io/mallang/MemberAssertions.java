@@ -18,4 +18,14 @@ public class MemberAssertions {
             assertThat(member.verifyPassword(command.password(), passwordEncoder)).isTrue();
         };
     }
+
+    public static ThrowingConsumer<Member> isSameAs(Member expected) {
+        return actual -> {
+            assertThat(actual.getId()).isEqualTo(expected.getId());
+            assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+            assertThat(actual.getNickname()).isEqualTo(expected.getNickname());
+            assertThat(actual.getStatus()).isEqualTo(expected.getStatus());
+            assertThat(actual.getJoinedAt()).isEqualTo(expected.getJoinedAt());
+        };
+    }
 }
