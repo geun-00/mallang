@@ -4,7 +4,7 @@ import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
-import jakarta.persistence.EntityNotFoundException;
+import io.mallang.member.domain.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +24,6 @@ public class MemberPersistenceAdapter implements SaveMemberPort, LoadMemberPort 
     public Member getById(MemberId memberId) {
         return memberJpaRepository.findById(memberId.value())
                                   .map(MemberJpaEntity::toDomain)
-                                  .orElseThrow(EntityNotFoundException::new);
+                                  .orElseThrow(() -> new MemberNotFoundException(memberId));
     }
 }
