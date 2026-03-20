@@ -3,8 +3,10 @@ package io.mallang;
 import io.mallang.member.domain.Email;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberCreateCommand;
+import io.mallang.member.domain.MemberRestoreCommand;
 import io.mallang.member.domain.Nickname;
 import io.mallang.member.domain.PasswordEncoder;
+import io.mallang.member.domain.ShippingAddress;
 import org.assertj.core.api.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +28,23 @@ public class MemberAssertions {
             assertThat(actual.getNickname()).isEqualTo(expected.getNickname());
             assertThat(actual.getStatus()).isEqualTo(expected.getStatus());
             assertThat(actual.getJoinedAt()).isEqualTo(expected.getJoinedAt());
+        };
+    }
+
+    public static ThrowingConsumer<Member> isRestoredFrom(MemberRestoreCommand command) {
+        return member -> {
+            assertThat(member.getId()).isEqualTo(command.id());
+            assertThat(member.getEmail()).isEqualTo(command.email());
+            assertThat(member.getNickname()).isEqualTo(command.nickname());
+            assertThat(member.getPassword()).isEqualTo(command.password());
+            assertThat(member.getJoinedAt()).isEqualTo(command.joinedAt());
+            assertThat(member.getStatus()).isEqualTo(command.status());
+            assertThat(member.getWithdrawnAt()).isEqualTo(command.withdrawnAt());
+            assertThat(member.getShippingAddresses())
+                    .map(ShippingAddress::getId)
+                    .isEqualTo(command.shippingAddresses().stream()
+                                      .map(ShippingAddress::getId)
+                                      .toList());
         };
     }
 }
