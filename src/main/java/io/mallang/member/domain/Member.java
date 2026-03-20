@@ -40,6 +40,14 @@ public class Member {
         this.shippingAddresses = new ShippingAddresses();
     }
 
+    public static Member restore(MemberRestoreCommand command) {
+        Member member = new Member(command.id(), command.email(), command.nickname(), command.password(), command.joinedAt());
+        member.status = command.status();
+        member.withdrawnAt = command.withdrawnAt();
+        member.shippingAddresses.restoreAll(command.shippingAddresses());
+        return member;
+    }
+
     public static Member create(MemberCreateCommand command, PasswordEncoder passwordEncoder, IdGenerator idGenerator, ClockHolder clockHolder) {
         return new Member(
                 new MemberId(idGenerator.nextId()),

@@ -1,8 +1,8 @@
 package io.mallang.member.domain;
 
 import io.mallang.domain.common.Address;
-import io.mallang.domain.common.Receiver;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.Receiver;
 import lombok.Getter;
 
 @Getter
@@ -21,6 +21,10 @@ public class ShippingAddress {
         this.receiver = receiver;
         this.address = address;
         this.isDefault = isDefault;
+    }
+
+    public static ShippingAddress restore(ShippingAddressRestoreCommand command) {
+        return new ShippingAddress(command.id(), command.receiver(), command.address(), command.isDefault());
     }
 
     static ShippingAddress create(AddShippingAddressCommand command, boolean isDefault, IdGenerator idGenerator) {

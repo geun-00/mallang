@@ -12,12 +12,37 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 
 import static io.mallang.MemberAssertions.isDerivedFrom;
+import static io.mallang.MemberAssertions.isRestoredFrom;
 import static io.mallang.fixtures.MemberFixture.*;
 import static io.mallang.member.domain.Member.create;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MemberTest {
+
+    @Test
+    void MemberRestoreCommand의_정보로_복원한다() {
+        // given
+        Member original = generateMemberWithShippingAddress(3);
+        original.withdraw(generateClockHolder());
+
+        MemberRestoreCommand restoreCommand = new MemberRestoreCommand(
+                original.getId(),
+                original.getEmail(),
+                original.getNickname(),
+                original.getPassword(),
+                original.getJoinedAt(),
+                original.getStatus(),
+                original.getWithdrawnAt(),
+                original.getShippingAddresses()
+        );
+
+        // when
+        Member restored = Member.restore(restoreCommand);
+
+        // then
+        assertThat(restored).satisfies(isRestoredFrom(restoreCommand));
+    }
 
     @Test
     void 유효한_정보로_회원을_생성하면_ACTIVE_상태가_된다() {

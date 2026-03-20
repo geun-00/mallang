@@ -44,6 +44,10 @@ public class ShippingAddresses {
         addresses.remove(target);
     }
 
+    void restoreAll(List<ShippingAddress> shippingAddresses) {
+        addresses.addAll(shippingAddresses);
+    }
+
     private ShippingAddress get(ShippingAddressId id) {
         return addresses.stream()
                         .filter(address -> address.getId().equals(id))
