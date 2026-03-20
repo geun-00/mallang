@@ -37,10 +37,18 @@ public class MemberFixture {
 
     public static MemberCreateCommand generateCreateCommand(String password) {
         return new MemberCreateCommand(
-                UUID.randomUUID() + "@test.com",
+                generateEmailValue(),
                 password,
-                UUID.randomUUID().toString().substring(0, 20)
+                generateNicknameValue()
         );
+    }
+
+    public static String generateEmailValue() {
+        return UUID.randomUUID() + "@test.com";
+    }
+
+    public static String generateNicknameValue() {
+        return UUID.randomUUID().toString().substring(0, 20);
     }
 
     public static Member generateMember() {
