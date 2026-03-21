@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 
+import static io.mallang.fixtures.MemberFixture.DEFAULT_PASSWORD;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.MemberFixture.generateEmailValue;
 import static io.mallang.fixtures.MemberFixture.generateNicknameValue;
@@ -133,7 +134,7 @@ class MemberCommandApiTest {
             @Autowired TestRestTemplate client
     ) {
         // given
-        var request = new MemberCreateRequest(generateEmailValue(), "password12@", invalidNickname);
+        var request = new MemberCreateRequest(generateEmailValue(), DEFAULT_PASSWORD, invalidNickname);
 
         // when
         ResponseEntity<Void> response = client.postForEntity(
@@ -150,12 +151,12 @@ class MemberCommandApiTest {
     void 이미_존재하는_이메일이면_409_Conflict_상태코드를_반환한다(@Autowired TestRestTemplate client) {
         // given
         String email = generateEmailValue();
-        var request1 = new MemberCreateRequest(email, "password12@", generateNicknameValue());
+        var request1 = new MemberCreateRequest(email, DEFAULT_PASSWORD, generateNicknameValue());
 
         client.postForEntity("/members", request1, Void.class);
 
         // when
-        var request2 = new MemberCreateRequest(email, "password12@", generateNicknameValue());
+        var request2 = new MemberCreateRequest(email, DEFAULT_PASSWORD, generateNicknameValue());
         ResponseEntity<Void> response = client.postForEntity(
                 "/members",
                 request2,
@@ -170,12 +171,12 @@ class MemberCommandApiTest {
     void 이미_존재하는_닉네임이면_409_Conflict_상태코드를_반환한다(@Autowired TestRestTemplate client) {
         // given
         String nickname = generateNicknameValue();
-        var request1 = new MemberCreateRequest(generateEmailValue(), "password12@", nickname);
+        var request1 = new MemberCreateRequest(generateEmailValue(), DEFAULT_PASSWORD, nickname);
 
         client.postForEntity("/members", request1, Void.class);
 
         // when
-        var request2 = new MemberCreateRequest(generateEmailValue(), "password12@", nickname);
+        var request2 = new MemberCreateRequest(generateEmailValue(), DEFAULT_PASSWORD, nickname);
         ResponseEntity<Void> response = client.postForEntity(
                 "/members",
                 request2,
@@ -189,7 +190,7 @@ class MemberCommandApiTest {
     @Test
     void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(@Autowired TestRestTemplate client) {
         // given
-        var request = new MemberCreateRequest("invalid-email", "password12@", generateNicknameValue());
+        var request = new MemberCreateRequest("invalid-email", DEFAULT_PASSWORD, generateNicknameValue());
 
         // when
         ResponseEntity<Void> response = client.postForEntity(
