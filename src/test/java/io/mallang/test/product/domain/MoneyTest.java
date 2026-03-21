@@ -1,5 +1,6 @@
 package io.mallang.test.product.domain;
 
+import io.mallang.domain.common.InvalidValueException;
 import io.mallang.domain.common.Money;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,13 +16,13 @@ class MoneyTest {
 
     @Test
     void 금액이_null이_아니어야_한다() {
-        assertThatThrownBy(() -> new Money(null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Money(null)).isInstanceOf(InvalidValueException.class);
     }
     
     @ParameterizedTest
     @ValueSource(ints = {-1, -100})
     void 금액은_음수가_아니어야_한다(int invalidValue) {
-        assertThatThrownBy(() -> new Money(BigDecimal.valueOf(invalidValue))).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Money(BigDecimal.valueOf(invalidValue))).isInstanceOf(InvalidValueException.class);
     }
     
     @ParameterizedTest

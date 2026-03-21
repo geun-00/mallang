@@ -1,5 +1,7 @@
 package io.mallang.member.domain;
 
+import io.mallang.domain.common.InvalidValueException;
+
 import java.util.regex.Pattern;
 
 public record Email(String address) {
@@ -9,11 +11,11 @@ public record Email(String address) {
 
     public Email {
         if (address == null || address.isBlank()) {
-            throw new IllegalArgumentException("이메일은 비어 있을 수 없습니다.");
+            throw new InvalidValueException("이메일은 비어 있을 수 없습니다.");
         }
 
         if (!EMAIL_PATTERN.matcher(address).matches()) {
-            throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다: " + address);
+            throw new InvalidValueException("유효하지 않은 이메일 형식입니다: " + address);
         }
     }
 }

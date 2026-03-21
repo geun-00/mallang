@@ -2,6 +2,7 @@ package io.mallang.test.member.domain;
 
 import io.mallang.domain.common.Address;
 import io.mallang.domain.common.ClockHolder;
+import io.mallang.domain.common.InvalidValueException;
 import io.mallang.domain.common.Receiver;
 import io.mallang.member.domain.*;
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ class MemberTest {
             "longpassword1234567890@", // 21자
     })
     void 비밀번호는_8자_이상_20자_이하여야_한다(String invalidPassword) {
-        assertThatThrownBy(() -> generateMember(invalidPassword)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> generateMember(invalidPassword)).isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
@@ -100,7 +101,7 @@ class MemberTest {
             "12345678@",  // 숫자 + 특수문자
     })
     void 비밀번호는_영문_숫자_특수문자를_포함해야_한다(String invalidPassword) {
-        assertThatThrownBy(() -> generateMember(invalidPassword)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> generateMember(invalidPassword)).isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
@@ -110,7 +111,7 @@ class MemberTest {
             "qwerwasd12@★", // 기타 특수문자 포함
     })
     void 비밀번호는_허용된_문자로만_구성되어야_한다(String invalidPassword) {
-        assertThatThrownBy(() -> generateMember(invalidPassword)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> generateMember(invalidPassword)).isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
@@ -118,7 +119,7 @@ class MemberTest {
     @ValueSource(strings = {"   "})
     void 식별자에_null이나_공백이_할당될_수_없다(String invalidId) {
         assertThatThrownBy(() -> create(generateCreateCommand(), generatePasswordEncoder(), () -> invalidId, generateClockHolder()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test

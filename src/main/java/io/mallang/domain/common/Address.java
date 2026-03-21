@@ -8,9 +8,9 @@ public record Address(String zipCode, String mainAddress, String detailAddress) 
 
     public Address {
         if (zipCode == null || !ZIP_CODE_PATTERN.matcher(zipCode).matches())
-            throw new IllegalArgumentException("우편번호는 5자리 숫자여야 합니다.");
+            throw new InvalidValueException("우편번호는 5자리 숫자여야 합니다.");
 
         if (mainAddress == null || mainAddress.isBlank())
-            throw new IllegalArgumentException("주소를 입력해주세요.");
+            throw new InvalidValueException("주소를 입력해주세요.");
     }
 }

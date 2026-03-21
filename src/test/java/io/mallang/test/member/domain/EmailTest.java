@@ -1,5 +1,6 @@
 package io.mallang.test.member.domain;
 
+import io.mallang.domain.common.InvalidValueException;
 import io.mallang.member.domain.Email;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -28,14 +29,15 @@ class EmailTest {
     })
     void 유효하지_않은_형식으로_생성할_수_없다(String invalidEmail) {
         assertThatThrownBy(() -> new Email(invalidEmail))
-                 .isInstanceOf(IllegalArgumentException.class);
+                 .isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"   "})
     void 이메일은_null이나_빈_문자열이_될_수_없다(String invalidEmail) {
-        assertThatThrownBy(() -> new Email(invalidEmail)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Email(invalidEmail))
+                .isInstanceOf(InvalidValueException.class);
     }
     
     @ParameterizedTest
