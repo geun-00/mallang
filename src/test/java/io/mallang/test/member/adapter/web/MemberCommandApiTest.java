@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 
+import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.MemberFixture.generateEmailValue;
 import static io.mallang.fixtures.MemberFixture.generateNicknameValue;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +29,7 @@ class MemberCommandApiTest {
     @Test
     void 올바르게_요청하면_201_Created_상태코드를_반환한다(@Autowired TestRestTemplate client) {
         // given
-        var request = new MemberCreateRequest(generateEmailValue(), "password12@", generateNicknameValue());
+        var request = generateCreateRequest();
 
         // when
         ResponseEntity<Void> response = client.postForEntity(
@@ -44,7 +45,7 @@ class MemberCommandApiTest {
     @Test
     void 올바르게_요청하면_식별자가_포함된_Location_헤더를_반환한다(@Autowired TestRestTemplate client) {
         // given
-        var request = new MemberCreateRequest(generateEmailValue(), "password12@", generateNicknameValue());
+        var request = generateCreateRequest();
 
         // when
         ResponseEntity<Void> response = client.postForEntity(
@@ -66,7 +67,7 @@ class MemberCommandApiTest {
             @Autowired LoadMemberPort loadMemberPort
     ) {
         // given
-        var request = new MemberCreateRequest(generateEmailValue(), "password12@", generateNicknameValue());
+        var request = generateCreateRequest();
 
         // when
         ResponseEntity<Void> response = client.postForEntity(
@@ -87,9 +88,10 @@ class MemberCommandApiTest {
     @ValueSource(strings = "  ")
     void email_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
             String invalidEmail,
-            @Autowired TestRestTemplate client) {
+            @Autowired TestRestTemplate client
+    ) {
         // given
-        var request = new MemberCreateRequest(invalidEmail, "password12@", generateNicknameValue());
+        var request = generateCreateRequest(invalidEmail);
 
         // when
         ResponseEntity<Void> response = client.postForEntity(
@@ -107,7 +109,8 @@ class MemberCommandApiTest {
     @ValueSource(strings = "  ")
     void password_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
             String invalidPassword,
-            @Autowired TestRestTemplate client) {
+            @Autowired TestRestTemplate client
+    ) {
         // given
         var request = new MemberCreateRequest(generateEmailValue(), invalidPassword, generateNicknameValue());
 
