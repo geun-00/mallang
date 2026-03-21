@@ -2,7 +2,7 @@ package io.mallang.member.adapter.persistence.jpa;
 
 import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.ShippingAddressId;
-import io.mallang.member.domain.ShippingAddressRestoreCommand;
+import io.mallang.member.domain.command.ShippingAddressRestoreCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

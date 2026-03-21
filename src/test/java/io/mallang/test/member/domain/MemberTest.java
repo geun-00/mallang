@@ -1,10 +1,13 @@
 package io.mallang.test.member.domain;
 
-import io.mallang.domain.common.Address;
+import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.InvalidValueException;
-import io.mallang.domain.common.Receiver;
+import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.*;
+import io.mallang.member.domain.command.MemberCreateCommand;
+import io.mallang.member.domain.command.MemberRestoreCommand;
+import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;

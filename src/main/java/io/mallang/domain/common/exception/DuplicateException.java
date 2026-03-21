@@ -1,4 +1,4 @@
-package io.mallang.domain.common;
+package io.mallang.domain.common.exception;
 
 public class DuplicateException extends RuntimeException {
 

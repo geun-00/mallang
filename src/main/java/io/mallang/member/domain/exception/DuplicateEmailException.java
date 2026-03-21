@@ -1,6 +1,7 @@
-package io.mallang.member.domain;
+package io.mallang.member.domain.exception;
 
-import io.mallang.domain.common.DuplicateException;
+import io.mallang.domain.common.exception.DuplicateException;
+import io.mallang.member.domain.Email;
 
 public class DuplicateEmailException extends DuplicateException {
 

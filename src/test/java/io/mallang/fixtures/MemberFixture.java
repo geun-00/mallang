@@ -4,6 +4,9 @@ import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.domain.*;
+import io.mallang.member.domain.command.AddShippingAddressCommand;
+import io.mallang.member.domain.command.MemberCreateCommand;
+import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

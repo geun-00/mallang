@@ -1,7 +1,7 @@
 package io.mallang.test.order.domain;
 
-import io.mallang.domain.common.Address;
-import io.mallang.domain.common.Receiver;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.order.domain.ShippingInfo;
 import org.junit.jupiter.api.Test;
 

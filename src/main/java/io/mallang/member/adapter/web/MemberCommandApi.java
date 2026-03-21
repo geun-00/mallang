@@ -3,7 +3,7 @@ package io.mallang.member.adapter.web;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
-import io.mallang.member.domain.MemberCreateCommand;
+import io.mallang.member.domain.command.MemberCreateCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

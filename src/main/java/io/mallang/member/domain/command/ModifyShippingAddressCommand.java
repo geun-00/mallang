@@ -1,6 +1,6 @@
-package io.mallang.member.domain;
+package io.mallang.member.domain.command;
 
-public record AddShippingAddressCommand(
+public record ModifyShippingAddressCommand(
         String receiverName,
         String receiverPhoneNumber,
         String zipCode,

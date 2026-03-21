@@ -2,8 +2,8 @@ package io.mallang;
 
 import io.mallang.member.domain.Email;
 import io.mallang.member.domain.Member;
-import io.mallang.member.domain.MemberCreateCommand;
-import io.mallang.member.domain.MemberRestoreCommand;
+import io.mallang.member.domain.command.MemberCreateCommand;
+import io.mallang.member.domain.command.MemberRestoreCommand;
 import io.mallang.member.domain.Nickname;
 import io.mallang.member.domain.PasswordEncoder;
 import io.mallang.member.domain.ShippingAddress;

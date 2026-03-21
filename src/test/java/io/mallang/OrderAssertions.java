@@ -1,7 +1,7 @@
 package io.mallang;
 
-import io.mallang.domain.common.Address;
-import io.mallang.domain.common.Receiver;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.order.domain.PlaceOrderCommand;
 import io.mallang.order.domain.ShippingInfo;
 import org.assertj.core.api.ThrowingConsumer;

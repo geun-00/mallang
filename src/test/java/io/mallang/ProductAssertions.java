@@ -1,6 +1,6 @@
 package io.mallang;
 
-import io.mallang.domain.common.Money;
+import io.mallang.domain.common.vo.Money;
 import io.mallang.product.domain.*;
 import org.assertj.core.api.ThrowingConsumer;
 

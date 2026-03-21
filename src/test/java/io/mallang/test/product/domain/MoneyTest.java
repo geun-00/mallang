@@ -1,7 +1,7 @@
 package io.mallang.test.product.domain;
 
-import io.mallang.domain.common.InvalidValueException;
-import io.mallang.domain.common.Money;
+import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.domain.common.vo.Money;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

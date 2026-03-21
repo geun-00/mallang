@@ -1,6 +1,7 @@
 package io.mallang.member.adapter.persistence.jpa;
 
 import io.mallang.member.domain.*;
+import io.mallang.member.domain.command.MemberRestoreCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

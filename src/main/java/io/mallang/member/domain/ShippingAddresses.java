@@ -1,6 +1,8 @@
 package io.mallang.member.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.member.domain.command.AddShippingAddressCommand;
+import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 
 import java.util.ArrayList;
 import java.util.Collections;

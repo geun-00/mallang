@@ -1,6 +1,6 @@
 package io.mallang.test.member.domain;
 
-import io.mallang.domain.common.InvalidValueException;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.Email;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;

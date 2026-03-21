@@ -2,6 +2,10 @@ package io.mallang.member.domain;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.member.domain.command.AddShippingAddressCommand;
+import io.mallang.member.domain.command.MemberCreateCommand;
+import io.mallang.member.domain.command.MemberRestoreCommand;
+import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
