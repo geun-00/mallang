@@ -1,0 +1,10 @@
+package io.mallang.member.adapter.web.model;
+
+import jakarta.validation.constraints.NotBlank;
+
+public record MemberCreateRequest(
+        @NotBlank String email,
+        @NotBlank String password,
+        @NotBlank String nickname
+) {
+}
