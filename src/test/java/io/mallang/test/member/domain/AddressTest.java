@@ -1,6 +1,7 @@
 package io.mallang.test.member.domain;
 
 import io.mallang.domain.common.Address;
+import io.mallang.domain.common.InvalidValueException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -26,7 +27,7 @@ class AddressTest {
     @Test
     void 우편번호는_null이면_안_된다() {
         assertThatThrownBy(() -> new Address(null, "서울시 강남구 테헤란로 1", "101호"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
@@ -38,7 +39,7 @@ class AddressTest {
     })
     void 우편번호는_5자리_숫자여야_한다(String invalidZipcode) {
         assertThatThrownBy(() -> new Address(invalidZipcode, "서울시 강남구 테헤란로 1", "101호"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
@@ -46,6 +47,6 @@ class AddressTest {
     @ValueSource(strings = {"   "})
     void 주소는_null_또는_공백이_아니어야_한다(String invalidMainAddress) {
         assertThatThrownBy(() -> new Address("12345", invalidMainAddress, "101호"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 }

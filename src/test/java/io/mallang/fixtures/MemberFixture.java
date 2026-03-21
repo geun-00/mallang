@@ -2,12 +2,15 @@ package io.mallang.fixtures;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class MemberFixture {
+
+    public static final String DEFAULT_PASSWORD = "password12@";
 
     public static PasswordEncoder generatePasswordEncoder() {
         return new PasswordEncoder() {
@@ -32,7 +35,7 @@ public class MemberFixture {
     }
 
     public static MemberCreateCommand generateCreateCommand() {
-        return generateCreateCommand("password12@");
+        return generateCreateCommand(DEFAULT_PASSWORD);
     }
 
     public static MemberCreateCommand generateCreateCommand(String password) {
@@ -49,6 +52,14 @@ public class MemberFixture {
 
     public static String generateNicknameValue() {
         return UUID.randomUUID().toString().substring(0, 20);
+    }
+
+    public static MemberCreateRequest generateCreateRequest() {
+        return new MemberCreateRequest(generateEmailValue(), DEFAULT_PASSWORD, generateNicknameValue());
+    }
+
+    public static MemberCreateRequest generateCreateRequest(String email) {
+        return new MemberCreateRequest(email, DEFAULT_PASSWORD, generateNicknameValue());
     }
 
     public static Member generateMember() {

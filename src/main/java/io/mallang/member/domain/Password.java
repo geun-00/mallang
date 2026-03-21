@@ -1,5 +1,7 @@
 package io.mallang.member.domain;
 
+import io.mallang.domain.common.InvalidValueException;
+
 import java.util.regex.Pattern;
 
 public record Password(String value) {
@@ -19,15 +21,15 @@ public record Password(String value) {
 
     private static void validatePassword(String rawPassword) {
         if (rawPassword.length() < 8 || rawPassword.length() > 20)
-            throw new IllegalArgumentException("비밀번호는 8자 이상 20자 이하여야 합니다.");
+            throw new InvalidValueException("비밀번호는 8자 이상 20자 이하여야 합니다.");
         if (!LETTER_PATTERN.matcher(rawPassword).find())
-            throw new IllegalArgumentException("비밀번호에 영문자를 포함해야 합니다.");
+            throw new InvalidValueException("비밀번호에 영문자를 포함해야 합니다.");
         if (!DIGIT_PATTERN.matcher(rawPassword).find())
-            throw new IllegalArgumentException("비밀번호에 숫자를 포함해야 합니다.");
+            throw new InvalidValueException("비밀번호에 숫자를 포함해야 합니다.");
         if (!SPECIAL_CHAR_PATTERN.matcher(rawPassword).find())
-            throw new IllegalArgumentException("비밀번호에 특수문자(!@#$%^&*)를 포함해야 합니다.");
+            throw new InvalidValueException("비밀번호에 특수문자(!@#$%^&*)를 포함해야 합니다.");
         if (!ALLOWED_CHARS_PATTERN.matcher(rawPassword).matches())
-            throw new IllegalArgumentException("비밀번호에 허용되지 않은 문자가 포함되어 있습니다.");
+            throw new InvalidValueException("비밀번호에 허용되지 않은 문자가 포함되어 있습니다.");
     }
 
     boolean verifyPassword(String rawPassword, PasswordEncoder passwordEncoder) {

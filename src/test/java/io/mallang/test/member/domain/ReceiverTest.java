@@ -1,5 +1,6 @@
 package io.mallang.test.member.domain;
 
+import io.mallang.domain.common.InvalidValueException;
 import io.mallang.domain.common.Receiver;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,26 +19,26 @@ class ReceiverTest {
         @NullSource
         @ValueSource(strings = {"   "})
         void 이름은_null_또는_공백이_아니어야_한다(String invalidName) {
-            assertThatThrownBy(() -> new Receiver(invalidName, "01011112222")).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> new Receiver(invalidName, "01011112222")).isInstanceOf(InvalidValueException.class);
         }
         
         @ParameterizedTest
         @ValueSource(strings = {"a", "aaaaaaaaaaa"})
         void 이름은_2자_이상_10자_이하여야_한다(String invalidName) {
-            assertThatThrownBy(() -> new Receiver(invalidName, "01011112222")).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> new Receiver(invalidName, "01011112222")).isInstanceOf(InvalidValueException.class);
         }
         
         @ParameterizedTest
         @ValueSource(strings = {" hello", "hello "})
         void 이름은_앞뒤_공백이_없어야_한다(String invalidName) {
-            assertThatThrownBy(() -> new Receiver(invalidName, "01011112222")).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> new Receiver(invalidName, "01011112222")).isInstanceOf(InvalidValueException.class);
         }
         
         @ParameterizedTest
         @NullSource
         @ValueSource(strings = {"1234567890", "010-1111-2222", "010 1111 2222", "abcdefghijk"})
         void 전화번호는_010XXXXXXXX_형식이어야_한다(String invalidPhoneNumber) {
-            assertThatThrownBy(() -> new Receiver("홍길동", invalidPhoneNumber)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> new Receiver("홍길동", invalidPhoneNumber)).isInstanceOf(InvalidValueException.class);
         }
     }
     
