@@ -4,7 +4,7 @@ import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.ShippingAddressId;
 
-public record ShippingAddressRestoreCommand(
+public record RestoreShippingAddressCommand(
         ShippingAddressId id,
         Receiver receiver,
         Address address,

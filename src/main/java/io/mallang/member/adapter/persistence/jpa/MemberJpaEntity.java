@@ -1,7 +1,7 @@
 package io.mallang.member.adapter.persistence.jpa;
 
 import io.mallang.member.domain.*;
-import io.mallang.member.domain.command.MemberRestoreCommand;
+import io.mallang.member.domain.command.RestoreMemberCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -75,7 +75,7 @@ public class MemberJpaEntity {
     }
 
     public Member toDomain() {
-        return Member.restore(new MemberRestoreCommand(
+        return Member.restore(new RestoreMemberCommand(
                 new MemberId(memberId),
                 new Email(email),
                 new Nickname(nickname),

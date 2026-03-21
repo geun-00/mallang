@@ -5,7 +5,7 @@ import io.mallang.member.domain.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MemberRestoreCommand(
+public record RestoreMemberCommand(
         MemberId id,
         Email email,
         Nickname nickname,
