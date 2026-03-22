@@ -55,8 +55,8 @@ public class Member {
     public static Member create(CreateMemberCommand command, PasswordEncoder passwordEncoder, IdGenerator idGenerator, ClockHolder clockHolder) {
         return new Member(
                 new MemberId(idGenerator.nextId()),
-                new Email(command.email()),
-                new Nickname(command.nickname()),
+                command.email(),
+                command.nickname(),
                 Password.encode(command.password(), passwordEncoder),
                 clockHolder.now()
         );

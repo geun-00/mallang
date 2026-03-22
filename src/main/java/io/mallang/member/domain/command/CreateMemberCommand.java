@@ -1,4 +1,7 @@
 package io.mallang.member.domain.command;
 
-public record CreateMemberCommand(String email, String password, String nickname) {
+import io.mallang.member.domain.Email;
+import io.mallang.member.domain.Nickname;
+
+public record CreateMemberCommand(Email email, String password, Nickname nickname) {
 }

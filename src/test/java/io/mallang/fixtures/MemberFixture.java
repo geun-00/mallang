@@ -44,9 +44,9 @@ public class MemberFixture {
 
     public static CreateMemberCommand generateCreateCommand(String password) {
         return new CreateMemberCommand(
-                generateEmailValue(),
+                new Email(generateEmailValue()),
                 password,
-                generateNicknameValue()
+                new Nickname(generateNicknameValue())
         );
     }
 

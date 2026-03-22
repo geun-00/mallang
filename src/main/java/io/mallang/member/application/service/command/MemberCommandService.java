@@ -35,7 +35,8 @@ public class MemberCommandService implements RegisterMemberUseCase {
         validateDuplicateEmail(email);
         validateDuplicateNickname(nickname);
 
-        Member member = Member.create(new CreateMemberCommand(command.email(), command.password(), command.nickname()), passwordEncoder, idGenerator, clockHolder);
+        CreateMemberCommand createCommand = new CreateMemberCommand(email, command.password(), nickname);
+        Member member = Member.create(createCommand, passwordEncoder, idGenerator, clockHolder);
         saveMemberPort.save(member);
 
         return new RegisterMemberResult(member.getId().value());
