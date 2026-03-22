@@ -1,6 +1,9 @@
 package io.mallang.order.domain;
 
 import io.mallang.domain.common.*;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Money;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.MemberId;
 import lombok.Getter;
 

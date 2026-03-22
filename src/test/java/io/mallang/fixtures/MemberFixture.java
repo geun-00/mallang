@@ -3,7 +3,11 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.domain.*;
+import io.mallang.member.domain.command.AddShippingAddressCommand;
+import io.mallang.member.domain.command.CreateMemberCommand;
+import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,12 +38,24 @@ public class MemberFixture {
         return () -> LocalDateTime.of(2024, 1, 1, 0, 0, 0);
     }
 
-    public static MemberCreateCommand generateCreateCommand() {
+    public static CreateMemberCommand generateCreateCommand() {
         return generateCreateCommand(DEFAULT_PASSWORD);
     }
 
-    public static MemberCreateCommand generateCreateCommand(String password) {
-        return new MemberCreateCommand(
+    public static CreateMemberCommand generateCreateCommand(String password) {
+        return new CreateMemberCommand(
+                new Email(generateEmailValue()),
+                password,
+                new Nickname(generateNicknameValue())
+        );
+    }
+
+    public static RegisterMemberCommand generateRegisterCommand() {
+        return generateRegisterCommand(DEFAULT_PASSWORD);
+    }
+
+    public static RegisterMemberCommand generateRegisterCommand(String password) {
+        return new RegisterMemberCommand(
                 generateEmailValue(),
                 password,
                 generateNicknameValue()

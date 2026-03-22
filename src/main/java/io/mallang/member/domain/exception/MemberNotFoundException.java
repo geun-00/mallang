@@ -1,4 +1,6 @@
-package io.mallang.member.domain;
+package io.mallang.member.domain.exception;
+
+import io.mallang.member.domain.MemberId;
 
 public class MemberNotFoundException extends RuntimeException {
 

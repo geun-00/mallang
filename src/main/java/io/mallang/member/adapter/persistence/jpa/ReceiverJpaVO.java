@@ -1,6 +1,6 @@
 package io.mallang.member.adapter.persistence.jpa;
 
-import io.mallang.domain.common.Receiver;
+import io.mallang.domain.common.vo.Receiver;
 import jakarta.persistence.Embeddable;
 
 @Embeddable

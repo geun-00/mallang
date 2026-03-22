@@ -1,7 +1,7 @@
 package io.mallang.adapter.web;
 
-import io.mallang.domain.common.DuplicateException;
-import io.mallang.domain.common.InvalidValueException;
+import io.mallang.domain.common.exception.DuplicateException;
+import io.mallang.domain.common.exception.InvalidValueException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;

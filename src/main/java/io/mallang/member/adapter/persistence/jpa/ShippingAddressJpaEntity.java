@@ -2,7 +2,7 @@ package io.mallang.member.adapter.persistence.jpa;
 
 import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.ShippingAddressId;
-import io.mallang.member.domain.ShippingAddressRestoreCommand;
+import io.mallang.member.domain.command.RestoreShippingAddressCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -51,7 +51,7 @@ public class ShippingAddressJpaEntity {
     }
 
     public ShippingAddress toDomain() {
-        return ShippingAddress.restore(new ShippingAddressRestoreCommand(
+        return ShippingAddress.restore(new RestoreShippingAddressCommand(
                 new ShippingAddressId(id),
                 receiver.toDomain(),
                 address.toDomain(),

@@ -1,6 +1,6 @@
 package io.mallang.member.domain;
 
-import io.mallang.domain.common.InvalidValueException;
+import io.mallang.domain.common.exception.InvalidValueException;
 
 public record ShippingAddressId(String value) {
 

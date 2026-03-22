@@ -1,10 +1,13 @@
 package io.mallang.test.member.domain;
 
-import io.mallang.domain.common.Address;
+import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.InvalidValueException;
-import io.mallang.domain.common.Receiver;
+import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.*;
+import io.mallang.member.domain.command.CreateMemberCommand;
+import io.mallang.member.domain.command.RestoreMemberCommand;
+import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -27,7 +30,7 @@ class MemberTest {
         Member original = generateMemberWithShippingAddress(3);
         original.withdraw(generateClockHolder());
 
-        MemberRestoreCommand restoreCommand = new MemberRestoreCommand(
+        RestoreMemberCommand restoreCommand = new RestoreMemberCommand(
                 original.getId(),
                 original.getEmail(),
                 original.getNickname(),
@@ -48,7 +51,7 @@ class MemberTest {
     @Test
     void 유효한_정보로_회원을_생성하면_ACTIVE_상태가_된다() {
         // given
-        MemberCreateCommand createCommand = generateCreateCommand();
+        CreateMemberCommand createCommand = generateCreateCommand();
 
         // when
         Member member = create(createCommand, generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
@@ -60,7 +63,7 @@ class MemberTest {
     @Test
     void 회원을_생성하면_커맨드의_정보가_저장된다() {
         // given
-        MemberCreateCommand command = generateCreateCommand();
+        CreateMemberCommand command = generateCreateCommand();
         PasswordEncoder passwordEncoder = generatePasswordEncoder();
 
         // when
@@ -136,7 +139,7 @@ class MemberTest {
     @Test
     void 회원을_생성하면_비밀번호가_해싱되어_저장된다() {
         // given
-        MemberCreateCommand createCommand = generateCreateCommand();
+        CreateMemberCommand createCommand = generateCreateCommand();
         String rawPassword = createCommand.password();
 
         // when

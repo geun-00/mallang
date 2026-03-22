@@ -2,6 +2,10 @@ package io.mallang.member.domain;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.member.domain.command.AddShippingAddressCommand;
+import io.mallang.member.domain.command.CreateMemberCommand;
+import io.mallang.member.domain.command.RestoreMemberCommand;
+import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -40,7 +44,7 @@ public class Member {
         this.shippingAddresses = new ShippingAddresses();
     }
 
-    public static Member restore(MemberRestoreCommand command) {
+    public static Member restore(RestoreMemberCommand command) {
         Member member = new Member(command.id(), command.email(), command.nickname(), command.password(), command.joinedAt());
         member.status = command.status();
         member.withdrawnAt = command.withdrawnAt();
@@ -48,11 +52,11 @@ public class Member {
         return member;
     }
 
-    public static Member create(MemberCreateCommand command, PasswordEncoder passwordEncoder, IdGenerator idGenerator, ClockHolder clockHolder) {
+    public static Member create(CreateMemberCommand command, PasswordEncoder passwordEncoder, IdGenerator idGenerator, ClockHolder clockHolder) {
         return new Member(
                 new MemberId(idGenerator.nextId()),
-                new Email(command.email()),
-                new Nickname(command.nickname()),
+                command.email(),
+                command.nickname(),
                 Password.encode(command.password(), passwordEncoder),
                 clockHolder.now()
         );

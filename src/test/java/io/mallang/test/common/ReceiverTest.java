@@ -1,7 +1,7 @@
-package io.mallang.test.member.domain;
+package io.mallang.test.common;
 
-import io.mallang.domain.common.InvalidValueException;
-import io.mallang.domain.common.Receiver;
+import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.domain.common.vo.Receiver;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;

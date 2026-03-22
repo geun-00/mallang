@@ -1,4 +1,6 @@
-package io.mallang.domain.common;
+package io.mallang.domain.common.vo;
+
+import io.mallang.domain.common.exception.InvalidValueException;
 
 import java.math.BigDecimal;
 

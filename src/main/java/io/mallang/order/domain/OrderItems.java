@@ -1,7 +1,7 @@
 package io.mallang.order.domain;
 
 import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.Money;
+import io.mallang.domain.common.vo.Money;
 
 import java.util.List;
 
