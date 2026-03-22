@@ -1,4 +1,4 @@
-package io.mallang.test.product.domain;
+package io.mallang.test.common;
 
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;

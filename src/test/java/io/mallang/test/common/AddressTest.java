@@ -1,4 +1,4 @@
-package io.mallang.test.member.domain;
+package io.mallang.test.common;
 
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.exception.InvalidValueException;
