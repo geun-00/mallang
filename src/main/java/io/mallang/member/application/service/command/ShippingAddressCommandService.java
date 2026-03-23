@@ -2,9 +2,11 @@ package io.mallang.member.application.service.command;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
+import io.mallang.member.application.provided.command.RemoveShippingAddressUseCase;
 import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;
 import io.mallang.member.application.provided.command.UpdateShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
+import io.mallang.member.application.provided.command.model.RemoveShippingAddressCommand;
 import io.mallang.member.application.provided.command.model.UpdateDefaultShippingAddressCommand;
 import io.mallang.member.application.provided.command.model.UpdateShippingAddressCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ShippingAddressCommandService implements RegisterShippingAddressUseCase, UpdateDefaultShippingAddressUseCase, UpdateShippingAddressUseCase {
+public class ShippingAddressCommandService implements RegisterShippingAddressUseCase, UpdateDefaultShippingAddressUseCase, UpdateShippingAddressUseCase, RemoveShippingAddressUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadMemberPort loadMemberPort;
@@ -73,5 +75,13 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
         saveMemberPort.save(member);
     }
-}
 
+    @Override
+    public void remove(RemoveShippingAddressCommand command) {
+        Member member = loadMemberPort.getById(command.memberId());
+
+        member.removeShippingAddress(command.shippingAddressId());
+
+        saveMemberPort.save(member);
+    }
+}
