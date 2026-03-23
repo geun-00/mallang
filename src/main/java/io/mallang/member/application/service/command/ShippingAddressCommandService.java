@@ -2,7 +2,9 @@ package io.mallang.member.application.service.command;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
+import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
+import io.mallang.member.application.provided.command.model.UpdateDefaultShippingAddressCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
@@ -16,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ShippingAddressCommandService implements RegisterShippingAddressUseCase {
+public class ShippingAddressCommandService implements RegisterShippingAddressUseCase, UpdateDefaultShippingAddressUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadMemberPort loadMemberPort;
@@ -40,6 +42,15 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
         saveMemberPort.save(member);
 
         return shippingAddress.getId();
+    }
+
+    @Override
+    public void update(UpdateDefaultShippingAddressCommand command) {
+        Member member = loadMemberPort.getById(command.memberId());
+
+        member.setDefaultShippingAddress(command.shippingAddressId());
+
+        saveMemberPort.save(member);
     }
 }
 
