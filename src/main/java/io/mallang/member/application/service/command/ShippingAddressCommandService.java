@@ -5,15 +5,11 @@ import io.mallang.member.application.provided.command.RegisterShippingAddressUse
 import io.mallang.member.application.provided.command.RemoveShippingAddressUseCase;
 import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;
 import io.mallang.member.application.provided.command.UpdateShippingAddressUseCase;
-import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
-import io.mallang.member.application.provided.command.model.RemoveShippingAddressCommand;
-import io.mallang.member.application.provided.command.model.UpdateDefaultShippingAddressCommand;
-import io.mallang.member.application.provided.command.model.UpdateShippingAddressCommand;
+import io.mallang.member.application.provided.command.model.*;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.ShippingAddress;
-import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +26,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
     private final SaveMemberPort saveMemberPort;
 
     @Override
-    public ShippingAddressId register(RegisterShippingAddressCommand command) {
+    public RegisterShippingAddressResult register(RegisterShippingAddressCommand command) {
         Member member = loadMemberPort.getById(command.memberId());
 
         ShippingAddress shippingAddress = member.addShippingAddress(
@@ -46,7 +42,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
         saveMemberPort.save(member);
 
-        return shippingAddress.getId();
+        return new RegisterShippingAddressResult(shippingAddress.getId().value());
     }
 
     @Override

@@ -1,10 +1,10 @@
 package io.mallang.member.application.provided.command;
 
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
-import io.mallang.member.domain.ShippingAddressId;
+import io.mallang.member.application.provided.command.model.RegisterShippingAddressResult;
 
 public interface RegisterShippingAddressUseCase {
 
-    ShippingAddressId register(RegisterShippingAddressCommand command);
+    RegisterShippingAddressResult register(RegisterShippingAddressCommand command);
 }
 

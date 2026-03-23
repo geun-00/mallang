@@ -3,6 +3,7 @@ package io.mallang.test.member.application.service;
 import io.mallang.TestConfig;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
+import io.mallang.member.application.provided.command.model.RegisterShippingAddressResult;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
@@ -33,14 +34,14 @@ class RegisterShippingAddressUseCaseTest {
         MemberId memberId = savedMemberId(saveMemberPort);
 
         // when
-        ShippingAddressId shippingAddressId = registerShippingAddressUseCase.register(command(memberId));
+        RegisterShippingAddressResult result = registerShippingAddressUseCase.register(command(memberId));
 
         // then
         Member member = loadMemberPort.getById(memberId);
         assertThat(member.getShippingAddresses())
                 .hasSize(1)
                 .extracting(ShippingAddress::getId)
-                .contains(shippingAddressId);
+                .contains(new ShippingAddressId(result.shippingAddressId()));
     }
 
     @Test
