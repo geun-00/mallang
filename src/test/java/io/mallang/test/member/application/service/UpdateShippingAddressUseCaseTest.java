@@ -1,12 +1,10 @@
 package io.mallang.test.member.application.service;
 
 import io.mallang.TestConfig;
-import io.mallang.fixtures.MemberFixture;
 import io.mallang.member.application.provided.command.UpdateShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.UpdateShippingAddressCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
-import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.exception.MemberNotFoundException;
@@ -16,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 import static io.mallang.MemberAssertions.isModifiedBy;
+import static io.mallang.fixtures.MemberFixture.savedMemberIdWithShippingAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -53,13 +52,6 @@ class UpdateShippingAddressUseCaseTest {
         // when & then
         assertThatThrownBy(() -> updateShippingAddressUseCase.update(command(wrongMemberId, anyId)))
                 .isInstanceOf(MemberNotFoundException.class);
-    }
-
-    private MemberId savedMemberIdWithShippingAddress(SaveMemberPort saveMemberPort) {
-        Member member = MemberFixture.generateMemberWithShippingAddress();
-        saveMemberPort.save(member);
-
-        return member.getId();
     }
 
     private ShippingAddressId firstShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {

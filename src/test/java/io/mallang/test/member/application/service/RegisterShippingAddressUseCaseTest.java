@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import static io.mallang.fixtures.MemberFixture.generateMember;
+import static io.mallang.fixtures.MemberFixture.savedMemberId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -30,10 +30,10 @@ class RegisterShippingAddressUseCaseTest {
             @Autowired RegisterShippingAddressUseCase registerShippingAddressUseCase
     ) {
         // given
-        MemberId memberId = getSavedMemberId(saveMemberPort);
+        MemberId memberId = savedMemberId(saveMemberPort);
 
         // when
-        ShippingAddressId shippingAddressId = registerShippingAddressUseCase.register(createRegisterCommand(memberId));
+        ShippingAddressId shippingAddressId = registerShippingAddressUseCase.register(command(memberId));
 
         // then
         Member member = loadMemberPort.getById(memberId);
@@ -51,18 +51,11 @@ class RegisterShippingAddressUseCaseTest {
         MemberId wrongMemberId = new MemberId("wrong-id");
 
         // when & then
-        assertThatThrownBy(() -> registerShippingAddressUseCase.register(createRegisterCommand(wrongMemberId)))
+        assertThatThrownBy(() -> registerShippingAddressUseCase.register(command(wrongMemberId)))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 
-    private MemberId getSavedMemberId(SaveMemberPort saveMemberPort) {
-        Member member = generateMember();
-        saveMemberPort.save(member);
-
-        return member.getId();
-    }
-
-    private RegisterShippingAddressCommand createRegisterCommand(MemberId memberId) {
+    private RegisterShippingAddressCommand command(MemberId memberId) {
         return new RegisterShippingAddressCommand(
                 memberId,
                 "홍길동",

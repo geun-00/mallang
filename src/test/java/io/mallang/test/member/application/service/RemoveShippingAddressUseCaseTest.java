@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import static io.mallang.fixtures.MemberFixture.generateMemberWithShippingAddress;
+import static io.mallang.fixtures.MemberFixture.savedMemberIdWithShippingAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -34,7 +34,7 @@ class RemoveShippingAddressUseCaseTest {
         ShippingAddressId shippingAddressId = firstShippingAddressId(memberId, loadMemberPort);
 
         // when
-        removeShippingAddressUseCase.remove(createRemoveCommand(memberId, shippingAddressId));
+        removeShippingAddressUseCase.remove(command(memberId, shippingAddressId));
 
         // then
         Member member = loadMemberPort.getById(memberId);
@@ -52,21 +52,15 @@ class RemoveShippingAddressUseCaseTest {
         ShippingAddressId anyId = new ShippingAddressId("any-id");
 
         // when & then
-        assertThatThrownBy(() -> removeShippingAddressUseCase.remove(createRemoveCommand(wrongMemberId, anyId)))
+        assertThatThrownBy(() -> removeShippingAddressUseCase.remove(command(wrongMemberId, anyId)))
                 .isInstanceOf(MemberNotFoundException.class);
-    }
-
-    private MemberId savedMemberIdWithShippingAddress(SaveMemberPort saveMemberPort) {
-        Member member = generateMemberWithShippingAddress();
-        saveMemberPort.save(member);
-        return member.getId();
     }
 
     private ShippingAddressId firstShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {
         return loadMemberPort.getById(memberId).getShippingAddresses().getFirst().getId();
     }
 
-    private RemoveShippingAddressCommand createRemoveCommand(MemberId memberId, ShippingAddressId shippingAddressId) {
+    private RemoveShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {
         return new RemoveShippingAddressCommand(memberId, shippingAddressId);
     }
 }

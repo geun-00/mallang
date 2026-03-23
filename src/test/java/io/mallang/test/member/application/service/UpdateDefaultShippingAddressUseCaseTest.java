@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import static io.mallang.fixtures.MemberFixture.generateMemberWithShippingAddress;
+import static io.mallang.fixtures.MemberFixture.savedMemberIdWithShippingAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -30,11 +30,11 @@ class UpdateDefaultShippingAddressUseCaseTest {
             @Autowired UpdateDefaultShippingAddressUseCase updateDefaultShippingAddressUseCase
     ) {
         // given
-        MemberId memberId = savedMemberIdWithShippingAddresses(2, saveMemberPort);
+        MemberId memberId = savedMemberIdWithShippingAddress(saveMemberPort, 2);
         ShippingAddressId targetId = secondShippingAddressId(memberId, loadMemberPort);
 
         // when
-        updateDefaultShippingAddressUseCase.update(createUpdateCommand(memberId, targetId));
+        updateDefaultShippingAddressUseCase.update(command(memberId, targetId));
 
         // then
         Member member = loadMemberPort.getById(memberId);
@@ -53,21 +53,15 @@ class UpdateDefaultShippingAddressUseCaseTest {
         ShippingAddressId anyId = new ShippingAddressId("any-id");
 
         // when & then
-        assertThatThrownBy(() -> updateDefaultShippingAddressUseCase.update(createUpdateCommand(wrongMemberId, anyId)))
+        assertThatThrownBy(() -> updateDefaultShippingAddressUseCase.update(command(wrongMemberId, anyId)))
                 .isInstanceOf(MemberNotFoundException.class);
-    }
-
-    private MemberId savedMemberIdWithShippingAddresses(int count, SaveMemberPort saveMemberPort) {
-        Member member = generateMemberWithShippingAddress(count);
-        saveMemberPort.save(member);
-        return member.getId();
     }
 
     private ShippingAddressId secondShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {
         return loadMemberPort.getById(memberId).getShippingAddresses().get(1).getId();
     }
 
-    private UpdateDefaultShippingAddressCommand createUpdateCommand(MemberId memberId, ShippingAddressId shippingAddressId) {
+    private UpdateDefaultShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {
         return new UpdateDefaultShippingAddressCommand(memberId, shippingAddressId);
     }
 }

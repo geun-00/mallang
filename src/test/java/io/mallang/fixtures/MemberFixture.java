@@ -3,6 +3,7 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.domain.*;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
@@ -128,5 +129,23 @@ public class MemberFixture {
         Member member = generateMemberWithShippingAddress();
         member.withdraw(generateClockHolder());
         return member;
+    }
+
+    public static MemberId savedMemberId(SaveMemberPort saveMemberPort) {
+        Member member = generateMember();
+        saveMemberPort.save(member);
+
+        return member.getId();
+    }
+
+    public static MemberId savedMemberIdWithShippingAddress(SaveMemberPort saveMemberPort) {
+        return savedMemberIdWithShippingAddress(saveMemberPort, 1);
+    }
+
+    public static MemberId savedMemberIdWithShippingAddress(SaveMemberPort saveMemberPort, int count) {
+        Member member = generateMemberWithShippingAddress(count);
+        saveMemberPort.save(member);
+
+        return member.getId();
     }
 }
