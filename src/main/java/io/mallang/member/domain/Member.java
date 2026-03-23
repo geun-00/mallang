@@ -83,8 +83,9 @@ public class Member {
     }
 
     public ShippingAddress addShippingAddress(AddShippingAddressCommand command, IdGenerator idGenerator) {
-        if (!status.isActive())
+        if (!status.isActive()) {
             throw new IllegalStateException("ACTIVE 상태에서만 배송지를 추가할 수 있습니다.");
+        }
 
         return shippingAddresses.add(command, idGenerator);
     }
