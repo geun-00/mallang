@@ -52,7 +52,7 @@ public class Member {
         return member;
     }
 
-    public static Member create(CreateMemberCommand command, PasswordEncoder passwordEncoder, IdGenerator idGenerator, ClockHolder clockHolder) {
+    public static Member create(CreateMemberCommand command, MemberPasswordEncoder passwordEncoder, IdGenerator idGenerator, ClockHolder clockHolder) {
         return new Member(
                 new MemberId(idGenerator.nextId()),
                 command.email(),
@@ -62,7 +62,7 @@ public class Member {
         );
     }
 
-    public boolean verifyPassword(String rawPassword, PasswordEncoder passwordEncoder) {
+    public boolean verifyPassword(String rawPassword, MemberPasswordEncoder passwordEncoder) {
         return password.verifyPassword(rawPassword, passwordEncoder);
     }
 

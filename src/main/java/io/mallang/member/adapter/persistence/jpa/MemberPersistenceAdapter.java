@@ -30,6 +30,13 @@ public class MemberPersistenceAdapter implements SaveMemberPort, LoadMemberPort 
     }
 
     @Override
+    public Member getByEmail(Email email) {
+        return memberJpaRepository.findByEmail(email.address())
+                                  .map(MemberJpaEntity::toDomain)
+                                  .orElseThrow(() -> new MemberNotFoundException(email));
+    }
+
+    @Override
     public boolean existsByEmail(Email email) {
         return memberJpaRepository.existsByEmail(email.address());
     }

@@ -65,7 +65,7 @@ class MemberTest {
     void 회원을_생성하면_커맨드의_정보가_저장된다() {
         // given
         CreateMemberCommand command = generateCreateCommand();
-        PasswordEncoder passwordEncoder = generatePasswordEncoder();
+        MemberPasswordEncoder passwordEncoder = generatePasswordEncoder();
 
         // when
         Member member = create(command, passwordEncoder, generateIdGenerator(), generateClockHolder());

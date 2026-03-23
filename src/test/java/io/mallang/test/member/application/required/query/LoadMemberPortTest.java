@@ -43,6 +43,27 @@ class LoadMemberPortTest {
     }
 
     @Test
+    void 저장된_이메일로_Member를_조회한다() {
+        // given
+        Member member = generateMember();
+        saveMemberPort.save(member);
+
+        // when & then
+        assertThatCode(() -> loadMemberPort.getByEmail(member.getEmail()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 존재하지_않는_이메일로_조회하면_MemberNotFoundException_예외가_발생한다() {
+        // given
+        Email unknownEmail = new Email(generateEmailValue());
+
+        // when & then
+        assertThatThrownBy(() -> loadMemberPort.getByEmail(unknownEmail))
+                .isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
     void 저장된_이메일로_존재_여부를_조회하면_true를_반환한다() {
         // given
         Member member = generateMember();

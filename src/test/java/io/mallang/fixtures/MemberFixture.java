@@ -3,8 +3,8 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
-import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
+import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.*;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.CreateMemberCommand;
@@ -17,8 +17,8 @@ public class MemberFixture {
 
     public static final String DEFAULT_PASSWORD = "password12@";
 
-    public static PasswordEncoder generatePasswordEncoder() {
-        return new PasswordEncoder() {
+    public static MemberPasswordEncoder generatePasswordEncoder() {
+        return new MemberPasswordEncoder() {
             @Override
             public String encode(String rawPassword) {
                 return rawPassword.toUpperCase() + "encoded";

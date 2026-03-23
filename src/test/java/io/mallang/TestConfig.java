@@ -2,9 +2,10 @@ package io.mallang;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
-import io.mallang.member.domain.PasswordEncoder;
+import io.mallang.member.domain.MemberPasswordEncoder;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,7 +26,8 @@ public class TestConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    @Primary
+    public MemberPasswordEncoder memberPasswordEncoder() {
         return generatePasswordEncoder();
     }
 }
