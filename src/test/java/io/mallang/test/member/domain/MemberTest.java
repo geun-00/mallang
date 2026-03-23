@@ -1,13 +1,14 @@
 package io.mallang.test.member.domain;
 
-import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.*;
 import io.mallang.member.domain.command.CreateMemberCommand;
-import io.mallang.member.domain.command.RestoreMemberCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
+import io.mallang.member.domain.command.RestoreMemberCommand;
+import io.mallang.member.domain.exception.ShippingAddressLimitException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -264,7 +265,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ShippingAddressLimitException.class);
     }
 
     @Test

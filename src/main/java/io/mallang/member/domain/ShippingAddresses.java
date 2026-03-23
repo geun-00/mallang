@@ -3,6 +3,7 @@ package io.mallang.member.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
+import io.mallang.member.domain.exception.ShippingAddressLimitException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,8 +18,9 @@ public class ShippingAddresses {
     ShippingAddresses() { }
 
     ShippingAddress add(AddShippingAddressCommand command, IdGenerator idGenerator) {
-        if (addresses.size() >= MAX_SHIPPING_ADDRESSES)
-            throw new IllegalStateException("배송지는 최대 5개까지 등록할 수 있습니다.");
+        if (addresses.size() >= MAX_SHIPPING_ADDRESSES) {
+            throw new ShippingAddressLimitException();
+        }
 
         boolean isDefault = addresses.isEmpty();
         ShippingAddress shippingAddress = ShippingAddress.create(command, isDefault, idGenerator);
