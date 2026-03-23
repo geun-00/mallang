@@ -1,5 +1,8 @@
 package io.mallang;
 
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
+import io.mallang.member.application.provided.command.model.UpdateShippingAddressCommand;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.PasswordEncoder;
 import io.mallang.member.domain.ShippingAddress;
@@ -43,6 +46,13 @@ public class MemberAssertions {
                     .isEqualTo(command.shippingAddresses().stream()
                                       .map(ShippingAddress::getId)
                                       .toList());
+        };
+    }
+
+    public static ThrowingConsumer<ShippingAddress> isModifiedBy(UpdateShippingAddressCommand command) {
+        return shippingAddress -> {
+            assertThat(shippingAddress.getReceiver()).isEqualTo(new Receiver(command.receiverName(), command.receiverPhoneNumber()));
+            assertThat(shippingAddress.getAddress()).isEqualTo(new Address(command.zipCode(), command.mainAddress(), command.detailAddress()));
         };
     }
 }
