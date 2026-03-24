@@ -2,6 +2,7 @@ package io.mallang;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
+import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -58,6 +59,14 @@ public record TestFixture(TestRestTemplate client) {
 
     public ResponseEntity<Void> registerShippingAddress(RegisterShippingAddressRequest request) {
         return client.postForEntity("/my/shipping-addresses", request, Void.class);
+    }
+
+    public ResponseEntity<Void> updateShippingAddress(String shippingAddressId, UpdateShippingAddressRequest request) {
+        return client.exchange(
+                RequestEntity.put("/my/shipping-addresses/" + shippingAddressId)
+                             .body(request),
+                Void.class
+        );
     }
 
     public String registerShippingAddressThenGetId() {

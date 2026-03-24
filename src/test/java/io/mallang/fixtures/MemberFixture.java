@@ -4,6 +4,7 @@ import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
+import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.*;
@@ -157,6 +158,16 @@ public class MemberFixture {
                 "12345",
                 "서울시 강남구 테헤란로 1",
                 "101호"
+        );
+    }
+
+    public static UpdateShippingAddressRequest generateUpdateShippingAddressRequest() {
+        return new UpdateShippingAddressRequest(
+                "이순신",
+                "01022223333",
+                "13579",
+                "경기도 부천시 원미구",
+                "2층"
         );
     }
 }
