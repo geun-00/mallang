@@ -3,9 +3,10 @@ package io.mallang.member.adapter.web;
 import io.mallang.member.adapter.security.CustomUserDetails;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
+import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressResult;
-import io.mallang.member.domain.MemberId;
+import io.mallang.member.application.provided.command.model.UpdateDefaultShippingAddressCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.net.URI;
 public class ShippingAddressCommandApi {
 
     private final RegisterShippingAddressUseCase registerShippingAddressUseCase;
+    private final UpdateDefaultShippingAddressUseCase updateDefaultShippingAddressUseCase;
 
     @PostMapping("/my/shipping-addresses")
     public ResponseEntity<?> registerShippingAddress(
@@ -37,5 +39,19 @@ public class ShippingAddressCommandApi {
         );
 
         return ResponseEntity.created(URI.create("/my/shipping-addresses/" + result.shippingAddressId())).build();
+    }
+
+    @PatchMapping("/my/shipping-addresses/{shippingAddressId}/default")
+    public ResponseEntity<?> updateDefault(
+            @PathVariable String shippingAddressId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        updateDefaultShippingAddressUseCase.update(
+                new UpdateDefaultShippingAddressCommand(
+                        userDetails.getMemberIdValue(),
+                        shippingAddressId
+                ));
+
+        return ResponseEntity.noContent().build();
     }
 }

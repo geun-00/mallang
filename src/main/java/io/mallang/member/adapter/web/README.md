@@ -82,8 +82,6 @@
 #### 실패 응답
 - 상태코드
   - `400 Bad Request`
-  - `401 Unauthorized`
-  - `404 Not Found`
 
 #### 정책
 - 인증이 필요하다
@@ -108,10 +106,10 @@
 ### 기본 배송지 변경
 
 #### 요청
-- `PATCH /members/{memberId}/shipping-addresses/{shippingAddressId}/default`
+- `PATCH /my/shipping-addresses/{shippingAddressId}/default`
 - curl 명령 예시
   ```bash
-  curl -i -X PATCH 'http://localhost:8080/members/{memberId}/shipping-addresses/{shippingAddressId}/default'
+  curl -i -X PATCH 'http://localhost:8080/my/shipping-addresses/{shippingAddressId}/default'
   ```
 
 #### 성공 응답
@@ -119,8 +117,6 @@
 
 #### 실패 응답
 - 상태코드
-  - `400 Bad Request`
-  - `401 Unauthorized`
   - `404 Not Found`
 
 #### 정책
@@ -129,10 +125,9 @@
 - 본인 배송지가 아니면 기본 배송지로 설정할 수 없다
 
 #### 테스트 시나리오
-- [ ] 올바르게 요청하면 `204 No Content` 상태코드를 반환한다
-- [ ] 인증되지 않은 요청이면 `401 Unauthorized` 상태코드를 반환한다
-- [ ] 존재하지 않는 회원이면 `404 Not Found` 상태코드를 반환한다
-- [ ] 도메인 규칙을 위반하면 `400 Bad Request` 상태코드를 반환한다
+- [x] 올바르게 요청하면 `204 No Content` 상태코드를 반환한다
+- [x] 인증되지 않은 요청이면 로그인 페이지로 리다이렉트한다
+- [x] 존재하지 않는 배송지면 `404 Not Found` 상태코드를 반환한다
 
 ---
 

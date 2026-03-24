@@ -4,6 +4,7 @@ import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import io.mallang.member.domain.exception.ShippingAddressLimitException;
+import io.mallang.member.domain.exception.ShippingAddressNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +57,7 @@ public class ShippingAddresses {
         return addresses.stream()
                         .filter(address -> address.getId().equals(id))
                         .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("해당 배송지 ID를 가진 배송지가 존재하지 않습니다."));
+                        .orElseThrow(() -> new ShippingAddressNotFoundException(id));
     }
 
     List<ShippingAddress> toList() {
