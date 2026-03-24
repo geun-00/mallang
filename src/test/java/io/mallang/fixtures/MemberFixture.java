@@ -3,6 +3,7 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.*;
@@ -147,5 +148,15 @@ public class MemberFixture {
         saveMemberPort.save(member);
 
         return member.getId();
+    }
+
+    public static RegisterShippingAddressRequest generateRegisterShippingAddressRequest() {
+        return new RegisterShippingAddressRequest(
+                "홍길동",
+                "01011112222",
+                "12345",
+                "서울시 강남구 테헤란로 1",
+                "101호"
+        );
     }
 }

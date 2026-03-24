@@ -58,10 +58,10 @@
 ### 배송지 추가
 
 #### 요청
-- `POST /members/{memberId}/shipping-addresses`
+- `POST /my/shipping-addresses`
 - curl 명령 예시
   ```bash
-  curl -i -X POST 'http://localhost:8080/members/{memberId}/shipping-addresses' \
+  curl -i -X POST 'http://localhost:8080/my/shipping-addresses' \
   -H 'Content-Type: application/json' \
   -d '{
     "receiverName": "홍길동",
@@ -76,7 +76,7 @@
 - 상태코드: `201 Created`
 - 헤더
   ```
-  Location: /members/{memberId}/shipping-addresses/{shippingAddressId}
+  Location: /my/shipping-addresses/{shippingAddressId}
   ```
 
 #### 실패 응답
