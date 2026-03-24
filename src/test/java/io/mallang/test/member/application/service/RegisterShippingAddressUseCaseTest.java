@@ -58,7 +58,7 @@ class RegisterShippingAddressUseCaseTest {
 
     private RegisterShippingAddressCommand command(MemberId memberId) {
         return new RegisterShippingAddressCommand(
-                memberId,
+                memberId.value(),
                 "홍길동",
                 "01011112222",
                 "12345",

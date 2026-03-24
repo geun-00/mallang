@@ -60,8 +60,8 @@ class UpdateShippingAddressUseCaseTest {
 
     private UpdateShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {
         return new UpdateShippingAddressCommand(
-                memberId,
-                shippingAddressId,
+                memberId.value(),
+                shippingAddressId.value(),
                 "이순신",
                 "01099998888",
                 "99999",

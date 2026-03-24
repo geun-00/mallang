@@ -1,7 +1,6 @@
 package io.mallang.member.adapter.security;
 
 import io.mallang.member.domain.Member;
-import io.mallang.member.domain.MemberId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,8 +15,8 @@ public class CustomUserDetails implements UserDetails {
         this.member = member;
     }
 
-    public MemberId getMemberId() {
-        return member.getId();
+    public String getMemberIdValue() {
+        return member.getId().value();
     }
 
     @Override

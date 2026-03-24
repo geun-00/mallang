@@ -9,7 +9,9 @@ import io.mallang.member.application.provided.command.model.*;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
+import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.ShippingAddress;
+import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public RegisterShippingAddressResult register(RegisterShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(command.memberId());
+        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
 
         ShippingAddress shippingAddress = member.addShippingAddress(
                 new AddShippingAddressCommand(
@@ -47,19 +49,19 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void update(UpdateDefaultShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(command.memberId());
+        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
 
-        member.setDefaultShippingAddress(command.shippingAddressId());
+        member.setDefaultShippingAddress(new ShippingAddressId(command.shippingAddressIdValue()));
 
         saveMemberPort.save(member);
     }
 
     @Override
     public void update(UpdateShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(command.memberId());
+        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
 
         member.modifyShippingAddress(
-                command.shippingAddressId(),
+                new ShippingAddressId(command.shippingAddressIdValue()),
                 new ModifyShippingAddressCommand(
                         command.receiverName(),
                         command.receiverPhoneNumber(),
@@ -74,9 +76,9 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void remove(RemoveShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(command.memberId());
+        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
 
-        member.removeShippingAddress(command.shippingAddressId());
+        member.removeShippingAddress(new ShippingAddressId(command.shippingAddressIdValue()));
 
         saveMemberPort.save(member);
     }
