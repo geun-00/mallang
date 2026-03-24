@@ -134,10 +134,10 @@
 ### 배송지 수정
 
 #### 요청
-- `PUT /members/{memberId}/shipping-addresses/{shippingAddressId}`
+- `PUT /my/shipping-addresses/{shippingAddressId}`
 - curl 명령 예시
   ```bash
-  curl -i -X PUT 'http://localhost:8080/members/{memberId}/shipping-addresses/{shippingAddressId}' \
+  curl -i -X PUT 'http://localhost:8080/my/shipping-addresses/{shippingAddressId}' \
   -H 'Content-Type: application/json' \
   -d '{
     "receiverName": "이순신",
@@ -154,7 +154,6 @@
 #### 실패 응답
 - 상태코드: 
   - `400 Bad Request`
-  - `401 Unauthorized`
   - `404 Not Found`
 
 #### 정책
@@ -163,18 +162,17 @@
 - `receiverPhoneNumber`는 필수다
 - `zipCode`는 필수다
 - `mainAddress`는 필수다
-- 존재하지 않는 회원의 배송지를 수정할 수 없다
 - 본인 배송지가 아니면 수정할 수 없다
 
 #### 테스트 시나리오
-- [ ] 올바르게 요청하면 `204 No Content` 상태코드를 반환한다
-- [ ] 인증되지 않은 요청이면 `401 Unauthorized` 상태코드를 반환한다
-- [ ] `receiverName` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] `receiverPhoneNumber` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] `zipCode` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] `mainAddress` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] 도메인 규칙을 위반하면 `400 Bad Request` 상태코드를 반환한다
-- [ ] 존재하지 않는 회원이면 `404 Not Found` 상태코드를 반환한다
+- [x] 올바르게 요청하면 `204 No Content` 상태코드를 반환한다
+- [x] 인증되지 않은 요청이면 로그인 페이지로 리다이렉트한다
+- [x] `receiverName` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] `receiverPhoneNumber` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] `zipCode` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] `mainAddress` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] 도메인 규칙을 위반하면 `400 Bad Request` 상태코드를 반환한다
+- [x] 존재하지 않는 배송지면 `404 Not Found` 상태코드를 반환한다
 
 ---
 
