@@ -69,6 +69,13 @@ public record TestFixture(TestRestTemplate client) {
         );
     }
 
+    public ResponseEntity<Void> removeShippingAddress(String shippingAddressId) {
+        return client.exchange(
+                RequestEntity.delete("/my/shipping-addresses/" + shippingAddressId).build(),
+                Void.class
+        );
+    }
+
     public String registerShippingAddressThenGetId() {
         ResponseEntity<Void> response = registerShippingAddress(generateRegisterShippingAddressRequest());
 
