@@ -2,17 +2,21 @@ package io.mallang;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
-import org.springframework.http.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
+import static io.mallang.fixtures.MemberFixture.generateRegisterShippingAddressRequest;
 import static org.springframework.http.HttpHeaders.COOKIE;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -56,6 +60,12 @@ public record TestFixture(TestRestTemplate client) {
         return client.postForEntity("/my/shipping-addresses", request, Void.class);
     }
 
+    public String registerShippingAddressThenGetId() {
+        ResponseEntity<Void> response = registerShippingAddress(generateRegisterShippingAddressRequest());
+
+        return response.getHeaders().getLocation().getPath().substring("/my/shipping-addresses/".length());
+    }
+
     public TestRestTemplate unauthenticatedClient() {
         TestRestTemplate unauthenticated = new TestRestTemplate(new RestTemplateBuilder());
         unauthenticated.setUriTemplateHandler(client.getRestTemplate().getUriTemplateHandler());
@@ -65,12 +75,8 @@ public record TestFixture(TestRestTemplate client) {
     }
 
     private ClientHttpRequestFactory noRedirectFactory() {
-        return new SimpleClientHttpRequestFactory() {
-            @Override
-            protected void prepareConnection(java.net.HttpURLConnection connection, String httpMethod) throws java.io.IOException {
-                super.prepareConnection(connection, httpMethod);
-                connection.setInstanceFollowRedirects(false);
-            }
-        };
+        var httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
+
+        return new HttpComponentsClientHttpRequestFactory(httpClient);
     }
 }
