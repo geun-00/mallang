@@ -1,7 +1,14 @@
 package io.mallang.fixtures;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.member.domain.MemberId;
+import io.mallang.product.application.provided.command.model.RegisterProductCommand;
+import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
 import io.mallang.product.domain.*;
+import io.mallang.product.domain.command.AddProductImageCommand;
+import io.mallang.product.domain.command.CreateProductCommand;
+import io.mallang.product.domain.command.CreateProductImageCommand;
+import io.mallang.product.domain.command.ModifyProductCommand;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,16 +18,39 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ProductFixture {
 
+    public static RegisterProductCommand generateRegisterProductCommand() {
+        return generateRegisterProductCommand(List.of());
+    }
+
+    public static RegisterProductCommand generateRegisterProductCommandWithImages() {
+        return generateRegisterProductCommand(List.of(
+                new RegisterProductImageCommand("https://test.com/images/" + UUID.randomUUID(), true),
+                new RegisterProductImageCommand("https://test.com/images/" + UUID.randomUUID(), false)
+        ));
+    }
+
+    public static RegisterProductCommand generateRegisterProductCommand(List<RegisterProductImageCommand> images) {
+        return new RegisterProductCommand(
+                generateSellerId().value(),
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                images
+        );
+    }
+
     public static IdGenerator generateIdGenerator() {
         return () -> UUID.randomUUID().toString();
     }
 
-    public static ProductCreateCommand generateProductCreateCommand() {
+    public static CreateProductCommand generateProductCreateCommand() {
         return generateProductCreateCommand(generateProductStockQuantity());
     }
 
-    public static ProductCreateCommand generateProductCreateCommand(int stockQuantity) {
-        return new ProductCreateCommand(
+    public static CreateProductCommand generateProductCreateCommand(int stockQuantity) {
+        return new CreateProductCommand(
                 generateProductName(),
                 generateProductDescription(),
                 generateProductPriceAmount(),
@@ -30,8 +60,8 @@ public class ProductFixture {
         );
     }
 
-    public static ProductCreateCommand generateProductCreateCommand(List<ProductImageCommand> images) {
-        return new ProductCreateCommand(
+    public static CreateProductCommand generateProductCreateCommand(List<CreateProductImageCommand> images) {
+        return new CreateProductCommand(
                 generateProductName(),
                 generateProductDescription(),
                 generateProductPriceAmount(),
@@ -50,12 +80,20 @@ public class ProductFixture {
         );
     }
 
+    public static MemberId generateSellerId() {
+        return new MemberId(UUID.randomUUID().toString());
+    }
+
     public static Product generateProduct() {
         return generateProduct(generateProductStockQuantity());
     }
 
     public static Product generateProduct(int stockQuantity) {
-        return Product.create(generateProductCreateCommand(stockQuantity), generateIdGenerator());
+        return generateProduct(generateSellerId(), stockQuantity);
+    }
+
+    public static Product generateProduct(MemberId sellerId, int stockQuantity) {
+        return Product.create(generateProductCreateCommand(stockQuantity), sellerId, generateIdGenerator());
     }
 
     public static Product generateDiscontinuedProduct() {
@@ -66,27 +104,27 @@ public class ProductFixture {
     }
 
     public static Product generateProductWithImages() {
-        return Product.create(generateProductCreateCommandWithImages(), generateIdGenerator());
+        return Product.create(generateProductCreateCommandWithImages(), generateSellerId(), generateIdGenerator());
     }
 
     public static Product generateProductWithImages(int nonThumbnailCount) {
-        List<ProductImageCommand> images = generateProductImageCommand(nonThumbnailCount);
+        List<CreateProductImageCommand> images = generateProductImageCommand(nonThumbnailCount);
 
-        return Product.create(generateProductCreateCommand(images), generateIdGenerator());
+        return Product.create(generateProductCreateCommand(images), generateSellerId(), generateIdGenerator());
     }
 
-    private static List<ProductImageCommand> generateProductImageCommand(int nonThumbnailCount) {
-        List<ProductImageCommand> images = new ArrayList<>();
-        images.add(new ProductImageCommand(generateProductImageUrl(), true));
+    private static List<CreateProductImageCommand> generateProductImageCommand(int nonThumbnailCount) {
+        List<CreateProductImageCommand> images = new ArrayList<>();
+        images.add(new CreateProductImageCommand(generateProductImageUrl(), true));
 
         for (int i = 0; i < nonThumbnailCount; i++) {
-            images.add(new ProductImageCommand(generateProductImageUrl(), false));
+            images.add(new CreateProductImageCommand(generateProductImageUrl(), false));
         }
         return images;
     }
 
-    public static ProductCreateCommand generateProductCreateCommandWithImages(int nonThumbnailCount) {
-        return new ProductCreateCommand(
+    public static CreateProductCommand generateProductCreateCommandWithImages(int nonThumbnailCount) {
+        return new CreateProductCommand(
                 generateProductName(),
                 generateProductDescription(),
                 generateProductPriceAmount(),
@@ -96,17 +134,17 @@ public class ProductFixture {
         );
     }
 
-    public static ProductCreateCommand generateProductCreateCommandWithImages() {
-        return new ProductCreateCommand(
+    public static CreateProductCommand generateProductCreateCommandWithImages() {
+        return new CreateProductCommand(
                 generateProductName(),
                 generateProductDescription(),
                 generateProductPriceAmount(),
                 generateProductStockQuantity(),
                 "FOOD",
                 List.of(
-                        new ProductImageCommand(generateProductImageUrl(), true),
-                        new ProductImageCommand(generateProductImageUrl(), false),
-                        new ProductImageCommand(generateProductImageUrl(), false)
+                        new CreateProductImageCommand(generateProductImageUrl(), true),
+                        new CreateProductImageCommand(generateProductImageUrl(), false),
+                        new CreateProductImageCommand(generateProductImageUrl(), false)
                 )
         );
     }

@@ -1,14 +1,14 @@
-package io.mallang.product.domain;
+package io.mallang.product.domain.command;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public record ProductCreateCommand(
+public record CreateProductCommand(
         String name,
         String description,
         BigDecimal price,
         int stockQuantity,
         String category,
-        List<ProductImageCommand> images
+        List<CreateProductImageCommand> images
 ) {
 }

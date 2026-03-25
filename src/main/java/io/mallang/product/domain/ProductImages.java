@@ -1,6 +1,8 @@
 package io.mallang.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.product.domain.command.AddProductImageCommand;
+import io.mallang.product.domain.command.CreateProductImageCommand;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,16 +23,20 @@ class ProductImages {
         this.images = images;
     }
 
-    static ProductImages from(List<ProductImageCommand> images, IdGenerator idGenerator) {
+    static ProductImages restore(ProductImage thumbnailImage, List<ProductImage> images) {
+        return new ProductImages(thumbnailImage, new ArrayList<>(images));
+    }
+
+    static ProductImages from(List<CreateProductImageCommand> images, IdGenerator idGenerator) {
         if (images.isEmpty()) {
             return new ProductImages(null, new ArrayList<>());
         }
 
-        Map<Boolean, List<ProductImageCommand>> partitioned = images.stream()
-                                                                    .collect(Collectors.partitioningBy(ProductImageCommand::isThumbnail));
+        Map<Boolean, List<CreateProductImageCommand>> partitioned = images.stream()
+                                                                          .collect(Collectors.partitioningBy(CreateProductImageCommand::isThumbnail));
 
-        List<ProductImageCommand> thumbnail = partitioned.get(true);
-        List<ProductImageCommand> others = partitioned.get(false);
+        List<CreateProductImageCommand> thumbnail = partitioned.get(true);
+        List<CreateProductImageCommand> others = partitioned.get(false);
 
         if (thumbnail.size() != 1)
             throw new IllegalArgumentException("이미지가 있는 경우 대표 이미지는 반드시 하나여야 합니다.");
