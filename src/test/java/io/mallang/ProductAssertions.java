@@ -2,6 +2,7 @@ package io.mallang;
 
 import io.mallang.product.domain.*;
 import io.mallang.product.domain.command.CreateProductCommand;
+import io.mallang.product.application.provided.command.model.UpdateProductCommand;
 import org.assertj.core.api.ThrowingConsumer;
 
 import java.math.BigDecimal;
@@ -22,6 +23,15 @@ public class ProductAssertions {
     }
 
     public static ThrowingConsumer<Product> isDerivedFrom(ModifyProductCommand command) {
+        return product -> {
+            assertThat(product.getName()).isEqualTo(new ProductName(command.name()));
+            assertThat(product.getDescription()).isEqualTo(new ProductDescription(command.description()));
+            assertThat(product.getPrice().value()).matches(priceEquals(command.price()));
+            assertThat(product.getCategory()).isEqualTo(ProductCategory.valueOf(command.category()));
+        };
+    }
+
+    public static ThrowingConsumer<Product> isDerivedFrom(UpdateProductCommand command) {
         return product -> {
             assertThat(product.getName()).isEqualTo(new ProductName(command.name()));
             assertThat(product.getDescription()).isEqualTo(new ProductDescription(command.description()));
