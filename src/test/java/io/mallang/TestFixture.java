@@ -4,6 +4,7 @@ import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.jsoup.Jsoup;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -31,11 +32,26 @@ public record TestFixture(TestRestTemplate client) {
 
     public void createMemberThenLogin() {
         MemberCreateRequest request = generateCreateRequest();
-        client.postForEntity("/members", request, Void.class);
+        registerMember(request);
+
+        String initialCookie = fetchInitialCookieWithCsrfToken();
+        String sessionCookie = loginWithCsrf(request, initialCookie);
+        String newCsrfToken = fetchCsrfTokenFromNewSession(sessionCookie);
+        registerAuthInterceptor(sessionCookie, newCsrfToken);
+    }
+
+    private String fetchInitialCookieWithCsrfToken() {
+        ResponseEntity<String> loginPage = client.getForEntity("/login", String.class);
+        return loginPage.getHeaders().getFirst(SET_COOKIE);
+    }
+
+    private String loginWithCsrf(MemberCreateRequest request, String initialCookie) {
+        String csrfToken = fetchCsrfTokenFromCookie(initialCookie);
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("email", request.email());
         form.add("password", request.password());
+        form.add("_csrf", csrfToken);
 
         ClientHttpRequestFactory original = client.getRestTemplate().getRequestFactory();
         client.getRestTemplate().setRequestFactory(noRedirectFactory());
@@ -43,18 +59,48 @@ public record TestFixture(TestRestTemplate client) {
         ResponseEntity<Void> loginResponse = client.exchange(
                 RequestEntity.post("/login")
                              .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                             .header(COOKIE, initialCookie)
                              .body(form),
                 Void.class
         );
 
         client.getRestTemplate().setRequestFactory(original);
 
-        String sessionCookie = loginResponse.getHeaders().getFirst(SET_COOKIE);
+        return loginResponse.getHeaders().getFirst(SET_COOKIE);
+    }
 
+    private String fetchCsrfTokenFromNewSession(String sessionCookie) {
+        ResponseEntity<String> afterLoginPage = client.exchange(
+                RequestEntity.get("/login")
+                             .header(COOKIE, sessionCookie)
+                             .build(),
+                String.class
+        );
+        return extractCsrfToken(afterLoginPage.getBody());
+    }
+
+    private void registerAuthInterceptor(String sessionCookie, String csrfToken) {
         client.getRestTemplate().getInterceptors().add((req, body, execution) -> {
             req.getHeaders().add(COOKIE, sessionCookie);
+            req.getHeaders().add("X-CSRF-TOKEN", csrfToken);
             return execution.execute(req, body);
         });
+    }
+
+    private String fetchCsrfTokenFromCookie(String initialCookie) {
+        ResponseEntity<String> loginPage = client.exchange(
+                RequestEntity.get("/login")
+                             .header(COOKIE, initialCookie)
+                             .build(),
+                String.class
+        );
+        return extractCsrfToken(loginPage.getBody());
+    }
+
+    private String extractCsrfToken(String html) {
+        return Jsoup.parse(html)
+                    .selectFirst("input[name=_csrf]")
+                    .val();
     }
 
     public ResponseEntity<Void> registerShippingAddress(RegisterShippingAddressRequest request) {
@@ -78,7 +124,6 @@ public record TestFixture(TestRestTemplate client) {
 
     public String registerShippingAddressThenGetId() {
         ResponseEntity<Void> response = registerShippingAddress(generateRegisterShippingAddressRequest());
-
         return response.getHeaders().getLocation().getPath().substring("/my/shipping-addresses/".length());
     }
 
@@ -86,13 +131,15 @@ public record TestFixture(TestRestTemplate client) {
         TestRestTemplate unauthenticated = new TestRestTemplate(new RestTemplateBuilder());
         unauthenticated.setUriTemplateHandler(client.getRestTemplate().getUriTemplateHandler());
         unauthenticated.getRestTemplate().setRequestFactory(noRedirectFactory());
-
         return unauthenticated;
     }
 
     private ClientHttpRequestFactory noRedirectFactory() {
         var httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
-
         return new HttpComponentsClientHttpRequestFactory(httpClient);
+    }
+
+    public ResponseEntity<Void> registerMember(MemberCreateRequest request) {
+        return client.postForEntity("/members", request, Void.class);
     }
 }

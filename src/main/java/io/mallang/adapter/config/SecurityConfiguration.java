@@ -19,7 +19,9 @@ public class SecurityConfiguration {
     ) throws Exception
     {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/members")
+                )
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(HttpMethod.POST, "/members").permitAll()
                         .anyRequest().authenticated()
