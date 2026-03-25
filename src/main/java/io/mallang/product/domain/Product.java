@@ -3,7 +3,10 @@ package io.mallang.product.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
+import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
+import io.mallang.product.domain.command.ModifyProductCommand;
+import io.mallang.product.domain.command.RestoreProductCommand;
 import lombok.Getter;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package io.mallang;
 import io.mallang.product.domain.*;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.application.provided.command.model.UpdateProductCommand;
+import io.mallang.product.domain.command.ModifyProductCommand;
 import org.assertj.core.api.ThrowingConsumer;
 
 import java.math.BigDecimal;

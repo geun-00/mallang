@@ -3,8 +3,10 @@ package io.mallang.test.product.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.*;
+import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
+import io.mallang.product.domain.command.ModifyProductCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

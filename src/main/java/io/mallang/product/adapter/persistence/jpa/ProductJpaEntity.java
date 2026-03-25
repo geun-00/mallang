@@ -3,6 +3,7 @@ package io.mallang.product.adapter.persistence.jpa;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.*;
+import io.mallang.product.domain.command.RestoreProductCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

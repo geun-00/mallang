@@ -5,8 +5,10 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
 import io.mallang.product.domain.*;
+import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
+import io.mallang.product.domain.command.ModifyProductCommand;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

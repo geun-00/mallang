@@ -2,7 +2,7 @@ package io.mallang.test.product.application.required.query;
 
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.AddProductImageCommand;
+import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.exception.ProductNotFoundException;

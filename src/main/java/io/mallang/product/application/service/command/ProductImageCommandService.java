@@ -10,7 +10,7 @@ import io.mallang.product.application.provided.command.model.ChangeThumbnailImag
 import io.mallang.product.application.provided.command.model.RemoveProductImageCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.AddProductImageCommand;
+import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.ProductImageId;

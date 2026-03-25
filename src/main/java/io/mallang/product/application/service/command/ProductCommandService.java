@@ -6,7 +6,7 @@ import io.mallang.product.application.provided.command.*;
 import io.mallang.product.application.provided.command.model.*;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.ModifyProductCommand;
+import io.mallang.product.domain.command.ModifyProductCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.command.CreateProductCommand;
