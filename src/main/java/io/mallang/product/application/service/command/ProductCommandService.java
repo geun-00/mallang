@@ -3,8 +3,10 @@ package io.mallang.product.application.service.command;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.AddStockUseCase;
+import io.mallang.product.application.provided.command.DeductStockUseCase;
 import io.mallang.product.application.provided.command.RegisterProductUseCase;
 import io.mallang.product.application.provided.command.model.AddStockCommand;
+import io.mallang.product.application.provided.command.model.DeductStockCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductResult;
 import io.mallang.product.application.required.command.SaveProductPort;
@@ -23,7 +25,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase {
+public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase, DeductStockUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadProductPort loadProductPort;
@@ -64,6 +66,18 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
         }
 
         product.addStock(command.quantity());
+        saveProductPort.save(product);
+    }
+
+    @Override
+    public void deductStock(DeductStockCommand command) {
+        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
+
+        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
+            throw new NotProductSellerException();
+        }
+
+        product.deductStock(command.quantity());
         saveProductPort.save(product);
     }
 }

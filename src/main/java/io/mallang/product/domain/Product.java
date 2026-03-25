@@ -97,8 +97,9 @@ public class Product {
     }
 
     public void deductStock(int deductedStock) {
-        if (this.status == ProductStatus.DISCONTINUED)
+        if (this.status == ProductStatus.DISCONTINUED) {
             throw new IllegalStateException("재고를 차감할 수 없는 상품입니다.");
+        }
 
         this.stockQuantity = this.stockQuantity.deduct(deductedStock);
         this.status = ProductStatus.of(stockQuantity);
