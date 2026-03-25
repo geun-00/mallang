@@ -6,7 +6,7 @@
 _Aggregate Root_
 
 #### 행위 & 규칙
-- 상품 생성 : `static create(ProductCreateCommand command, IdGenerator idGenerator)`
+- 상품 생성 : `static create(ProductCreateCommand command, MemberId sellerId, IdGenerator idGenerator)`
   - 재고가 1 이상이면 `ON_SALE`, 0이면 `SOLD_OUT` 상태로 생성
   - 생성 시 식별자(`id`) 할당
   - 이미지가 있는 경우 대표 이미지는 반드시 하나여야 한다
@@ -37,6 +37,7 @@ _Aggregate Root_
 | 속성 | 타입 | 설명 |
 |------|------|------|
 | `id` | ProductId | 식별자 |
+| `sellerId` | MemberId | 판매자 (회원 애그리거트 참조) |
 | `name` | ProductName (VO) | 상품명 |
 | `description` | ProductDescription (VO) | 상품 설명 |
 | `price` | Money (VO) | 가격 |

@@ -1,6 +1,7 @@
 package io.mallang.fixtures;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.*;
 
 import java.math.BigDecimal;
@@ -50,12 +51,16 @@ public class ProductFixture {
         );
     }
 
+    public static MemberId generateSellerId() {
+        return new MemberId(UUID.randomUUID().toString());
+    }
+
     public static Product generateProduct() {
         return generateProduct(generateProductStockQuantity());
     }
 
     public static Product generateProduct(int stockQuantity) {
-        return Product.create(generateProductCreateCommand(stockQuantity), generateIdGenerator());
+        return Product.create(generateProductCreateCommand(stockQuantity), generateSellerId(), generateIdGenerator());
     }
 
     public static Product generateDiscontinuedProduct() {
@@ -66,13 +71,13 @@ public class ProductFixture {
     }
 
     public static Product generateProductWithImages() {
-        return Product.create(generateProductCreateCommandWithImages(), generateIdGenerator());
+        return Product.create(generateProductCreateCommandWithImages(), generateSellerId(), generateIdGenerator());
     }
 
     public static Product generateProductWithImages(int nonThumbnailCount) {
         List<ProductImageCommand> images = generateProductImageCommand(nonThumbnailCount);
 
-        return Product.create(generateProductCreateCommand(images), generateIdGenerator());
+        return Product.create(generateProductCreateCommand(images), generateSellerId(), generateIdGenerator());
     }
 
     private static List<ProductImageCommand> generateProductImageCommand(int nonThumbnailCount) {

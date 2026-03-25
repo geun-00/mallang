@@ -2,6 +2,7 @@ package io.mallang.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Money;
+import io.mallang.member.domain.MemberId;
 import lombok.Getter;
 
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.List;
 public class Product {
 
     private final ProductId id;
+
+    private final MemberId sellerId;
 
     private final ProductImages productImages;
 
@@ -27,30 +30,51 @@ public class Product {
 
     private Product(
             ProductId id,
+            MemberId sellerId,
             ProductName name,
             ProductDescription description,
             Money price,
             StockQuantity stockQuantity,
+            ProductStatus status,
             ProductCategory category,
             ProductImages productImages
     ) {
         this.id = id;
+        this.sellerId = sellerId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
-        this.status = ProductStatus.of(stockQuantity);
+        this.status = status;
         this.category = category;
         this.productImages = productImages;
     }
 
-    public static Product create(ProductCreateCommand command, IdGenerator idGenerator) {
+    public static Product restore(RestoreProductCommand command) {
+        return new Product(
+                command.id(),
+                command.sellerId(),
+                command.name(),
+                command.description(),
+                command.price(),
+                command.stockQuantity(),
+                command.status(),
+                command.category(),
+                ProductImages.restore(command.thumbnailImage(), command.images())
+        );
+    }
+
+    public static Product create(ProductCreateCommand command, MemberId sellerId, IdGenerator idGenerator) {
+        StockQuantity stockQuantity = new StockQuantity(command.stockQuantity());
+
         return new Product(
                 new ProductId(idGenerator.nextId()),
+                sellerId,
                 new ProductName(command.name()),
                 new ProductDescription(command.description()),
                 new Money(command.price()),
-                new StockQuantity(command.stockQuantity()),
+                stockQuantity,
+                ProductStatus.of(stockQuantity),
                 ProductCategory.valueOf(command.category()),
                 ProductImages.from(command.images(), idGenerator)
         );
@@ -87,6 +111,10 @@ public class Product {
             throw new IllegalStateException("이미 단종된 상품입니다.");
 
         this.status = ProductStatus.DISCONTINUED;
+    }
+
+    public boolean isSeller(MemberId memberId) {
+        return this.sellerId.equals(memberId);
     }
 
     public ProductImage getThumbnailImage() {
