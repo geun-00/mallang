@@ -1,12 +1,13 @@
 package io.mallang.fixtures;
 
-import io.mallang.product.adapter.web.model.CreateProductRequest;
-import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
+import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
+import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
-import io.mallang.product.domain.*;
+import io.mallang.product.domain.Product;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
@@ -20,7 +21,16 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ProductFixture {
 
-    public static CreateProductRequest generateProductCreateRequest() {
+    public static UpdateProductRequest generateUpdateProductRequest() {
+        return new UpdateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                "BOOKS"
+        );
+    }
+
+    public static CreateProductRequest generateCreateProductRequest() {
         return new CreateProductRequest(
                 generateProductName(),
                 generateProductDescription(),
@@ -31,7 +41,7 @@ public class ProductFixture {
         );
     }
 
-    public static CreateProductRequest generateProductCreateRequestWithImages() {
+    public static CreateProductRequest generateCreateProductRequestWithImages() {
         return new CreateProductRequest(
                 generateProductName(),
                 generateProductDescription(),
