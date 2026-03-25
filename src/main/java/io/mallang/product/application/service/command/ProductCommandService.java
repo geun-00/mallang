@@ -2,10 +2,7 @@ package io.mallang.product.application.service.command;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
-import io.mallang.product.application.provided.command.AddStockUseCase;
-import io.mallang.product.application.provided.command.DeductStockUseCase;
-import io.mallang.product.application.provided.command.RegisterProductUseCase;
-import io.mallang.product.application.provided.command.UpdateProductUseCase;
+import io.mallang.product.application.provided.command.*;
 import io.mallang.product.application.provided.command.model.*;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
@@ -24,7 +21,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase, DeductStockUseCase, UpdateProductUseCase {
+public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase, DeductStockUseCase, UpdateProductUseCase, DiscontinueProductUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadProductPort loadProductPort;
@@ -95,6 +92,18 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
                 command.category()
         ));
 
+        saveProductPort.save(product);
+    }
+
+    @Override
+    public void discontinue(DiscontinueProductCommand command) {
+        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
+
+        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
+            throw new NotProductSellerException();
+        }
+
+        product.discontinue();
         saveProductPort.save(product);
     }
 }

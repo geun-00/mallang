@@ -117,8 +117,9 @@ public class Product {
     }
 
     public void discontinue() {
-        if (this.status == ProductStatus.DISCONTINUED)
+        if (this.status == ProductStatus.DISCONTINUED) {
             throw new IllegalStateException("이미 단종된 상품입니다.");
+        }
 
         this.status = ProductStatus.DISCONTINUED;
     }
