@@ -91,7 +91,7 @@ public class ProductJpaEntity {
         return entity;
     }
 
-    public Product toDomain() {
+    public Product toDomainWithImages() {
         Map<Boolean, List<ProductImageJpaEntity>> partitioned =
                 images.stream().collect(partitioningBy(ProductImageJpaEntity::isThumbnail));
 
@@ -113,7 +113,26 @@ public class ProductJpaEntity {
                         status,
                         category,
                         thumbnailImage,
-                        otherImages
+                        otherImages,
+                        true
+                )
+        );
+    }
+
+    public Product toDomainWithoutImages() {
+        return Product.restore(
+                new RestoreProductCommand(
+                        new ProductId(id),
+                        new MemberId(sellerId),
+                        new ProductName(name),
+                        new ProductDescription(description),
+                        new Money(price),
+                        new StockQuantity(stockQuantity),
+                        status,
+                        category,
+                        null,
+                        List.of(),
+                        false
                 )
         );
     }

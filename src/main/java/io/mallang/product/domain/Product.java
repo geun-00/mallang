@@ -28,6 +28,8 @@ public class Product {
 
     private ProductCategory category;
 
+    private final boolean imagesLoaded;
+
     private Product(
             ProductId id,
             MemberId sellerId,
@@ -37,7 +39,8 @@ public class Product {
             StockQuantity stockQuantity,
             ProductStatus status,
             ProductCategory category,
-            ProductImages productImages
+            ProductImages productImages,
+            boolean imagesLoaded
     ) {
         this.id = id;
         this.sellerId = sellerId;
@@ -48,6 +51,7 @@ public class Product {
         this.status = status;
         this.category = category;
         this.productImages = productImages;
+        this.imagesLoaded = imagesLoaded;
     }
 
     public static Product restore(RestoreProductCommand command) {
@@ -60,7 +64,8 @@ public class Product {
                 command.stockQuantity(),
                 command.status(),
                 command.category(),
-                ProductImages.restore(command.thumbnailImage(), command.images())
+                ProductImages.restore(command.thumbnailImage(), command.images()),
+                command.imagesLoaded()
         );
     }
 
@@ -76,7 +81,8 @@ public class Product {
                 stockQuantity,
                 ProductStatus.of(stockQuantity),
                 ProductCategory.valueOf(command.category()),
-                ProductImages.from(command.images(), idGenerator)
+                ProductImages.from(command.images(), idGenerator),
+                true
         );
     }
 
@@ -128,6 +134,8 @@ public class Product {
     public void addImages(List<AddProductImageCommand> addCommands, IdGenerator idGenerator) {
         if (this.status == ProductStatus.DISCONTINUED)
             throw new IllegalStateException("이미지를 추가할 수 없는 상품입니다.");
+        if (!this.imagesLoaded)
+            throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
 
         this.productImages.add(addCommands, idGenerator);
     }
@@ -135,6 +143,8 @@ public class Product {
     public void removeImage(ProductImageId imageId) {
         if (this.status == ProductStatus.DISCONTINUED)
             throw new IllegalStateException("이미지를 제거할 수 없는 상품입니다.");
+        if (!this.imagesLoaded)
+            throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
 
         this.productImages.removeImage(imageId);
     }
@@ -142,6 +152,8 @@ public class Product {
     public void changeThumbnailImage(ProductImageId imageId) {
         if (this.status == ProductStatus.DISCONTINUED)
             throw new IllegalStateException("대표 이미지를 변경할 수 없는 상품입니다.");
+        if (!this.imagesLoaded)
+            throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
 
         this.productImages.changeThumbnailImage(imageId);
     }
