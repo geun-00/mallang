@@ -10,10 +10,10 @@ import io.mallang.product.application.provided.command.model.ChangeThumbnailImag
 import io.mallang.product.application.provided.command.model.RemoveProductImageCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.ProductImageId;
+import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.exception.NotProductSellerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,11 +32,7 @@ public class ProductImageCommandService implements AddProductImagesUseCase, Remo
 
     @Override
     public void addImages(AddProductImagesCommand command) {
-        Product product = loadProductPort.getByIdWithImages(new ProductId(command.productIdValue()));
-
-        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
-            throw new NotProductSellerException();
-        }
+        Product product = loadProductWithImagesAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         List<AddProductImageCommand> addCommands = command.imageUrls()
                                                           .stream()
@@ -49,11 +45,7 @@ public class ProductImageCommandService implements AddProductImagesUseCase, Remo
 
     @Override
     public void removeImage(RemoveProductImageCommand command) {
-        Product product = loadProductPort.getByIdWithImages(new ProductId(command.productIdValue()));
-
-        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
-            throw new NotProductSellerException();
-        }
+        Product product = loadProductWithImagesAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         product.removeImage(new ProductImageId(command.productImageIdValue()));
 
@@ -62,14 +54,20 @@ public class ProductImageCommandService implements AddProductImagesUseCase, Remo
 
     @Override
     public void changeThumbnail(ChangeThumbnailImageCommand command) {
-        Product product = loadProductPort.getByIdWithImages(new ProductId(command.productIdValue()));
-
-        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
-            throw new NotProductSellerException();
-        }
+        Product product = loadProductWithImagesAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         product.changeThumbnailImage(new ProductImageId(command.productImageIdValue()));
 
         saveProductPort.save(product);
+    }
+
+    private Product loadProductWithImagesAndValidateSeller(String productIdValue, String memberIdValue) {
+        Product product = loadProductPort.getByIdWithImages(new ProductId(productIdValue));
+
+        if (!product.isSeller(new MemberId(memberIdValue))) {
+            throw new NotProductSellerException();
+        }
+
+        return product;
     }
 }

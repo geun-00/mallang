@@ -6,11 +6,11 @@ import io.mallang.product.application.provided.command.*;
 import io.mallang.product.application.provided.command.model.*;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.command.ModifyProductCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
+import io.mallang.product.domain.command.ModifyProductCommand;
 import io.mallang.product.domain.exception.NotProductSellerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,11 +55,7 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
 
     @Override
     public void addStock(AddStockCommand command) {
-        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
-
-        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
-            throw new NotProductSellerException();
-        }
+        Product product = loadProductAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         product.addStock(command.quantity());
         saveProductPort.save(product);
@@ -67,11 +63,7 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
 
     @Override
     public void deductStock(DeductStockCommand command) {
-        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
-
-        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
-            throw new NotProductSellerException();
-        }
+        Product product = loadProductAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         product.deductStock(command.quantity());
         saveProductPort.save(product);
@@ -79,11 +71,7 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
 
     @Override
     public void update(UpdateProductCommand command) {
-        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
-
-        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
-            throw new NotProductSellerException();
-        }
+        Product product = loadProductAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         product.modify(new ModifyProductCommand(
                 command.name(),
@@ -97,13 +85,19 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
 
     @Override
     public void discontinue(DiscontinueProductCommand command) {
-        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
-
-        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
-            throw new NotProductSellerException();
-        }
+        Product product = loadProductAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         product.discontinue();
         saveProductPort.save(product);
+    }
+
+    private Product loadProductAndValidateSeller(String productIdValue, String memberIdValue) {
+        Product product = loadProductPort.getById(new ProductId(productIdValue));
+
+        if (!product.isSeller(new MemberId(memberIdValue))) {
+            throw new NotProductSellerException();
+        }
+
+        return product;
     }
 }
