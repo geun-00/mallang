@@ -88,8 +88,9 @@ public class Product {
     }
 
     public void addStock(int additionalStock) {
-        if (this.status == ProductStatus.DISCONTINUED)
+        if (this.status == ProductStatus.DISCONTINUED) {
             throw new IllegalStateException("재고를 추가할 수 없는 상품입니다.");
+        }
 
         this.stockQuantity = this.stockQuantity.add(additionalStock);
         this.status = ProductStatus.of(stockQuantity);

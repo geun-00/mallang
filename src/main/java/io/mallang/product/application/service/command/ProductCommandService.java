@@ -2,13 +2,18 @@ package io.mallang.product.application.service.command;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
+import io.mallang.product.application.provided.command.AddStockUseCase;
 import io.mallang.product.application.provided.command.RegisterProductUseCase;
+import io.mallang.product.application.provided.command.model.AddStockCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductResult;
 import io.mallang.product.application.required.command.SaveProductPort;
+import io.mallang.product.application.required.query.LoadProductPort;
+import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
-import io.mallang.product.domain.Product;
+import io.mallang.product.domain.exception.NotProductSellerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +23,10 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductCommandService implements RegisterProductUseCase {
+public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase {
 
     private final IdGenerator idGenerator;
+    private final LoadProductPort loadProductPort;
     private final SaveProductPort saveProductPort;
 
     @Override
@@ -47,5 +53,17 @@ public class ProductCommandService implements RegisterProductUseCase {
         saveProductPort.save(product);
 
         return new RegisterProductResult(product.getId().value());
+    }
+
+    @Override
+    public void addStock(AddStockCommand command) {
+        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
+
+        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
+            throw new NotProductSellerException();
+        }
+
+        product.addStock(command.quantity());
+        saveProductPort.save(product);
     }
 }
