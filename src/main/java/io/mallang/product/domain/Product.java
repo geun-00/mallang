@@ -159,10 +159,12 @@ public class Product {
     }
 
     public void changeThumbnailImage(ProductImageId imageId) {
-        if (this.status == ProductStatus.DISCONTINUED)
+        if (this.status == ProductStatus.DISCONTINUED) {
             throw new IllegalStateException("대표 이미지를 변경할 수 없는 상품입니다.");
-        if (!this.imagesLoaded)
+        }
+        if (!this.imagesLoaded) {
             throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
+        }
 
         this.productImages.changeThumbnailImage(imageId);
     }

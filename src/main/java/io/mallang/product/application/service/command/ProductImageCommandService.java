@@ -3,8 +3,10 @@ package io.mallang.product.application.service.command;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.AddProductImagesUseCase;
+import io.mallang.product.application.provided.command.ChangeThumbnailImageUseCase;
 import io.mallang.product.application.provided.command.RemoveProductImageUseCase;
 import io.mallang.product.application.provided.command.model.AddProductImagesCommand;
+import io.mallang.product.application.provided.command.model.ChangeThumbnailImageCommand;
 import io.mallang.product.application.provided.command.model.RemoveProductImageCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
@@ -22,7 +24,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductImageCommandService implements AddProductImagesUseCase, RemoveProductImageUseCase {
+public class ProductImageCommandService implements AddProductImagesUseCase, RemoveProductImageUseCase, ChangeThumbnailImageUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadProductPort loadProductPort;
@@ -54,6 +56,19 @@ public class ProductImageCommandService implements AddProductImagesUseCase, Remo
         }
 
         product.removeImage(new ProductImageId(command.productImageIdValue()));
+
+        saveProductPort.save(product);
+    }
+
+    @Override
+    public void changeThumbnail(ChangeThumbnailImageCommand command) {
+        Product product = loadProductPort.getByIdWithImages(new ProductId(command.productIdValue()));
+
+        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
+            throw new NotProductSellerException();
+        }
+
+        product.changeThumbnailImage(new ProductImageId(command.productImageIdValue()));
 
         saveProductPort.save(product);
     }
