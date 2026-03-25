@@ -62,6 +62,6 @@ class UpdateDefaultShippingAddressUseCaseTest {
     }
 
     private UpdateDefaultShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {
-        return new UpdateDefaultShippingAddressCommand(memberId, shippingAddressId);
+        return new UpdateDefaultShippingAddressCommand(memberId.value(), shippingAddressId.value());
     }
 }

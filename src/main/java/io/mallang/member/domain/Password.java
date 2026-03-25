@@ -11,7 +11,7 @@ public record Password(String value) {
     private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[!@#$%^&*]");
     private static final Pattern ALLOWED_CHARS_PATTERN = Pattern.compile("^[a-zA-Z0-9!@#$%^&*]+$");
 
-    static Password encode(String rawPassword, PasswordEncoder passwordEncoder) {
+    static Password encode(String rawPassword, MemberPasswordEncoder passwordEncoder) {
         rawPassword = rawPassword.strip();
 
         validatePassword(rawPassword);
@@ -32,7 +32,7 @@ public record Password(String value) {
             throw new InvalidValueException("비밀번호에 허용되지 않은 문자가 포함되어 있습니다.");
     }
 
-    boolean verifyPassword(String rawPassword, PasswordEncoder passwordEncoder) {
+    boolean verifyPassword(String rawPassword, MemberPasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(rawPassword, this.value);
     }
 }

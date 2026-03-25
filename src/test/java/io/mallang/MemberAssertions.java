@@ -4,7 +4,7 @@ import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.application.provided.command.model.UpdateShippingAddressCommand;
 import io.mallang.member.domain.Member;
-import io.mallang.member.domain.PasswordEncoder;
+import io.mallang.member.domain.MemberPasswordEncoder;
 import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.command.CreateMemberCommand;
 import io.mallang.member.domain.command.RestoreMemberCommand;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MemberAssertions {
 
-    public static ThrowingConsumer<Member> isDerivedFrom(CreateMemberCommand command, PasswordEncoder passwordEncoder) {
+    public static ThrowingConsumer<Member> isDerivedFrom(CreateMemberCommand command, MemberPasswordEncoder passwordEncoder) {
         return member -> {
             assertThat(member.getEmail()).isEqualTo(command.email());
             assertThat(member.getNickname()).isEqualTo(command.nickname());

@@ -1,9 +1,7 @@
 package io.mallang.member.application.provided.command.model;
 
-import io.mallang.member.domain.MemberId;
-
 public record RegisterShippingAddressCommand(
-        MemberId memberId,
+        String memberIdValue,
         String receiverName,
         String receiverPhoneNumber,
         String zipCode,

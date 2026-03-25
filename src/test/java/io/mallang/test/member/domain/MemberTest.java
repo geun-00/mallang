@@ -9,6 +9,7 @@ import io.mallang.member.domain.command.CreateMemberCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import io.mallang.member.domain.command.RestoreMemberCommand;
 import io.mallang.member.domain.exception.ShippingAddressLimitException;
+import io.mallang.member.domain.exception.ShippingAddressNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -65,7 +66,7 @@ class MemberTest {
     void 회원을_생성하면_커맨드의_정보가_저장된다() {
         // given
         CreateMemberCommand command = generateCreateCommand();
-        PasswordEncoder passwordEncoder = generatePasswordEncoder();
+        MemberPasswordEncoder passwordEncoder = generatePasswordEncoder();
 
         // when
         Member member = create(command, passwordEncoder, generateIdGenerator(), generateClockHolder());
@@ -332,7 +333,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.setDefaultShippingAddress(otherShippingAddress.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ShippingAddressNotFoundException.class);
     }
 
     @Test
@@ -386,7 +387,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.modifyShippingAddress(otherShippingAddress.getId(), generateModifyShippingAddressCommand()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ShippingAddressNotFoundException.class);
     }
 
     @Test
@@ -429,6 +430,6 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.removeShippingAddress(otherShippingAddress.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ShippingAddressNotFoundException.class);
     }
 }

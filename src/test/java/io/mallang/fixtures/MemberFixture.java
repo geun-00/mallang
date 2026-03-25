@@ -3,8 +3,10 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
-import io.mallang.member.application.required.command.SaveMemberPort;
+import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
+import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
+import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.*;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.CreateMemberCommand;
@@ -17,8 +19,8 @@ public class MemberFixture {
 
     public static final String DEFAULT_PASSWORD = "password12@";
 
-    public static PasswordEncoder generatePasswordEncoder() {
-        return new PasswordEncoder() {
+    public static MemberPasswordEncoder generatePasswordEncoder() {
+        return new MemberPasswordEncoder() {
             @Override
             public String encode(String rawPassword) {
                 return rawPassword.toUpperCase() + "encoded";
@@ -147,5 +149,25 @@ public class MemberFixture {
         saveMemberPort.save(member);
 
         return member.getId();
+    }
+
+    public static RegisterShippingAddressRequest generateRegisterShippingAddressRequest() {
+        return new RegisterShippingAddressRequest(
+                "홍길동",
+                "01011112222",
+                "12345",
+                "서울시 강남구 테헤란로 1",
+                "101호"
+        );
+    }
+
+    public static UpdateShippingAddressRequest generateUpdateShippingAddressRequest() {
+        return new UpdateShippingAddressRequest(
+                "이순신",
+                "01022223333",
+                "13579",
+                "경기도 부천시 원미구",
+                "2층"
+        );
     }
 }

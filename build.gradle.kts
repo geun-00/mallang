@@ -34,7 +34,10 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     runtimeOnly("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5")
+    testImplementation("org.jsoup:jsoup:1.18.3")
     runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("org.postgresql:postgresql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation("com.github.f4b6a3:ulid-creator:5.2.3")

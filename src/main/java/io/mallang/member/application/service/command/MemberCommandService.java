@@ -13,7 +13,7 @@ import io.mallang.member.domain.exception.DuplicateNicknameException;
 import io.mallang.member.domain.Email;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.Nickname;
-import io.mallang.member.domain.PasswordEncoder;
+import io.mallang.member.domain.MemberPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class MemberCommandService implements RegisterMemberUseCase {
     private final ClockHolder clockHolder;
     private final SaveMemberPort saveMemberPort;
     private final LoadMemberPort loadMemberPort;
-    private final PasswordEncoder passwordEncoder;
+    private final MemberPasswordEncoder passwordEncoder;
 
     @Override
     public RegisterMemberResult register(RegisterMemberCommand command) {

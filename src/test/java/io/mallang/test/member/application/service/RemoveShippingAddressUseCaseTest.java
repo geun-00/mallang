@@ -61,6 +61,6 @@ class RemoveShippingAddressUseCaseTest {
     }
 
     private RemoveShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {
-        return new RemoveShippingAddressCommand(memberId, shippingAddressId);
+        return new RemoveShippingAddressCommand(memberId.value(), shippingAddressId.value());
     }
 }
