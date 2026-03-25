@@ -87,7 +87,11 @@ public class ProductFixture {
     }
 
     public static Product generateProduct(int stockQuantity) {
-        return Product.create(generateProductCreateCommand(stockQuantity), generateSellerId(), generateIdGenerator());
+        return generateProduct(generateSellerId(), stockQuantity);
+    }
+
+    public static Product generateProduct(MemberId sellerId, int stockQuantity) {
+        return Product.create(generateProductCreateCommand(stockQuantity), sellerId, generateIdGenerator());
     }
 
     public static Product generateDiscontinuedProduct() {
