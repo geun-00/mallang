@@ -106,8 +106,9 @@ public class Product {
     }
 
     public void modify(ModifyProductCommand command) {
-        if (this.status == ProductStatus.DISCONTINUED)
+        if (this.status == ProductStatus.DISCONTINUED) {
             throw new IllegalStateException("상품을 수정할 수 없는 상품입니다.");
+        }
 
         this.name = new ProductName(command.name());
         this.description = new ProductDescription(command.description());

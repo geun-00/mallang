@@ -5,12 +5,11 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.AddStockUseCase;
 import io.mallang.product.application.provided.command.DeductStockUseCase;
 import io.mallang.product.application.provided.command.RegisterProductUseCase;
-import io.mallang.product.application.provided.command.model.AddStockCommand;
-import io.mallang.product.application.provided.command.model.DeductStockCommand;
-import io.mallang.product.application.provided.command.model.RegisterProductCommand;
-import io.mallang.product.application.provided.command.model.RegisterProductResult;
+import io.mallang.product.application.provided.command.UpdateProductUseCase;
+import io.mallang.product.application.provided.command.model.*;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
+import io.mallang.product.domain.ModifyProductCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.command.CreateProductCommand;
@@ -25,7 +24,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase, DeductStockUseCase {
+public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase, DeductStockUseCase, UpdateProductUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadProductPort loadProductPort;
@@ -78,6 +77,24 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
         }
 
         product.deductStock(command.quantity());
+        saveProductPort.save(product);
+    }
+
+    @Override
+    public void update(UpdateProductCommand command) {
+        Product product = loadProductPort.getById(new ProductId(command.productIdValue()));
+
+        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
+            throw new NotProductSellerException();
+        }
+
+        product.modify(new ModifyProductCommand(
+                command.name(),
+                command.description(),
+                command.price(),
+                command.category()
+        ));
+
         saveProductPort.save(product);
     }
 }
