@@ -21,6 +21,10 @@ class ProductImages {
         this.images = images;
     }
 
+    static ProductImages restore(ProductImage thumbnailImage, List<ProductImage> images) {
+        return new ProductImages(thumbnailImage, new ArrayList<>(images));
+    }
+
     static ProductImages from(List<ProductImageCommand> images, IdGenerator idGenerator) {
         if (images.isEmpty()) {
             return new ProductImages(null, new ArrayList<>());
