@@ -88,27 +88,21 @@ public class Product {
     }
 
     public void addStock(int additionalStock) {
-        if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("재고를 추가할 수 없는 상품입니다.");
-        }
+        validateNotDiscontinued("재고를 추가할 수 없는 상품입니다.");
 
         this.stockQuantity = this.stockQuantity.add(additionalStock);
         this.status = ProductStatus.of(stockQuantity);
     }
 
     public void deductStock(int deductedStock) {
-        if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("재고를 차감할 수 없는 상품입니다.");
-        }
+        validateNotDiscontinued("재고를 차감할 수 없는 상품입니다.");
 
         this.stockQuantity = this.stockQuantity.deduct(deductedStock);
         this.status = ProductStatus.of(stockQuantity);
     }
 
     public void modify(ModifyProductCommand command) {
-        if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("상품을 수정할 수 없는 상품입니다.");
-        }
+        validateNotDiscontinued("상품을 수정할 수 없는 상품입니다.");
 
         this.name = new ProductName(command.name());
         this.description = new ProductDescription(command.description());
@@ -117,9 +111,7 @@ public class Product {
     }
 
     public void discontinue() {
-        if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("이미 단종된 상품입니다.");
-        }
+        validateNotDiscontinued("이미 단종된 상품입니다.");
 
         this.status = ProductStatus.DISCONTINUED;
     }
@@ -137,35 +129,35 @@ public class Product {
     }
 
     public void addImages(List<AddProductImageCommand> addCommands, IdGenerator idGenerator) {
-        if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("이미지를 추가할 수 없는 상품입니다.");
-        }
-        if (!this.imagesLoaded) {
-            throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
-        }
+        validateNotDiscontinued("이미지를 추가할 수 없는 상품입니다.");
+        validateImagesLoaded();
 
         this.productImages.add(addCommands, idGenerator);
     }
 
     public void removeImage(ProductImageId imageId) {
-        if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("이미지를 제거할 수 없는 상품입니다.");
-        }
-        if (!this.imagesLoaded) {
-            throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
-        }
+        validateNotDiscontinued("이미지를 제거할 수 없는 상품입니다.");
+        validateImagesLoaded();
 
         this.productImages.removeImage(imageId);
     }
 
     public void changeThumbnailImage(ProductImageId imageId) {
+        validateNotDiscontinued("대표 이미지를 변경할 수 없는 상품입니다.");
+        validateImagesLoaded();
+
+        this.productImages.changeThumbnailImage(imageId);
+    }
+
+    private void validateNotDiscontinued(String message) {
         if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("대표 이미지를 변경할 수 없는 상품입니다.");
+            throw new IllegalStateException(message);
         }
+    }
+
+    private void validateImagesLoaded() {
         if (!this.imagesLoaded) {
             throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
         }
-
-        this.productImages.changeThumbnailImage(imageId);
     }
 }
