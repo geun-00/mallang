@@ -3,12 +3,15 @@ package io.mallang.product.application.service.command;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.AddProductImagesUseCase;
+import io.mallang.product.application.provided.command.RemoveProductImageUseCase;
 import io.mallang.product.application.provided.command.model.AddProductImagesCommand;
+import io.mallang.product.application.provided.command.model.RemoveProductImageCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.AddProductImageCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
+import io.mallang.product.domain.ProductImageId;
 import io.mallang.product.domain.exception.NotProductSellerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductImageCommandService implements AddProductImagesUseCase {
+public class ProductImageCommandService implements AddProductImagesUseCase, RemoveProductImageUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadProductPort loadProductPort;
@@ -38,6 +41,19 @@ public class ProductImageCommandService implements AddProductImagesUseCase {
                                                           .map(AddProductImageCommand::new)
                                                           .toList();
         product.addImages(addCommands, idGenerator);
+
+        saveProductPort.save(product);
+    }
+
+    @Override
+    public void removeImage(RemoveProductImageCommand command) {
+        Product product = loadProductPort.getByIdWithImages(new ProductId(command.productIdValue()));
+
+        if (!product.isSeller(new MemberId(command.memberIdValue()))) {
+            throw new NotProductSellerException();
+        }
+
+        product.removeImage(new ProductImageId(command.productImageIdValue()));
 
         saveProductPort.save(product);
     }

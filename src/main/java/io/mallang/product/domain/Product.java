@@ -148,10 +148,12 @@ public class Product {
     }
 
     public void removeImage(ProductImageId imageId) {
-        if (this.status == ProductStatus.DISCONTINUED)
+        if (this.status == ProductStatus.DISCONTINUED) {
             throw new IllegalStateException("이미지를 제거할 수 없는 상품입니다.");
-        if (!this.imagesLoaded)
+        }
+        if (!this.imagesLoaded) {
             throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
+        }
 
         this.productImages.removeImage(imageId);
     }
