@@ -1,5 +1,7 @@
 package io.mallang.fixtures;
 
+import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
@@ -17,6 +19,31 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ProductFixture {
+
+    public static CreateProductRequest generateProductCreateRequest() {
+        return new CreateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                List.of()
+        );
+    }
+
+    public static CreateProductRequest generateProductCreateRequestWithImages() {
+        return new CreateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                List.of(
+                        new ProductImageRequest(generateProductImageUrl(), true),
+                        new ProductImageRequest(generateProductImageUrl(), false)
+                )
+        );
+    }
 
     public static RegisterProductCommand generateRegisterProductCommand() {
         return generateRegisterProductCommand(List.of());
@@ -158,25 +185,25 @@ public class ProductFixture {
         return addImageCommands;
     }
 
-    private static String generateProductName() {
+    public static String generateProductName() {
         return "name" + UUID.randomUUID();
     }
 
-    private static String generateProductDescription() {
+    public static String generateProductDescription() {
         return "description" + UUID.randomUUID();
     }
 
-    private static BigDecimal generateProductPriceAmount() {
+    public static BigDecimal generateProductPriceAmount() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return BigDecimal.valueOf(random.nextInt(10000, 100000));
     }
 
-    private static int generateProductStockQuantity() {
+    public static int generateProductStockQuantity() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return random.nextInt(10, 100);
     }
 
-    private static String generateProductImageUrl() {
+    public static String generateProductImageUrl() {
         return "https://test.com/images/" + UUID.randomUUID();
     }
 }

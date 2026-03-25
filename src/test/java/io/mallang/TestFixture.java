@@ -1,6 +1,7 @@
 package io.mallang;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -141,5 +142,9 @@ public record TestFixture(TestRestTemplate client) {
 
     public ResponseEntity<Void> registerMember(MemberCreateRequest request) {
         return client.postForEntity("/members", request, Void.class);
+    }
+
+    public ResponseEntity<Void> registerProduct(CreateProductRequest request) {
+        return client.postForEntity("/products", request, Void.class);
     }
 }
