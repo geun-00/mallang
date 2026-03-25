@@ -3,6 +3,8 @@ package io.mallang.test.product.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.*;
+import io.mallang.product.domain.command.CreateProductCommand;
+import io.mallang.product.domain.command.CreateProductImageCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,7 +28,7 @@ class ProductTest {
 
     @Test
     void 유효한_정보로_상품을_생성하면_상품명_설명_가격_재고_수량_카테고리가_저장된다() {
-        ProductCreateCommand createCommand = generateProductCreateCommand();
+        CreateProductCommand createCommand = generateProductCreateCommand();
         IdGenerator idGenerator = generateIdGenerator();
 
         Product product = Product.create(createCommand, generateSellerId(), idGenerator);
@@ -188,7 +190,7 @@ class ProductTest {
 
     @Test
     void 이미지와_함께_상품을_생성하면_대표이미지와_이미지목록이_저장된다() {
-        ProductCreateCommand createCommand = generateProductCreateCommandWithImages();
+        CreateProductCommand createCommand = generateProductCreateCommandWithImages();
         Product product = Product.create(createCommand, generateSellerId(), generateIdGenerator());
 
         assertThat(product.getThumbnailImage()).isNotNull();
@@ -205,11 +207,11 @@ class ProductTest {
 
     @Test
     void 이미지가_있는데_대표이미지가_없으면_예외가_발생한다() {
-        List<ProductImageCommand> nonThumbnailImages = List.of(
-                new ProductImageCommand("https://test.com/image1.jpg", false),
-                new ProductImageCommand("https://test.com/image2.jpg", false)
+        List<CreateProductImageCommand> nonThumbnailImages = List.of(
+                new CreateProductImageCommand("https://test.com/image1.jpg", false),
+                new CreateProductImageCommand("https://test.com/image2.jpg", false)
         );
-        ProductCreateCommand createCommand = generateProductCreateCommand(nonThumbnailImages);
+        CreateProductCommand createCommand = generateProductCreateCommand(nonThumbnailImages);
 
         assertThatThrownBy(() -> Product.create(createCommand, generateSellerId(), generateIdGenerator()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -217,7 +219,7 @@ class ProductTest {
 
     @Test
     void 대표이미지_외_이미지가_10개를_초과하면_예외가_발생한다() {
-        ProductCreateCommand createCommand = generateProductCreateCommandWithImages(11);
+        CreateProductCommand createCommand = generateProductCreateCommandWithImages(11);
 
         assertThatThrownBy(() -> Product.create(createCommand, generateSellerId(), generateIdGenerator()))
                 .isInstanceOf(IllegalArgumentException.class);

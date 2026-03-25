@@ -3,6 +3,7 @@ package io.mallang.product.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
+import io.mallang.product.domain.command.CreateProductCommand;
 import lombok.Getter;
 
 import java.util.List;
@@ -69,7 +70,7 @@ public class Product {
         );
     }
 
-    public static Product create(ProductCreateCommand command, MemberId sellerId, IdGenerator idGenerator) {
+    public static Product create(CreateProductCommand command, MemberId sellerId, IdGenerator idGenerator) {
         StockQuantity stockQuantity = new StockQuantity(command.stockQuantity());
 
         return new Product(
