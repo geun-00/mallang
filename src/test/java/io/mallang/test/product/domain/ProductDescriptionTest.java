@@ -1,5 +1,6 @@
 package io.mallang.test.product.domain;
 
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductDescription;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ class ProductDescriptionTest {
     @Test
     void 상품_설명은_null이_아니여야_한다() {
         assertThatThrownBy(() -> new ProductDescription(null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
     
     @Test
@@ -19,7 +20,7 @@ class ProductDescriptionTest {
         String longDescription = "a".repeat(2001);
 
         assertThatThrownBy(() -> new ProductDescription(longDescription))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
     
     @Test

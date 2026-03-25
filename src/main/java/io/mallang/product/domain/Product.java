@@ -84,7 +84,7 @@ public class Product {
                 new Money(command.price()),
                 stockQuantity,
                 ProductStatus.of(stockQuantity),
-                ProductCategory.valueOf(command.category()),
+                ProductCategory.from(command.category()),
                 ProductImages.from(command.images(), idGenerator),
                 true
         );
