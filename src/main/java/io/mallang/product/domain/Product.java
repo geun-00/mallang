@@ -110,7 +110,7 @@ public class Product {
         this.name = new ProductName(command.name());
         this.description = new ProductDescription(command.description());
         this.price = new Money(command.price());
-        this.category = ProductCategory.valueOf(command.category());
+        this.category = ProductCategory.from(command.category());
     }
 
     public void discontinue() {

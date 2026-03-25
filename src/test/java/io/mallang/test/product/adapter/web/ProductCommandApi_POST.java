@@ -34,7 +34,7 @@ class ProductCommandApi_POST {
     void 올바르게_요청하면_201_Created_상태코드를_반환한다(@Autowired TestFixture fixture) {
         // given
         fixture.createMemberThenLogin();
-        var request = generateProductCreateRequest();
+        var request = generateCreateProductRequest();
 
         // when
         ResponseEntity<Void> response = fixture.registerProduct(request);
@@ -47,7 +47,7 @@ class ProductCommandApi_POST {
     void 올바르게_요청하면_식별자가_포함된_Location_헤더를_반환한다(@Autowired TestFixture fixture) {
         // given
         fixture.createMemberThenLogin();
-        var request = generateProductCreateRequest();
+        var request = generateCreateProductRequest();
 
         // when
         ResponseEntity<Void> response = fixture.registerProduct(request);
@@ -66,7 +66,7 @@ class ProductCommandApi_POST {
     ) {
         // given
         fixture.createMemberThenLogin();
-        var request = generateProductCreateRequest();
+        var request = generateCreateProductRequest();
 
         // when
         ResponseEntity<Void> response = fixture.registerProduct(request);
@@ -81,7 +81,7 @@ class ProductCommandApi_POST {
     void 이미지_없이_등록할_수_있다(@Autowired TestFixture fixture) {
         // given
         fixture.createMemberThenLogin();
-        var request = generateProductCreateRequest();
+        var request = generateCreateProductRequest();
 
         // when
         ResponseEntity<Void> response = fixture.registerProduct(request);
@@ -94,7 +94,7 @@ class ProductCommandApi_POST {
     void 이미지와_함께_등록할_수_있다(@Autowired TestFixture fixture) {
         // given
         fixture.createMemberThenLogin();
-        var request = generateProductCreateRequestWithImages();
+        var request = generateCreateProductRequestWithImages();
 
         // when
         ResponseEntity<Void> response = fixture.registerProduct(request);
@@ -106,7 +106,7 @@ class ProductCommandApi_POST {
     @Test
     void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired TestFixture fixture) {
         // given
-        var request = generateProductCreateRequest();
+        var request = generateCreateProductRequest();
 
         // when
         ResponseEntity<Void> response = fixture.unauthenticatedClient().postForEntity(

@@ -2,15 +2,20 @@ package io.mallang.product.adapter.web;
 
 import io.mallang.member.adapter.security.CustomUserDetails;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.RegisterProductUseCase;
+import io.mallang.product.application.provided.command.UpdateProductUseCase;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductResult;
+import io.mallang.product.application.provided.command.model.UpdateProductCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +27,7 @@ import java.util.List;
 public class ProductCommandApi {
 
     private final RegisterProductUseCase registerProductUseCase;
+    private final UpdateProductUseCase updateProductUseCase;
 
     @PostMapping("/products")
     public ResponseEntity<Void> register(
@@ -48,5 +54,25 @@ public class ProductCommandApi {
         );
 
         return ResponseEntity.created(URI.create("/products/" + result.productId())).build();
+    }
+
+    @PutMapping("/products/{productId}")
+    public ResponseEntity<Void> update(
+            @PathVariable String productId,
+            @Valid @RequestBody UpdateProductRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        updateProductUseCase.update(
+                new UpdateProductCommand(
+                        userDetails.getMemberIdValue(),
+                        productId,
+                        request.name(),
+                        request.description(),
+                        request.price(),
+                        request.category()
+                )
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }
