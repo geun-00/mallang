@@ -2,9 +2,15 @@ package io.mallang.fixtures;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
+import io.mallang.product.adapter.web.model.AddProductImagesRequest;
+import io.mallang.product.adapter.web.model.AddStockRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
+import io.mallang.product.adapter.web.model.DeductStockRequest;
+import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
-import io.mallang.product.domain.*;
+import io.mallang.product.domain.Product;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
@@ -17,6 +23,55 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ProductFixture {
+
+    public static UpdateProductRequest generateUpdateProductRequest() {
+        return new UpdateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                "BOOKS"
+        );
+    }
+
+    public static AddStockRequest generateAddStockRequest() {
+        return new AddStockRequest(generateProductStockQuantity());
+    }
+
+    public static DeductStockRequest generateDeductStockRequest(int quantity) {
+        return new DeductStockRequest(quantity);
+    }
+
+    public static AddProductImagesRequest generateAddProductImagesRequest() {
+        return new AddProductImagesRequest(List.of(
+                generateProductImageUrl(),
+                generateProductImageUrl()
+        ));
+    }
+
+    public static CreateProductRequest generateCreateProductRequest() {
+        return new CreateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                null
+        );
+    }
+
+    public static CreateProductRequest generateCreateProductRequestWithImages() {
+        return new CreateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                List.of(
+                        new ProductImageRequest(generateProductImageUrl(), true),
+                        new ProductImageRequest(generateProductImageUrl(), false)
+                )
+        );
+    }
 
     public static RegisterProductCommand generateRegisterProductCommand() {
         return generateRegisterProductCommand(List.of());
@@ -158,25 +213,25 @@ public class ProductFixture {
         return addImageCommands;
     }
 
-    private static String generateProductName() {
+    public static String generateProductName() {
         return "name" + UUID.randomUUID();
     }
 
-    private static String generateProductDescription() {
+    public static String generateProductDescription() {
         return "description" + UUID.randomUUID();
     }
 
-    private static BigDecimal generateProductPriceAmount() {
+    public static BigDecimal generateProductPriceAmount() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return BigDecimal.valueOf(random.nextInt(10000, 100000));
     }
 
-    private static int generateProductStockQuantity() {
+    public static int generateProductStockQuantity() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return random.nextInt(10, 100);
     }
 
-    private static String generateProductImageUrl() {
+    public static String generateProductImageUrl() {
         return "https://test.com/images/" + UUID.randomUUID();
     }
 }

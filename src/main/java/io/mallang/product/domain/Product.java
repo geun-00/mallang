@@ -1,6 +1,7 @@
 package io.mallang.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.command.AddProductImageCommand;
@@ -84,7 +85,7 @@ public class Product {
                 new Money(command.price()),
                 stockQuantity,
                 ProductStatus.of(stockQuantity),
-                ProductCategory.valueOf(command.category()),
+                ProductCategory.from(command.category()),
                 ProductImages.from(command.images(), idGenerator),
                 true
         );
@@ -110,7 +111,7 @@ public class Product {
         this.name = new ProductName(command.name());
         this.description = new ProductDescription(command.description());
         this.price = new Money(command.price());
-        this.category = ProductCategory.valueOf(command.category());
+        this.category = ProductCategory.from(command.category());
     }
 
     public void discontinue() {
@@ -154,7 +155,7 @@ public class Product {
 
     private void validateNotDiscontinued(String message) {
         if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException(message);
+            throw new InvalidValueException(message);
         }
     }
 

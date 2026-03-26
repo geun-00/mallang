@@ -9,10 +9,12 @@ public record Money(BigDecimal value) {
     public static final Money ZERO =  new Money(BigDecimal.ZERO);
 
     public Money {
-        if (value == null)
+        if (value == null) {
             throw new InvalidValueException("금액은 null이 될 수 없습니다.");
-        if (value.compareTo(BigDecimal.ZERO) < 0)
+        }
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
             throw new InvalidValueException("금액은 음수일 수 없습니다.");
+        }
     }
 
     public Money add(Money other) {

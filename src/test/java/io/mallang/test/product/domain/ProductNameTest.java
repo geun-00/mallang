@@ -1,5 +1,6 @@
 package io.mallang.test.product.domain;
 
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,19 +16,19 @@ class ProductNameTest {
     @NullSource
     @ValueSource(strings = {"   "})
     void 상품명은_null_또는_공백이_아니어야_한다(String invalidName) {
-        assertThatThrownBy(() -> new ProductName(invalidName)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new ProductName(invalidName)).isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {" test", "test "})
     void 상품명은_앞뒤_공백이_없어야_한다(String invalidName) {
-        assertThatThrownBy(() -> new ProductName(invalidName)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new ProductName(invalidName)).isInstanceOf(InvalidValueException.class);
     }
     
     @Test
     void 상품명은_100자_이하여야_한다() {
         String longName = "a".repeat(101);
-        assertThatThrownBy(() -> new ProductName(longName)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new ProductName(longName)).isInstanceOf(InvalidValueException.class);
     }
 
     @Test

@@ -1,6 +1,11 @@
 package io.mallang;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.product.adapter.web.model.AddProductImagesRequest;
+import io.mallang.product.adapter.web.model.AddStockRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.DeductStockRequest;
+import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -19,6 +24,7 @@ import org.springframework.util.MultiValueMap;
 
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.MemberFixture.generateRegisterShippingAddressRequest;
+import static io.mallang.fixtures.ProductFixture.*;
 import static org.springframework.http.HttpHeaders.COOKIE;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -141,5 +147,77 @@ public record TestFixture(TestRestTemplate client) {
 
     public ResponseEntity<Void> registerMember(MemberCreateRequest request) {
         return client.postForEntity("/members", request, Void.class);
+    }
+
+    public ResponseEntity<Void> registerProduct(CreateProductRequest request) {
+        return client.postForEntity("/products", request, Void.class);
+    }
+
+    public ResponseEntity<Void> updateProduct(String productId, UpdateProductRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .put("/products/" + productId)
+                        .body(request),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> addStock(String productId, AddStockRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/stock/add")
+                        .body(request),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> deductStock(String productId, DeductStockRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/stock/deduct")
+                        .body(request),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> discontinue(String productId) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/discontinue")
+                        .build(),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> addImages(String productId, AddProductImagesRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .post("/products/" + productId + "/images")
+                        .body(request),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> removeImage(String productId, String imageId) {
+        return client.exchange(
+                RequestEntity
+                        .delete("/products/" + productId + "/images/" + imageId)
+                        .build(),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> changeThumbnailImage(String productId, String imageId) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/images/" + imageId + "/thumbnail")
+                        .build(),
+                Void.class
+        );
+    }
+
+    public String registerProductThenGetId() {
+        ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
+        return response.getHeaders().getLocation().getPath().substring("/products/".length());
     }
 }
