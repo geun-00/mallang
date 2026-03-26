@@ -198,6 +198,15 @@ public record TestFixture(TestRestTemplate client) {
         );
     }
 
+    public ResponseEntity<Void> removeImage(String productId, String imageId) {
+        return client.exchange(
+                RequestEntity
+                        .delete("/products/" + productId + "/images/" + imageId)
+                        .build(),
+                Void.class
+        );
+    }
+
     public String registerProductThenGetId() {
         ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
         return response.getHeaders().getLocation().getPath().substring("/products/".length());
