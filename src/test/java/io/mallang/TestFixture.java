@@ -207,6 +207,15 @@ public record TestFixture(TestRestTemplate client) {
         );
     }
 
+    public ResponseEntity<Void> changeThumbnailImage(String productId, String imageId) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/images/" + imageId + "/thumbnail")
+                        .build(),
+                Void.class
+        );
+    }
+
     public String registerProductThenGetId() {
         ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
         return response.getHeaders().getLocation().getPath().substring("/products/".length());
