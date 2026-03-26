@@ -5,6 +5,9 @@ import io.mallang.TestFixtureConfiguration;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -65,6 +68,28 @@ class ProductImageCommandApi_POST_images {
         fixture.createMemberThenLogin();
         String productId = fixture.registerProductThenGetId();
         var request = new AddProductImagesRequest(null);
+
+        // when
+        ResponseEntity<Void> response = fixture.addImages(productId, request);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "   "})
+    void imageUrls_요소가_null_또는_비어있는_문자열이면_400_Bad_Request_상태코드를_반환한다(
+            String invalidImageUrl,
+            @Autowired TestFixture fixture
+    ) {
+        // given
+        fixture.createMemberThenLogin();
+        String productId = fixture.registerProductThenGetId();
+        List<String> imageUrls = new ArrayList<>();
+        imageUrls.add(generateProductImageUrl());
+        imageUrls.add(invalidImageUrl);
+        var request = new AddProductImagesRequest(imageUrls);
 
         // when
         ResponseEntity<Void> response = fixture.addImages(productId, request);

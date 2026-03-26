@@ -4,6 +4,8 @@ import io.mallang.domain.common.exception.InvalidValueException;
 
 import java.util.Arrays;
 
+import static java.util.stream.Collectors.joining;
+
 public enum ProductCategory {
     FOOD,
     ELECTRONICS,
@@ -20,7 +22,7 @@ public enum ProductCategory {
                      .filter(c -> c.name().equalsIgnoreCase(value))
                      .findFirst()
                      .orElseThrow(() -> new InvalidValueException(
-                             "유효하지 않은 카테고리입니다: " + value + ". 허용값: FOOD, ELECTRONICS, CLOTHING, BOOKS, ETC"
+                             "유효하지 않은 카테고리입니다: " + value + ". 허용값: " + Arrays.stream(values()).map(ProductCategory::name).collect(joining(", "))
                      ));
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.net.URI;
 import java.util.List;
 
@@ -101,6 +102,57 @@ class ProductCommandApi_POST {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
+    }
+
+    @Test
+    void images_요소가_null이면_400_Bad_Request_상태코드를_반환한다(@Autowired TestFixture fixture) {
+        // given
+        fixture.createMemberThenLogin();
+        List<CreateProductRequest.ProductImageRequest> images = new ArrayList<>();
+        images.add(new CreateProductRequest.ProductImageRequest(generateProductImageUrl(), true));
+        images.add(null);
+        var request = new CreateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                images
+        );
+
+        // when
+        ResponseEntity<Void> response = fixture.registerProduct(request);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", " "})
+    void images_요소의_imageUrl이_null_또는_비어있으면_400_Bad_Request_상태코드를_반환한다(
+            String invalidImageUrl,
+            @Autowired TestFixture fixture
+    ) {
+        // given
+        fixture.createMemberThenLogin();
+        var request = new CreateProductRequest(
+                generateProductName(),
+                generateProductDescription(),
+                generateProductPriceAmount(),
+                generateProductStockQuantity(),
+                "FOOD",
+                List.of(
+                        new CreateProductRequest.ProductImageRequest(invalidImageUrl, true),
+                        new CreateProductRequest.ProductImageRequest(generateProductImageUrl(), false)
+                )
+        );
+
+        // when
+        ResponseEntity<Void> response = fixture.registerProduct(request);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
 
     @Test
