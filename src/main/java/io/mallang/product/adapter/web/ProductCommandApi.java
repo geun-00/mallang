@@ -1,10 +1,13 @@
 package io.mallang.product.adapter.web;
 
 import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
+import io.mallang.product.application.provided.command.AddStockUseCase;
 import io.mallang.product.application.provided.command.RegisterProductUseCase;
 import io.mallang.product.application.provided.command.UpdateProductUseCase;
+import io.mallang.product.application.provided.command.model.AddStockCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductResult;
@@ -13,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,6 +32,7 @@ public class ProductCommandApi {
 
     private final RegisterProductUseCase registerProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
+    private final AddStockUseCase addStockUseCase;
 
     @PostMapping("/products")
     public ResponseEntity<Void> register(
@@ -70,6 +75,23 @@ public class ProductCommandApi {
                         request.description(),
                         request.price(),
                         request.category()
+                )
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/products/{productId}/stock/add")
+    public ResponseEntity<Void> addStock(
+            @PathVariable String productId,
+            @Valid @RequestBody AddStockRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        addStockUseCase.addStock(
+                new AddStockCommand(
+                        userDetails.getMemberIdValue(),
+                        productId,
+                        request.quantity()
                 )
         );
 

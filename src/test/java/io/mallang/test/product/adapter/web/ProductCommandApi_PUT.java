@@ -20,6 +20,7 @@ import static io.mallang.fixtures.ProductFixture.generateProductPriceAmount;
 import static io.mallang.fixtures.ProductFixture.generateUpdateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.FOUND;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -183,5 +184,24 @@ class ProductCommandApi_PUT {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void 본인_상품이_아니면_403_Forbidden_상태코드를_반환한다(
+            @Autowired TestFixture ownerFixture,
+            @Autowired TestFixture anotherFixture
+    ) {
+        // given
+        ownerFixture.createMemberThenLogin();
+        String productId = ownerFixture.registerProductThenGetId();
+
+        anotherFixture.createMemberThenLogin();
+        var request = generateUpdateProductRequest();
+
+        // when
+        ResponseEntity<Void> response = anotherFixture.updateProduct(productId, request);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
     }
 }
