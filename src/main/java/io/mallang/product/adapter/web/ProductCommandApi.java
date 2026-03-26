@@ -5,26 +5,13 @@ import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.DeductStockRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
-import io.mallang.product.application.provided.command.AddStockUseCase;
-import io.mallang.product.application.provided.command.DeductStockUseCase;
-import io.mallang.product.application.provided.command.RegisterProductUseCase;
-import io.mallang.product.application.provided.command.UpdateProductUseCase;
-import io.mallang.product.application.provided.command.model.AddStockCommand;
-import io.mallang.product.application.provided.command.model.DeductStockCommand;
-import io.mallang.product.application.provided.command.model.RegisterProductCommand;
-import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
-import io.mallang.product.application.provided.command.model.RegisterProductResult;
-import io.mallang.product.application.provided.command.model.UpdateProductCommand;
+import io.mallang.product.application.provided.command.*;
+import io.mallang.product.application.provided.command.model.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -37,6 +24,7 @@ public class ProductCommandApi {
     private final UpdateProductUseCase updateProductUseCase;
     private final AddStockUseCase addStockUseCase;
     private final DeductStockUseCase deductStockUseCase;
+    private final DiscontinueProductUseCase discontinueProductUseCase;
 
     @PostMapping("/products")
     public ResponseEntity<Void> register(
@@ -113,6 +101,21 @@ public class ProductCommandApi {
                         userDetails.getMemberIdValue(),
                         productId,
                         request.quantity()
+                )
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/products/{productId}/discontinue")
+    public ResponseEntity<Void> discontinue(
+            @PathVariable String productId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        discontinueProductUseCase.discontinue(
+                new DiscontinueProductCommand(
+                        userDetails.getMemberIdValue(),
+                        productId
                 )
         );
 
