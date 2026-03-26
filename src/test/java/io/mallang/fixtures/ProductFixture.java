@@ -5,6 +5,7 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
+import io.mallang.product.adapter.web.model.DeductStockRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
@@ -33,6 +34,10 @@ public class ProductFixture {
 
     public static AddStockRequest generateAddStockRequest() {
         return new AddStockRequest(generateProductStockQuantity());
+    }
+
+    public static DeductStockRequest generateDeductStockRequest(int quantity) {
+        return new DeductStockRequest(quantity);
     }
 
     public static CreateProductRequest generateCreateProductRequest() {

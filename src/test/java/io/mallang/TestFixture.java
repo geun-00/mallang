@@ -3,6 +3,7 @@ package io.mallang;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.DeductStockRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
@@ -164,6 +165,15 @@ public record TestFixture(TestRestTemplate client) {
         return client.exchange(
                 RequestEntity
                         .patch("/products/" + productId + "/stock/add")
+                        .body(request),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> deductStock(String productId, DeductStockRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/stock/deduct")
                         .body(request),
                 Void.class
         );

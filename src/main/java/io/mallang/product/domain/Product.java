@@ -1,6 +1,7 @@
 package io.mallang.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.command.AddProductImageCommand;
@@ -154,7 +155,7 @@ public class Product {
 
     private void validateNotDiscontinued(String message) {
         if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException(message);
+            throw new InvalidValueException(message);
         }
     }
 
