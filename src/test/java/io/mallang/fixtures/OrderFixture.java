@@ -87,8 +87,7 @@ public class OrderFixture {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return new CreateOrderItemCommand(
                 UUID.randomUUID().toString(),
-                random.nextInt(1, 10),
-                BigDecimal.valueOf(random.nextInt(1000, 100000))
+                random.nextInt(1, 10)
         );
     }
 

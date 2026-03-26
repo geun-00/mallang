@@ -45,12 +45,10 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     @Override
     public CreateOrderResult place(CreateOrderCommand command) {
         Member member = getOrderableMember(command.memberIdValue());
+        Map<String, Product> orderProducts = deductStocks(command.items());
+        Order order = createOrder(command, member, orderProducts);
 
-        Map<String, Product> productsById = deductStocks(command.items());
-
-        Order order = createOrder(command, member, productsById);
-
-        productsById.values().forEach(saveProductPort::save);
+        orderProducts.values().forEach(saveProductPort::save);
         saveOrderPort.save(order);
 
         return new CreateOrderResult(order.getId().value());
@@ -90,10 +88,10 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     private Order createOrder(
             CreateOrderCommand command,
             Member member,
-            Map<String, Product> productsById
+            Map<String, Product> orderProducts
     ) {
         List<PlaceOrderItemCommand> itemCommands = command.items().stream()
-                                                          .map(item -> toDomainCommand(item, productsById))
+                                                          .map(item -> toDomainCommand(item, orderProducts))
                                                           .toList();
 
         return Order.place(
@@ -111,8 +109,8 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         );
     }
 
-    private PlaceOrderItemCommand toDomainCommand(CreateOrderItemCommand item, Map<String, Product> productsById) {
-        Product product = productsById.get(item.productId());
+    private PlaceOrderItemCommand toDomainCommand(CreateOrderItemCommand item, Map<String, Product> orderProducts) {
+        Product product = orderProducts.get(item.productId());
 
         return new PlaceOrderItemCommand(
                 product.getId().value(),

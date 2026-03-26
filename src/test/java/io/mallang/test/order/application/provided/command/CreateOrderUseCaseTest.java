@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static io.mallang.OrderAssertions.isCreatedFrom;
@@ -56,8 +55,7 @@ class CreateOrderUseCaseTest {
                 member.getId(),
                 List.of(new CreateOrderItemCommand(
                         product.getId().value(),
-                        2,
-                        product.getPrice().value()))
+                        2))
         );
 
         // when
@@ -87,8 +85,8 @@ class CreateOrderUseCaseTest {
         CreateOrderCommand command = generateCreateOrderCommand(
                 member.getId(),
                 List.of(
-                        new CreateOrderItemCommand(firstProduct.getId().value(), 2, firstProduct.getPrice().value()),
-                        new CreateOrderItemCommand(secondProduct.getId().value(), 3, secondProduct.getPrice().value())
+                        new CreateOrderItemCommand(firstProduct.getId().value(), 2),
+                        new CreateOrderItemCommand(secondProduct.getId().value(), 3)
                 )
         );
 
@@ -116,7 +114,7 @@ class CreateOrderUseCaseTest {
 
         CreateOrderCommand command = generateCreateOrderCommand(
                 member.getId(),
-                List.of(new CreateOrderItemCommand(product.getId().value(), 2, product.getPrice().value()))
+                List.of(new CreateOrderItemCommand(product.getId().value(), 2))
         );
         int expected = product.getStockQuantity().value() - command.items().stream()
                                                                    .mapToInt(CreateOrderItemCommand::quantity)
@@ -140,7 +138,7 @@ class CreateOrderUseCaseTest {
 
         CreateOrderCommand command = generateCreateOrderCommand(
                 member.getId(),
-                List.of(new CreateOrderItemCommand("unknown-product-id", 2, BigDecimal.ONE))
+                List.of(new CreateOrderItemCommand("unknown-product-id", 2))
         );
 
         // when & then

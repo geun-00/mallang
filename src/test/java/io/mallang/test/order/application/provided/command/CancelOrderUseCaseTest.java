@@ -54,7 +54,7 @@ class CancelOrderUseCaseTest {
 
         CreateOrderCommand createCommand = generateCreateOrderCommand(
                 member.getId(),
-                List.of(new CreateOrderItemCommand(product.getId().value(), 2, product.getPrice().value()))
+                List.of(new CreateOrderItemCommand(product.getId().value(), 2))
         );
         CreateOrderResult result = createOrderUseCase.place(createCommand);
         CancelOrderCommand command = new CancelOrderCommand(result.orderId());
@@ -84,7 +84,7 @@ class CancelOrderUseCaseTest {
 
         CreateOrderCommand createCommand = generateCreateOrderCommand(
                 member.getId(),
-                List.of(new CreateOrderItemCommand(product.getId().value(), 2, product.getPrice().value()))
+                List.of(new CreateOrderItemCommand(product.getId().value(), 2))
         );
 
         CreateOrderResult result = createOrderUseCase.place(createCommand);
