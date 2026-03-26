@@ -29,7 +29,7 @@ public class OrderItem {
         this.price = price;
     }
 
-    static OrderItem create(OrderItemCommand itemCommand, IdGenerator idGenerator) {
+    static OrderItem create(PlaceOrderItemCommand itemCommand, IdGenerator idGenerator) {
         return new OrderItem(
                 new OrderItemId(idGenerator.nextId()),
                 new ProductId(itemCommand.productId()),

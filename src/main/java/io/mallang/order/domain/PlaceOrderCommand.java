@@ -4,7 +4,7 @@ import java.util.List;
 
 public record PlaceOrderCommand(
         String memberId,
-        List<OrderItemCommand> items,
+        List<PlaceOrderItemCommand> items,
         String receiverName,
         String receiverPhoneNumber,
         String zipCode,
