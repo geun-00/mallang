@@ -2,6 +2,7 @@ package io.mallang.fixtures;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
+import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
@@ -28,6 +29,10 @@ public class ProductFixture {
                 generateProductPriceAmount(),
                 "BOOKS"
         );
+    }
+
+    public static AddStockRequest generateAddStockRequest() {
+        return new AddStockRequest(generateProductStockQuantity());
     }
 
     public static CreateProductRequest generateCreateProductRequest() {

@@ -1,6 +1,7 @@
 package io.mallang;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
@@ -154,6 +155,15 @@ public record TestFixture(TestRestTemplate client) {
         return client.exchange(
                 RequestEntity
                         .put("/products/" + productId)
+                        .body(request),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> addStock(String productId, AddStockRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/stock/add")
                         .body(request),
                 Void.class
         );
