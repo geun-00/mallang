@@ -3,6 +3,7 @@ package io.mallang.order.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.product.domain.ProductId;
+import io.mallang.order.domain.command.RestoreOrderItemCommand;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -34,6 +35,15 @@ public class OrderItem {
                 new ProductId(itemCommand.productId()),
                 itemCommand.quantity(),
                 new Money(itemCommand.price())
+        );
+    }
+
+    public static OrderItem restore(RestoreOrderItemCommand command) {
+        return new OrderItem(
+                command.id(),
+                command.productId(),
+                command.quantity(),
+                command.price()
         );
     }
 

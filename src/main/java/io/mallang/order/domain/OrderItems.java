@@ -21,6 +21,10 @@ public class OrderItems {
         return new OrderItems(items);
     }
 
+    static OrderItems restore(List<OrderItem> items) {
+        return new OrderItems(items);
+    }
+
     private static void validate(List<OrderItem> items) {
         if (items == null || items.isEmpty())
             throw new IllegalArgumentException("주문 상품은 1개 이상이어야 합니다.");

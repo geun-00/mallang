@@ -1,10 +1,12 @@
 package io.mallang.order.domain;
 
-import io.mallang.domain.common.*;
+import io.mallang.domain.common.ClockHolder;
+import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.MemberId;
+import io.mallang.order.domain.command.RestoreOrderCommand;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -50,6 +52,18 @@ public class Order {
                 createShippingInfo(command),
                 clockHolder.now()
         );
+    }
+
+    public static Order restore(RestoreOrderCommand command) {
+        Order order = new Order(
+                command.id(),
+                command.memberId(),
+                OrderItems.restore(command.items()),
+                command.shippingInfo(),
+                command.orderedAt()
+        );
+        order.status = command.status();
+        return order;
     }
 
     private static ShippingInfo createShippingInfo(PlaceOrderCommand command) {
