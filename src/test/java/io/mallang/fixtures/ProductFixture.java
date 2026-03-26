@@ -55,7 +55,7 @@ public class ProductFixture {
                 generateProductPriceAmount(),
                 generateProductStockQuantity(),
                 "FOOD",
-                List.of()
+                null
         );
     }
 
