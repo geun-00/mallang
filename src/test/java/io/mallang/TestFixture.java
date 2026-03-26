@@ -1,6 +1,7 @@
 package io.mallang;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.DeductStockRequest;
@@ -184,6 +185,15 @@ public record TestFixture(TestRestTemplate client) {
                 RequestEntity
                         .patch("/products/" + productId + "/discontinue")
                         .build(),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> addImages(String productId, AddProductImagesRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .post("/products/" + productId + "/images")
+                        .body(request),
                 Void.class
         );
     }
