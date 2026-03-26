@@ -1,8 +1,10 @@
 package io.mallang.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
+import io.mallang.product.domain.exception.ProductImageNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,11 +40,13 @@ class ProductImages {
         List<CreateProductImageCommand> thumbnail = partitioned.get(true);
         List<CreateProductImageCommand> others = partitioned.get(false);
 
-        if (thumbnail.size() != 1)
-            throw new IllegalArgumentException("이미지가 있는 경우 대표 이미지는 반드시 하나여야 합니다.");
+        if (thumbnail.size() != 1) {
+            throw new InvalidValueException("이미지가 있는 경우 대표 이미지는 반드시 하나여야 합니다.");
+        }
 
-        if (others.size() > MAX_OTHER_IMAGES)
-            throw new IllegalArgumentException("대표 이미지 외 이미지는 최대 10개까지 등록할 수 있습니다.");
+        if (others.size() > MAX_OTHER_IMAGES) {
+            throw new InvalidValueException("대표 이미지 외 이미지는 최대 10개까지 등록할 수 있습니다.");
+        }
 
         ProductImage thumbnailImage = new ProductImage(
                 new ProductImageId(idGenerator.nextId()),
@@ -93,8 +97,9 @@ class ProductImages {
         int addedImagesCount = (thumbnailImage == null)
                 ? addCommands.size() - 1
                 : addCommands.size();
-        if (this.images.size() + addedImagesCount > MAX_OTHER_IMAGES)
-            throw new IllegalArgumentException("대표 이미지 외 이미지는 최대 10개까지 등록할 수 있습니다.");
+        if (this.images.size() + addedImagesCount > MAX_OTHER_IMAGES) {
+            throw new InvalidValueException("대표 이미지 외 이미지는 최대 10개까지 등록할 수 있습니다.");
+        }
     }
 
     void removeImage(ProductImageId imageId) {
@@ -126,6 +131,6 @@ class ProductImages {
         return this.images.stream()
                           .filter(image -> image.id().equals(imageId))
                           .findFirst()
-                          .orElseThrow(() -> new IllegalArgumentException("해당 이미지가 존재하지 않습니다."));
+                          .orElseThrow(() -> new ProductImageNotFoundException(imageId));
     }
 }
