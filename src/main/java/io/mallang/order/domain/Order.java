@@ -74,8 +74,9 @@ public class Order {
     }
 
     public void cancel() {
-        if (!status.isCancelable())
+        if (!status.isCancelable()) {
             throw new IllegalStateException("취소할 수 없는 주문입니다.");
+        }
 
         this.status = OrderStatus.CANCELED;
     }

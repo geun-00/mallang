@@ -6,14 +6,15 @@ import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.exception.NotOrderableMemberException;
+import io.mallang.order.application.provided.command.CancelOrderUseCase;
 import io.mallang.order.application.provided.command.CreateOrderUseCase;
+import io.mallang.order.application.provided.command.model.CancelOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderItemCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderResult;
 import io.mallang.order.application.required.command.SaveOrderPort;
-import io.mallang.order.domain.Order;
-import io.mallang.order.domain.PlaceOrderCommand;
-import io.mallang.order.domain.PlaceOrderItemCommand;
+import io.mallang.order.application.required.query.LoadOrderPort;
+import io.mallang.order.domain.*;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
@@ -31,11 +32,12 @@ import static java.util.stream.Collectors.toMap;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class OrderCommandService implements CreateOrderUseCase {
+public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCase {
 
     private final IdGenerator idGenerator;
     private final ClockHolder clockHolder;
     private final LoadMemberPort loadMemberPort;
+    private final LoadOrderPort loadOrderPort;
     private final LoadProductPort loadProductPort;
     private final SaveProductPort saveProductPort;
     private final SaveOrderPort saveOrderPort;
@@ -119,4 +121,35 @@ public class OrderCommandService implements CreateOrderUseCase {
         );
     }
 
+
+    @Override
+    public void cancel(CancelOrderCommand command) {
+        Order order = loadOrderPort.getById(new OrderId(command.orderIdValue()));
+        order.cancel();
+
+        Map<String, Product> productsById = addStocks(order.getItems());
+
+        productsById.values().forEach(saveProductPort::save);
+        saveOrderPort.save(order);
+    }
+
+    private Map<String, Product> addStocks(List<OrderItem> items) {
+        Map<String, Integer> quantitiesByProductId = items.stream()
+                                                          .collect(toMap(
+                                                                  item -> item.getProductId().value(),
+                                                                  OrderItem::getQuantity,
+                                                                  Integer::sum,
+                                                                  LinkedHashMap::new
+                                                          ));
+        Map<String, Product> productsById = new LinkedHashMap<>();
+
+        quantitiesByProductId.forEach((productId, quantity) -> {
+            Product product = loadProductPort.getById(new ProductId(productId));
+            product.addStock(quantity);
+
+            productsById.put(productId, product);
+        });
+
+        return productsById;
+    }
 }
