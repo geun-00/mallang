@@ -179,6 +179,15 @@ public record TestFixture(TestRestTemplate client) {
         );
     }
 
+    public ResponseEntity<Void> discontinue(String productId) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/products/" + productId + "/discontinue")
+                        .build(),
+                Void.class
+        );
+    }
+
     public String registerProductThenGetId() {
         ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
         return response.getHeaders().getLocation().getPath().substring("/products/".length());
