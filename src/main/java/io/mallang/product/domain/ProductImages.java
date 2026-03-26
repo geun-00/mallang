@@ -112,7 +112,7 @@ class ProductImages {
         this.images.remove(removedProductImage);
     }
 
-    public void changeThumbnailImage(ProductImageId imageId) {
+    void changeThumbnailImage(ProductImageId imageId) {
         if (thumbnailImage != null && thumbnailImage.id().equals(imageId)) {
             return;
         }

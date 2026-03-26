@@ -1,12 +1,14 @@
 package io.mallang.test.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.*;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
 import io.mallang.product.domain.command.ModifyProductCommand;
+import io.mallang.product.domain.exception.ProductImageNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -129,7 +131,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.deductStock(3))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -165,7 +167,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.addStock(1))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -176,7 +178,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.deductStock(1))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -187,7 +189,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.modify(generateModifyProductCommand()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -216,7 +218,7 @@ class ProductTest {
         CreateProductCommand createCommand = generateProductCreateCommand(nonThumbnailImages);
 
         assertThatThrownBy(() -> Product.create(createCommand, generateSellerId(), generateIdGenerator()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -224,7 +226,7 @@ class ProductTest {
         CreateProductCommand createCommand = generateProductCreateCommandWithImages(11);
 
         assertThatThrownBy(() -> Product.create(createCommand, generateSellerId(), generateIdGenerator()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -235,7 +237,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(product::discontinue)
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -297,7 +299,7 @@ class ProductTest {
 
         // when & then
         assertThatThrownBy(() -> product.addImages(addImageCommands, generateIdGenerator()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -320,7 +322,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.addImages(generateAddProductImageCommand(1), generateIdGenerator()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -382,7 +384,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.removeImage(wrongTargetId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ProductImageNotFoundException.class);
     }
 
     @Test
@@ -396,7 +398,7 @@ class ProductTest {
 
         // then
         assertThatThrownBy(() -> product.removeImage(targetId))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -425,7 +427,7 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.changeThumbnailImage(new ProductImageId(randomUUID().toString())))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ProductImageNotFoundException.class);
     }
 
     @Test
@@ -452,6 +454,6 @@ class ProductTest {
         // when
         // then
         assertThatThrownBy(() -> product.changeThumbnailImage(targetImage.id()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 }
