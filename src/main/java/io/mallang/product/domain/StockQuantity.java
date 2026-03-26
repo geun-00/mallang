@@ -19,8 +19,12 @@ public record StockQuantity(Integer value) {
     }
 
     public StockQuantity deduct(int deductedStock) {
+        if (deductedStock <= 0) {
+            throw new InvalidValueException("차감 수량은 0보다 커야 합니다.");
+        }
+
         if (this.value < deductedStock) {
-            throw new IllegalArgumentException("보유 재고보다 많은 수량을 차감할 수 없습니다.");
+            throw new InvalidValueException("보유 재고보다 많은 수량을 차감할 수 없습니다.");
         }
 
         return new StockQuantity(this.value - deductedStock);

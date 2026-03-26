@@ -3,11 +3,14 @@ package io.mallang.product.adapter.web;
 import io.mallang.member.adapter.security.CustomUserDetails;
 import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.DeductStockRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.AddStockUseCase;
+import io.mallang.product.application.provided.command.DeductStockUseCase;
 import io.mallang.product.application.provided.command.RegisterProductUseCase;
 import io.mallang.product.application.provided.command.UpdateProductUseCase;
 import io.mallang.product.application.provided.command.model.AddStockCommand;
+import io.mallang.product.application.provided.command.model.DeductStockCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductResult;
@@ -33,6 +36,7 @@ public class ProductCommandApi {
     private final RegisterProductUseCase registerProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
     private final AddStockUseCase addStockUseCase;
+    private final DeductStockUseCase deductStockUseCase;
 
     @PostMapping("/products")
     public ResponseEntity<Void> register(
@@ -89,6 +93,23 @@ public class ProductCommandApi {
     ) {
         addStockUseCase.addStock(
                 new AddStockCommand(
+                        userDetails.getMemberIdValue(),
+                        productId,
+                        request.quantity()
+                )
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/products/{productId}/stock/deduct")
+    public ResponseEntity<Void> deductStock(
+            @PathVariable String productId,
+            @Valid @RequestBody DeductStockRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        deductStockUseCase.deductStock(
+                new DeductStockCommand(
                         userDetails.getMemberIdValue(),
                         productId,
                         request.quantity()
