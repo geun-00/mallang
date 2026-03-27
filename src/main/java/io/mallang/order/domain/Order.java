@@ -1,6 +1,7 @@
 package io.mallang.order.domain;
 
 import io.mallang.domain.common.ClockHolder;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Money;
@@ -75,7 +76,7 @@ public class Order {
 
     public void cancel() {
         if (!status.isCancelable()) {
-            throw new IllegalStateException("취소할 수 없는 주문입니다.");
+            throw new InvalidValueException("취소할 수 없는 주문입니다.");
         }
 
         this.status = OrderStatus.CANCELED;

@@ -1,6 +1,7 @@
 package io.mallang.test.order.application.provided.command;
 
 import io.mallang.TestConfig;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.order.application.provided.command.CancelOrderUseCase;
@@ -154,7 +155,7 @@ class CancelOrderUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> cancelOrderUseCase.cancel(command))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -169,6 +170,6 @@ class CancelOrderUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> cancelOrderUseCase.cancel(command))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 }

@@ -3,11 +3,12 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
+import io.mallang.order.adapter.web.model.CreateOrderRequest;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderItemCommand;
 import io.mallang.order.domain.Order;
-import io.mallang.order.domain.PlaceOrderItemCommand;
 import io.mallang.order.domain.PlaceOrderCommand;
+import io.mallang.order.domain.PlaceOrderItemCommand;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static io.mallang.order.adapter.web.model.CreateOrderRequest.CreateOrderItemRequest;
 
 public class OrderFixture {
 
@@ -99,5 +102,16 @@ public class OrderFixture {
         Order order = generateOrder();
         order.cancel();
         return order;
+    }
+
+    public static CreateOrderRequest generateCreateOrderRequest(String productId, Integer quantity) {
+        return new CreateOrderRequest(
+                List.of(new CreateOrderItemRequest(productId, quantity)),
+                "홍길동",
+                "01012345678",
+                "12345",
+                "서울시 강남구 테헤란로 1",
+                "101호"
+        );
     }
 }

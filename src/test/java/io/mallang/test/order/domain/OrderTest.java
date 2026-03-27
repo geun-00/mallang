@@ -1,6 +1,7 @@
 package io.mallang.test.order.domain;
 
 import io.mallang.domain.common.ClockHolder;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.PlaceOrderItemCommand;
@@ -105,7 +106,7 @@ class OrderTest {
         PlaceOrderCommand command = generatePlaceOrderCommand(invalidOrderItems);
 
         assertThatThrownBy(() -> Order.place(command, generateIdGenerator(), generateClockHolder()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -113,7 +114,7 @@ class OrderTest {
         List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand("product-1", 1, BigDecimal.ZERO));
 
         assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -122,7 +123,7 @@ class OrderTest {
         List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand("product-1", invalidQuantity, BigDecimal.valueOf(10000)));
 
         assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -150,7 +151,7 @@ class OrderTest {
         order.nextStatus(); // PREPARING
         order.nextStatus(); // SHIPPED
 
-        assertThatThrownBy(order::cancel).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -160,7 +161,7 @@ class OrderTest {
         order.nextStatus(); // SHIPPED
         order.nextStatus(); // DELIVERING
 
-        assertThatThrownBy(order::cancel).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -171,13 +172,13 @@ class OrderTest {
         order.nextStatus(); // DELIVERING
         order.nextStatus(); // DELIVERY_COMPLETED
 
-        assertThatThrownBy(order::cancel).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
     }
 
     @Test
     void 이미_취소된_주문은_다시_취소할_수_없다() {
         Order order = generateCanceledOrder();
 
-        assertThatThrownBy(order::cancel).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
     }
 }
