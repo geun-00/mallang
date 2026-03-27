@@ -85,6 +85,10 @@ public class Order {
         this.status = status.next();
     }
 
+    public boolean isOrderer(MemberId memberId) {
+        return this.memberId.equals(memberId);
+    }
+
     public List<OrderItem> getItems() {
         return items.toList();
     }

@@ -15,6 +15,7 @@ import io.mallang.order.application.provided.command.model.CreateOrderResult;
 import io.mallang.order.application.required.command.SaveOrderPort;
 import io.mallang.order.application.required.query.LoadOrderPort;
 import io.mallang.order.domain.*;
+import io.mallang.order.domain.exception.NotOrdererException;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
@@ -123,6 +124,11 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     @Override
     public void cancel(CancelOrderCommand command) {
         Order order = loadOrderPort.getById(new OrderId(command.orderIdValue()));
+
+        if (!order.isOrderer(new MemberId(command.memberIdValue()))) {
+            throw new NotOrdererException();
+        }
+
         order.cancel();
 
         Map<String, Product> productsById = addStocks(order.getItems());

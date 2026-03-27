@@ -1,6 +1,7 @@
 package io.mallang.test.order.domain;
 
 import io.mallang.domain.common.ClockHolder;
+import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.PlaceOrderItemCommand;
 import io.mallang.order.domain.OrderStatus;
@@ -46,6 +47,14 @@ class OrderTest {
         Order order = Order.place(command, generateIdGenerator(), generateClockHolder());
 
         assertThat(order.getMemberId().value()).isEqualTo(command.memberId());
+    }
+
+    @Test
+    void 주문자인지_확인할_수_있다() {
+        Order order = generateOrder();
+
+        assertThat(order.isOrderer(order.getMemberId())).isTrue();
+        assertThat(order.isOrderer(new MemberId("other-member-id"))).isFalse();
     }
 
     @Test
