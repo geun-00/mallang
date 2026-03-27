@@ -46,6 +46,7 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     @Override
     public CreateOrderResult place(CreateOrderCommand command) {
         Member member = getOrderableMember(command.memberIdValue());
+        // TODO : 일괄 로딩 및 일괄 저장 개선
         Map<String, Product> orderProducts = deductStocks(command.items());
         Order order = createOrder(command, member, orderProducts);
 
@@ -131,6 +132,7 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
 
         order.cancel();
 
+        // TODO : 일괄 로딩 및 일괄 저장 개선
         Map<String, Product> productsById = addStocks(order.getItems());
 
         productsById.values().forEach(saveProductPort::save);
