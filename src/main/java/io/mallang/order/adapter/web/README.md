@@ -63,18 +63,18 @@
 - 상품 재고보다 많은 수량을 주문할 수 없다
 
 #### 테스트 시나리오
-- [ ] 올바르게 요청하면 `201 Created` 상태코드를 반환한다
-- [ ] 올바르게 요청하면 식별자가 포함된 `Location` 헤더를 반환한다
-- [ ] 올바르게 요청하면 `Location` 헤더의 식별자로 주문을 조회할 수 있다
-- [ ] 인증되지 않은 요청이면 로그인 페이지로 리다이렉트한다
-- [ ] `items` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] `receiverName` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] `receiverPhoneNumber` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] `zipCode` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] `mainAddress` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
-- [ ] 존재하지 않는 상품이면 `404 Not Found` 상태코드를 반환한다
-- [ ] 주문할 수 없는 회원이면 `403 Forbidden` 상태코드를 반환한다
-- [ ] 도메인 규칙을 위반하면 `400 Bad Request` 상태코드를 반환한다
+- [x] 올바르게 요청하면 `201 Created` 상태코드를 반환한다
+- [x] 올바르게 요청하면 식별자가 포함된 `Location` 헤더를 반환한다
+- [x] 올바르게 요청하면 `Location` 헤더의 식별자로 주문을 조회할 수 있다
+- [x] 인증되지 않은 요청이면 로그인 페이지로 리다이렉트한다
+- [x] `items` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] `receiverName` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] `receiverPhoneNumber` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] `zipCode` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] `mainAddress` 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] 존재하지 않는 상품이면 `404 Not Found` 상태코드를 반환한다
+- [x] 주문할 수 없는 회원이면 `403 Forbidden` 상태코드를 반환한다
+- [x] 도메인 규칙을 위반하면 `400 Bad Request` 상태코드를 반환한다
 
 ---
 
