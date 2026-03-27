@@ -1,13 +1,10 @@
 package io.mallang;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
-import io.mallang.product.adapter.web.model.AddProductImagesRequest;
-import io.mallang.product.adapter.web.model.AddStockRequest;
-import io.mallang.product.adapter.web.model.CreateProductRequest;
-import io.mallang.product.adapter.web.model.DeductStockRequest;
-import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
+import io.mallang.order.adapter.web.model.CreateOrderRequest;
+import io.mallang.product.adapter.web.model.*;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.jsoup.Jsoup;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
@@ -24,7 +21,7 @@ import org.springframework.util.MultiValueMap;
 
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.MemberFixture.generateRegisterShippingAddressRequest;
-import static io.mallang.fixtures.ProductFixture.*;
+import static io.mallang.fixtures.ProductFixture.generateCreateProductRequest;
 import static org.springframework.http.HttpHeaders.COOKIE;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -39,9 +36,12 @@ public record TestFixture(TestRestTemplate client) {
     public void createMemberThenLogin() {
         MemberCreateRequest request = generateCreateRequest();
         registerMember(request);
+        login(request.email(), request.password());
+    }
 
+    public void login(String email, String password) {
         String initialCookie = fetchInitialCookieWithCsrfToken();
-        String sessionCookie = loginWithCsrf(request, initialCookie);
+        String sessionCookie = loginWithCsrf(email, password, initialCookie);
         String newCsrfToken = fetchCsrfTokenFromNewSession(sessionCookie);
         registerAuthInterceptor(sessionCookie, newCsrfToken);
     }
@@ -51,12 +51,12 @@ public record TestFixture(TestRestTemplate client) {
         return loginPage.getHeaders().getFirst(SET_COOKIE);
     }
 
-    private String loginWithCsrf(MemberCreateRequest request, String initialCookie) {
+    private String loginWithCsrf(String email, String password, String initialCookie) {
         String csrfToken = fetchCsrfTokenFromCookie(initialCookie);
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("email", request.email());
-        form.add("password", request.password());
+        form.add("email", email);
+        form.add("password", password);
         form.add("_csrf", csrfToken);
 
         ClientHttpRequestFactory original = client.getRestTemplate().getRequestFactory();
@@ -214,6 +214,10 @@ public record TestFixture(TestRestTemplate client) {
                         .build(),
                 Void.class
         );
+    }
+
+    public ResponseEntity<Void> createOrder(CreateOrderRequest request) {
+        return client.postForEntity("/my/orders", request, Void.class);
     }
 
     public String registerProductThenGetId() {
