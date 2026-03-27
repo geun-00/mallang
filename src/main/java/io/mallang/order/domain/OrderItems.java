@@ -1,6 +1,7 @@
 package io.mallang.order.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
 
 import java.util.List;
@@ -26,8 +27,9 @@ public class OrderItems {
     }
 
     private static void validate(List<OrderItem> items) {
-        if (items == null || items.isEmpty())
-            throw new IllegalArgumentException("주문 상품은 1개 이상이어야 합니다.");
+        if (items == null || items.isEmpty()) {
+            throw new InvalidValueException("주문 상품은 1개 이상이어야 합니다.");
+        }
     }
 
     Money totalPrice() {

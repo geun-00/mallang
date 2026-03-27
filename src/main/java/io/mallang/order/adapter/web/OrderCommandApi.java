@@ -2,7 +2,9 @@ package io.mallang.order.adapter.web;
 
 import io.mallang.member.adapter.security.CustomUserDetails;
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
+import io.mallang.order.application.provided.command.CancelOrderUseCase;
 import io.mallang.order.application.provided.command.CreateOrderUseCase;
+import io.mallang.order.application.provided.command.model.CancelOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderItemCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderResult;
@@ -10,6 +12,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +26,7 @@ import java.util.List;
 public class OrderCommandApi {
 
     private final CreateOrderUseCase createOrderUseCase;
+    private final CancelOrderUseCase cancelOrderUseCase;
 
     @PostMapping("/my/orders")
     public ResponseEntity<Void> create(
@@ -48,5 +53,18 @@ public class OrderCommandApi {
         );
 
         return ResponseEntity.created(URI.create("/my/orders/" + result.orderId())).build();
+    }
+
+    @PatchMapping("/my/orders/{orderId}/cancel")
+    public ResponseEntity<Void> cancel(
+            @PathVariable String orderId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        cancelOrderUseCase.cancel(new CancelOrderCommand(
+                orderId,
+                userDetails.getMemberIdValue()
+        ));
+
+        return ResponseEntity.noContent().build();
     }
 }
