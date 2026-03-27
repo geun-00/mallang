@@ -1,4 +1,4 @@
-package io.mallang.order.domain;
+package io.mallang.order.domain.command;
 
 import java.math.BigDecimal;
 

@@ -7,6 +7,7 @@ import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.MemberId;
+import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.RestoreOrderCommand;
 import lombok.Getter;
 

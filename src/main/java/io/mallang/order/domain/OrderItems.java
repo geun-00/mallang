@@ -3,6 +3,7 @@ package io.mallang.order.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
+import io.mallang.order.domain.command.PlaceOrderItemCommand;
 
 import java.util.List;
 
