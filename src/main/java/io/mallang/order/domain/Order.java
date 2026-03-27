@@ -1,10 +1,12 @@
 package io.mallang.order.domain;
 
-import io.mallang.domain.common.*;
+import io.mallang.domain.common.ClockHolder;
+import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.MemberId;
+import io.mallang.order.domain.command.RestoreOrderCommand;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -52,6 +54,18 @@ public class Order {
         );
     }
 
+    public static Order restore(RestoreOrderCommand command) {
+        Order order = new Order(
+                command.id(),
+                command.memberId(),
+                OrderItems.restore(command.items()),
+                command.shippingInfo(),
+                command.orderedAt()
+        );
+        order.status = command.status();
+        return order;
+    }
+
     private static ShippingInfo createShippingInfo(PlaceOrderCommand command) {
         return new ShippingInfo(
                 new Receiver(command.receiverName(), command.receiverPhoneNumber()),
@@ -60,14 +74,19 @@ public class Order {
     }
 
     public void cancel() {
-        if (!status.isCancelable())
+        if (!status.isCancelable()) {
             throw new IllegalStateException("취소할 수 없는 주문입니다.");
+        }
 
         this.status = OrderStatus.CANCELED;
     }
 
     public void nextStatus() {
         this.status = status.next();
+    }
+
+    public boolean isOrderer(MemberId memberId) {
+        return this.memberId.equals(memberId);
     }
 
     public List<OrderItem> getItems() {

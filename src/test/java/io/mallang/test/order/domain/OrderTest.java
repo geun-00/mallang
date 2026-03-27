@@ -1,8 +1,9 @@
 package io.mallang.test.order.domain;
 
 import io.mallang.domain.common.ClockHolder;
+import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
-import io.mallang.order.domain.OrderItemCommand;
+import io.mallang.order.domain.PlaceOrderItemCommand;
 import io.mallang.order.domain.OrderStatus;
 import io.mallang.order.domain.PlaceOrderCommand;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,14 @@ class OrderTest {
     }
 
     @Test
+    void 주문자인지_확인할_수_있다() {
+        Order order = generateOrder();
+
+        assertThat(order.isOrderer(order.getMemberId())).isTrue();
+        assertThat(order.isOrderer(new MemberId("other-member-id"))).isFalse();
+    }
+
+    @Test
     void 주문을_생성하면_배송지_정보가_스냅샷으로_저장된다() {
         PlaceOrderCommand command = generatePlaceOrderCommand();
         Order order = Order.place(command, generateIdGenerator(), generateClockHolder());
@@ -58,7 +67,7 @@ class OrderTest {
 
     @Test
     void 주문을_생성하면_주문_상품_목록이_저장된다() {
-        List<OrderItemCommand> itemCommands = generateOrderItemCommands(3);
+        List<PlaceOrderItemCommand> itemCommands = generateOrderItemCommands(3);
         Order order = Order.place(generatePlaceOrderCommand(itemCommands), generateIdGenerator(), generateClockHolder());
 
         assertThat(order.getItems()).hasSize(3);
@@ -78,9 +87,9 @@ class OrderTest {
     @Test
     void 주문을_생성하면_총_가격은_주문_상품들의_단가와_수량의_합산이다() {
         // given
-        List<OrderItemCommand> items = List.of(
-                new OrderItemCommand("product-1", 2, BigDecimal.valueOf(10000)),
-                new OrderItemCommand("product-2", 3, BigDecimal.valueOf(20000))
+        List<PlaceOrderItemCommand> items = List.of(
+                new PlaceOrderItemCommand("product-1", 2, BigDecimal.valueOf(10000)),
+                new PlaceOrderItemCommand("product-2", 3, BigDecimal.valueOf(20000))
         );
 
         // when
@@ -92,7 +101,7 @@ class OrderTest {
 
     @Test
     void 주문_상품이_없으면_예외가_발생한다() {
-        List<OrderItemCommand> invalidOrderItems = List.of();
+        List<PlaceOrderItemCommand> invalidOrderItems = List.of();
         PlaceOrderCommand command = generatePlaceOrderCommand(invalidOrderItems);
 
         assertThatThrownBy(() -> Order.place(command, generateIdGenerator(), generateClockHolder()))
@@ -101,7 +110,7 @@ class OrderTest {
 
     @Test
     void 주문_상품_가격이_0원이면_예외가_발생한다() {
-        List<OrderItemCommand> items = List.of(new OrderItemCommand("product-1", 1, BigDecimal.ZERO));
+        List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand("product-1", 1, BigDecimal.ZERO));
 
         assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -110,7 +119,7 @@ class OrderTest {
     @Test
     void 주문_상품_수량이_0_이하이면_예외가_발생한다() {
         int invalidQuantity = 0;
-        List<OrderItemCommand> items = List.of(new OrderItemCommand("product-1", invalidQuantity, BigDecimal.valueOf(10000)));
+        List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand("product-1", invalidQuantity, BigDecimal.valueOf(10000)));
 
         assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
                 .isInstanceOf(IllegalArgumentException.class);

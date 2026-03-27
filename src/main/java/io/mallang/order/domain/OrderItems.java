@@ -14,10 +14,14 @@ public class OrderItems {
         this.items = List.copyOf(items);
     }
 
-    static OrderItems from(List<OrderItemCommand> commands, IdGenerator idGenerator) {
+    static OrderItems from(List<PlaceOrderItemCommand> commands, IdGenerator idGenerator) {
         List<OrderItem> items = commands.stream()
                                         .map(command -> OrderItem.create(command, idGenerator))
                                         .toList();
+        return new OrderItems(items);
+    }
+
+    static OrderItems restore(List<OrderItem> items) {
         return new OrderItems(items);
     }
 
