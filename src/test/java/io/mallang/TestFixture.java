@@ -220,6 +220,20 @@ public record TestFixture(TestRestTemplate client) {
         return client.postForEntity("/my/orders", request, Void.class);
     }
 
+    public ResponseEntity<Void> cancelOrder(String orderId) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/my/orders/" + orderId + "/cancel")
+                        .build(),
+                Void.class
+        );
+    }
+
+    public String createOrderThenGetId(CreateOrderRequest request) {
+        ResponseEntity<Void> response = createOrder(request);
+        return response.getHeaders().getLocation().getPath().substring("/my/orders/".length());
+    }
+
     public String registerProductThenGetId() {
         ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
         return response.getHeaders().getLocation().getPath().substring("/products/".length());
