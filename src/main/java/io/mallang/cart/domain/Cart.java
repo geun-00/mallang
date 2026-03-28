@@ -3,6 +3,7 @@ package io.mallang.cart.domain;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
+import io.mallang.cart.domain.command.RestoreCartCommand;
 import lombok.Getter;
 
 import java.util.List;
@@ -19,8 +20,17 @@ public class Cart {
         this.items = new CartItems();
     }
 
+    private Cart(MemberId memberId, CartItems items) {
+        this.memberId = memberId;
+        this.items = items;
+    }
+
     public static Cart create(MemberId memberId) {
         return new Cart(memberId);
+    }
+
+    public static Cart restore(RestoreCartCommand command) {
+        return new Cart(command.memberId(), CartItems.restore(command.items()));
     }
 
     public CartItemId addItem(AddCartItemCommand command, IdGenerator idGenerator) {

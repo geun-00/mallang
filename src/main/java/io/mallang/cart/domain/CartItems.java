@@ -14,6 +14,14 @@ public class CartItems {
         this.items = new ArrayList<>();
     }
 
+    private CartItems(List<CartItem> items) {
+        this.items = new ArrayList<>(items);
+    }
+
+    static CartItems restore(List<CartItem> items) {
+        return new CartItems(items);
+    }
+
     CartItemId add(ProductId productId, int quantity, IdGenerator idGenerator) {
         return items.stream()
                     .filter(item -> item.getProductId().equals(productId))

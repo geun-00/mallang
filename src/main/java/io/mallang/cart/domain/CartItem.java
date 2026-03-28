@@ -1,6 +1,7 @@
 package io.mallang.cart.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.cart.domain.command.RestoreCartItemCommand;
 import io.mallang.product.domain.ProductId;
 import lombok.Getter;
 
@@ -26,6 +27,14 @@ public class CartItem {
                 new CartItemId(idGenerator.nextId()),
                 productId,
                 quantity
+        );
+    }
+
+    public static CartItem restore(RestoreCartItemCommand command) {
+        return new CartItem(
+                command.id(),
+                command.productId(),
+                command.quantity()
         );
     }
 
