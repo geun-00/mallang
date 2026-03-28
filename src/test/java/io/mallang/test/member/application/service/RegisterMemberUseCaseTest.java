@@ -1,9 +1,11 @@
 package io.mallang.test.member.application.service;
 
 import io.mallang.TestConfig;
+import io.mallang.cart.application.required.query.LoadCartPort;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
+import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.exception.DuplicateEmailException;
 import io.mallang.member.domain.exception.DuplicateNicknameException;
 import org.junit.jupiter.api.Test;
@@ -16,16 +18,17 @@ import static io.mallang.fixtures.MemberFixture.generateEmailValue;
 import static io.mallang.fixtures.MemberFixture.generateNicknameValue;
 import static io.mallang.fixtures.MemberFixture.generateRegisterCommand;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Import(TestConfig.class)
 class RegisterMemberUseCaseTest {
 
-    @Autowired RegisterMemberUseCase registerMemberUseCase;
-
     @Test
-    void 회원가입_성공시_MemberId를_반환한다() {
+    void 회원가입_성공시_MemberId를_반환한다(
+            @Autowired RegisterMemberUseCase registerMemberUseCase
+    ) {
         // given
         RegisterMemberCommand command = generateRegisterCommand();
 
@@ -37,7 +40,25 @@ class RegisterMemberUseCaseTest {
     }
 
     @Test
-    void 동일한_이메일로_중복_가입하면_DuplicateEmailException이_발생한다() {
+    void 회원가입_성공시_장바구니도_함께_생성된다(
+            @Autowired RegisterMemberUseCase registerMemberUseCase,
+            @Autowired LoadCartPort loadCartPort
+    ) {
+        // given
+        RegisterMemberCommand command = generateRegisterCommand();
+
+        // when
+        RegisterMemberResult result = registerMemberUseCase.register(command);
+
+        // then
+        assertThatCode(() -> loadCartPort.getByMemberId(new MemberId(result.memberId())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 동일한_이메일로_중복_가입하면_DuplicateEmailException이_발생한다(
+            @Autowired RegisterMemberUseCase registerMemberUseCase
+    ) {
         // given
         String email = generateEmailValue();
         registerMemberUseCase.register(new RegisterMemberCommand(email, DEFAULT_PASSWORD, generateNicknameValue()));
@@ -49,7 +70,9 @@ class RegisterMemberUseCaseTest {
     }
 
     @Test
-    void 동일한_닉네임으로_중복_가입하면_DuplicateNicknameException이_발생한다() {
+    void 동일한_닉네임으로_중복_가입하면_DuplicateNicknameException이_발생한다(
+            @Autowired RegisterMemberUseCase registerMemberUseCase
+    ) {
         // given
         String nickname = generateNicknameValue();
         registerMemberUseCase.register(new RegisterMemberCommand(generateEmailValue(), DEFAULT_PASSWORD, nickname));

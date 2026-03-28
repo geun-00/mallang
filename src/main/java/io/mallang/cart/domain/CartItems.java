@@ -53,6 +53,13 @@ public class CartItems {
         items.clear();
     }
 
+    int getQuantityOf(ProductId productId) {
+        return items.stream()
+                    .filter(item -> item.getProductId().equals(productId))
+                    .mapToInt(CartItem::getQuantity)
+                    .sum();
+    }
+
     List<ProductId> getProductIds() {
         return items.stream()
                     .map(CartItem::getProductId)

@@ -1,9 +1,9 @@
 package io.mallang.cart.domain;
 
+import io.mallang.cart.domain.command.RestoreCartCommand;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
-import io.mallang.cart.domain.command.RestoreCartCommand;
 import lombok.Getter;
 
 import java.util.List;
@@ -55,6 +55,10 @@ public class Cart {
 
     public List<CartItem> getItems() {
         return items.toList();
+    }
+
+    public int getQuantityOf(ProductId productId) {
+        return items.getQuantityOf(productId);
     }
 
     public List<ProductId> getProductIds() {
