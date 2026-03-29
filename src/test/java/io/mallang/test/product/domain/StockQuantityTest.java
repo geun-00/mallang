@@ -25,25 +25,38 @@ class StockQuantityTest {
         assertThatCode(() -> new StockQuantity(validValue)).doesNotThrowAnyException();
     }
 
-    @Test
-    void 추가_수량이_0_이하이면_예외가_발생한다() {
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 추가_수량이_0_이하이면_예외가_발생한다(int invalidQuantity) {
         StockQuantity stock = new StockQuantity(10);
 
-        assertThatThrownBy(() -> stock.add(0))
+        assertThatThrownBy(() -> stock.add(invalidQuantity))
                 .isInstanceOf(InvalidValueException.class);
+    }
 
-        assertThatThrownBy(() -> stock.add(-1))
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 확인_수량이_0_이하이면_예외가_발생한다(int invalidQuantity) {
+        StockQuantity stock = new StockQuantity(10);
+
+        assertThatThrownBy(() -> stock.checkAvailable(invalidQuantity))
+                .isInstanceOf(InvalidValueException.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 차감_수량이_0_이하이면_예외가_발생한다(int invalidQuantity) {
+        StockQuantity stock = new StockQuantity(10);
+
+        assertThatThrownBy(() -> stock.deduct(invalidQuantity))
                 .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
-    void 차감_수량이_0_이하이면_예외가_발생한다() {
-        StockQuantity stock = new StockQuantity(10);
+    void 확인_대상_수량이_보유_재고보다_많으면_예외가_발생한다() {
+        StockQuantity stock = new StockQuantity(2);
 
-        assertThatThrownBy(() -> stock.deduct(0))
-                .isInstanceOf(InvalidValueException.class);
-
-        assertThatThrownBy(() -> stock.deduct(-1))
+        assertThatThrownBy(() -> stock.checkAvailable(3))
                 .isInstanceOf(InvalidValueException.class);
     }
 

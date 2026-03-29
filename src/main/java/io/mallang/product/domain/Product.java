@@ -117,7 +117,7 @@ public class Product {
     public void validateEnoughStock(int quantity) {
         validateNotDiscontinued("재고를 확인할 수 없는 상품입니다.");
 
-        this.stockQuantity.deduct(quantity);
+        this.stockQuantity.checkAvailable(quantity);
     }
 
     public void discontinue() {
