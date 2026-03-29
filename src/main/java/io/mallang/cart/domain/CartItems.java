@@ -1,6 +1,7 @@
 package io.mallang.cart.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductId;
 
 import java.util.ArrayList;
@@ -66,6 +67,10 @@ public class CartItems {
                     .toList();
     }
 
+    ProductId getProductIdOf(CartItemId cartItemId) {
+        return findById(cartItemId).getProductId();
+    }
+
     List<CartItem> toList() {
         return List.copyOf(items);
     }
@@ -74,6 +79,6 @@ public class CartItems {
         return items.stream()
                     .filter(item -> item.getId().equals(itemId))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 장바구니 항목입니다."));
+                    .orElseThrow(() -> new InvalidValueException("존재하지 않는 장바구니 항목입니다."));
     }
 }

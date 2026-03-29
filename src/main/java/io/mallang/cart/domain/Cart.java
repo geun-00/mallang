@@ -41,6 +41,10 @@ public class Cart {
         items.changeQuantity(itemId, quantity);
     }
 
+    public ProductId getProductIdOf(CartItemId itemId) {
+        return items.getProductIdOf(itemId);
+    }
+
     public void removeItem(CartItemId itemId) {
         items.remove(itemId);
     }

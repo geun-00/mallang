@@ -4,6 +4,7 @@ import io.mallang.cart.domain.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.Test;
@@ -99,7 +100,7 @@ class CartTest {
         Cart cart = generateCart();
 
         assertThatThrownBy(() -> cart.changeQuantity(generateNotExistCartItemId(), 1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -139,7 +140,7 @@ class CartTest {
         Cart cart = generateCart();
 
         assertThatThrownBy(() -> cart.removeItem(generateNotExistCartItemId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
