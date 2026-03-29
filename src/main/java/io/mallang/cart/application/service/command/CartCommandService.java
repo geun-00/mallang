@@ -2,9 +2,11 @@ package io.mallang.cart.application.service.command;
 
 import io.mallang.cart.application.provided.command.AddCartItemUseCase;
 import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
+import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
 import io.mallang.cart.application.provided.command.model.AddItemToCartResult;
 import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
+import io.mallang.cart.application.provided.command.model.RemoveCartItemCommand;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
 import io.mallang.cart.domain.AddCartItemCommand;
@@ -22,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CartCommandService implements AddCartItemUseCase, ChangeCartItemQuantityUseCase {
+public class CartCommandService implements AddCartItemUseCase, ChangeCartItemQuantityUseCase, RemoveCartItemUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadCartPort loadCartPort;
@@ -60,6 +62,15 @@ public class CartCommandService implements AddCartItemUseCase, ChangeCartItemQua
         product.validateEnoughStock(command.quantity());
 
         cart.changeQuantity(cartItemId, command.quantity());
+
+        saveCartPort.save(cart);
+    }
+
+    @Override
+    public void removeItem(RemoveCartItemCommand command) {
+        Cart cart = loadCartPort.getByMemberId(new MemberId(command.memberIdValue()));
+
+        cart.removeItem(new CartItemId(command.cartItemIdValue()));
 
         saveCartPort.save(cart);
     }
