@@ -7,8 +7,8 @@ import io.mallang.order.adapter.web.model.CreateOrderRequest;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderItemCommand;
 import io.mallang.order.domain.Order;
-import io.mallang.order.domain.PlaceOrderCommand;
-import io.mallang.order.domain.PlaceOrderItemCommand;
+import io.mallang.order.domain.command.PlaceOrderCommand;
+import io.mallang.order.domain.command.PlaceOrderItemCommand;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

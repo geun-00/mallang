@@ -1,6 +1,7 @@
 package io.mallang.cart.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductId;
 
 import java.util.ArrayList;
@@ -12,6 +13,14 @@ public class CartItems {
 
     CartItems() {
         this.items = new ArrayList<>();
+    }
+
+    private CartItems(List<CartItem> items) {
+        this.items = new ArrayList<>(items);
+    }
+
+    static CartItems restore(List<CartItem> items) {
+        return new CartItems(items);
     }
 
     CartItemId add(ProductId productId, int quantity, IdGenerator idGenerator) {
@@ -45,10 +54,21 @@ public class CartItems {
         items.clear();
     }
 
+    int getQuantityOf(ProductId productId) {
+        return items.stream()
+                    .filter(item -> item.getProductId().equals(productId))
+                    .mapToInt(CartItem::getQuantity)
+                    .sum();
+    }
+
     List<ProductId> getProductIds() {
         return items.stream()
                     .map(CartItem::getProductId)
                     .toList();
+    }
+
+    ProductId getProductIdOf(CartItemId cartItemId) {
+        return findById(cartItemId).getProductId();
     }
 
     List<CartItem> toList() {
@@ -59,6 +79,6 @@ public class CartItems {
         return items.stream()
                     .filter(item -> item.getId().equals(itemId))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 장바구니 항목입니다."));
+                    .orElseThrow(() -> new InvalidValueException("존재하지 않는 장바구니 항목입니다."));
     }
 }

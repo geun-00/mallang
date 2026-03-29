@@ -114,6 +114,12 @@ public class Product {
         this.category = ProductCategory.from(command.category());
     }
 
+    public void validateEnoughStock(int quantity) {
+        validateNotDiscontinued("재고를 확인할 수 없는 상품입니다.");
+
+        this.stockQuantity.checkAvailable(quantity);
+    }
+
     public void discontinue() {
         validateNotDiscontinued("이미 단종된 상품입니다.");
 

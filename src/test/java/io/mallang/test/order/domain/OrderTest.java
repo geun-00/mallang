@@ -4,9 +4,9 @@ import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
-import io.mallang.order.domain.PlaceOrderItemCommand;
+import io.mallang.order.domain.command.PlaceOrderItemCommand;
 import io.mallang.order.domain.OrderStatus;
-import io.mallang.order.domain.PlaceOrderCommand;
+import io.mallang.order.domain.command.PlaceOrderCommand;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

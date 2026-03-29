@@ -1,5 +1,7 @@
 package io.mallang.member.application.service.command;
 
+import io.mallang.cart.application.required.command.SaveCartPort;
+import io.mallang.cart.domain.Cart;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
@@ -16,13 +18,16 @@ import io.mallang.member.domain.Nickname;
 import io.mallang.member.domain.MemberPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberCommandService implements RegisterMemberUseCase {
 
     private final IdGenerator idGenerator;
     private final ClockHolder clockHolder;
+    private final SaveCartPort saveCartPort;
     private final SaveMemberPort saveMemberPort;
     private final LoadMemberPort loadMemberPort;
     private final MemberPasswordEncoder passwordEncoder;
@@ -38,6 +43,7 @@ public class MemberCommandService implements RegisterMemberUseCase {
         CreateMemberCommand createCommand = new CreateMemberCommand(email, command.password(), nickname);
         Member member = Member.create(createCommand, passwordEncoder, idGenerator, clockHolder);
         saveMemberPort.save(member);
+        saveCartPort.save(Cart.create(member.getId()));
 
         return new RegisterMemberResult(member.getId().value());
     }

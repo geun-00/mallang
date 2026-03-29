@@ -7,7 +7,7 @@ import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderItem;
-import io.mallang.order.domain.PlaceOrderCommand;
+import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.ShippingInfo;
 import org.assertj.core.api.ThrowingConsumer;
 

@@ -135,6 +135,23 @@ class ProductTest {
     }
 
     @Test
+    void 확인_대상_수량이_재고보다_많으면_예외가_발생한다() {
+        Product product = generateProduct(2);
+
+        assertThatThrownBy(() -> product.validateEnoughStock(3))
+                .isInstanceOf(InvalidValueException.class);
+    }
+
+    @Test
+    void 충분한_재고가_있으면_확인만_하고_재고는_변하지_않는다() {
+        Product product = generateProduct(5);
+
+        product.validateEnoughStock(3);
+
+        assertThat(product.getStockQuantity().value()).isEqualTo(5);
+    }
+
+    @Test
     void 상품_정보를_수정할_수_있다() {
         // given
         Product product = generateProduct();

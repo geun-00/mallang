@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:latest
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - ./db_data:/var/lib/postgresql/18/docker
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=password
