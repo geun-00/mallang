@@ -1,14 +1,19 @@
 package io.mallang.cart.adapter.web;
 
 import io.mallang.cart.adapter.web.model.AddCartItemRequest;
+import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
 import io.mallang.cart.application.provided.command.AddCartItemUseCase;
+import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
 import io.mallang.cart.application.provided.command.model.AddItemToCartResult;
+import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
 import io.mallang.member.adapter.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +25,7 @@ import java.net.URI;
 public class CartCommandApi {
 
     private final AddCartItemUseCase addCartItemUseCase;
+    private final ChangeCartItemQuantityUseCase changeCartItemQuantityUseCase;
 
     @PostMapping("/my/cart/items")
     public ResponseEntity<Void> addItem(
@@ -35,5 +41,22 @@ public class CartCommandApi {
         );
 
         return ResponseEntity.created(URI.create("/my/cart/items/" + result.cartItemId())).build();
+    }
+
+    @PatchMapping("/my/cart/items/{cartItemId}")
+    public ResponseEntity<Void> changeQuantity(
+            @PathVariable String cartItemId,
+            @Valid @RequestBody ChangeCartItemQuantityRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        changeCartItemQuantityUseCase.changeQuantity(
+                new ChangeCartItemQuantityCommand(
+                        userDetails.getMemberIdValue(),
+                        cartItemId,
+                        request.quantity()
+                )
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }
