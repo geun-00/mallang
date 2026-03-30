@@ -38,15 +38,17 @@ public class MemberJpaEntity {
     private MemberStatus status;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<ShippingAddressJpaEntity> shippingAddresses = new ArrayList<>();
+    private final List<ShippingAddressJpaEntity> shippingAddresses = new ArrayList<>();
 
-    private MemberJpaEntity(String memberId,
-                            String email,
-                            String nickname,
-                            String password,
-                            LocalDateTime joinedAt,
-                            LocalDateTime withdrawnAt,
-                            MemberStatus status) {
+    private MemberJpaEntity(
+            String memberId,
+            String email,
+            String nickname,
+            String password,
+            LocalDateTime joinedAt,
+            LocalDateTime withdrawnAt,
+            MemberStatus status
+    ) {
         this.memberId = memberId;
         this.email = email;
         this.nickname = nickname;
@@ -67,7 +69,8 @@ public class MemberJpaEntity {
                 member.getStatus()
         );
 
-        member.getShippingAddresses().stream()
+        member.getShippingAddresses()
+              .stream()
               .map(shippingAddress -> ShippingAddressJpaEntity.from(shippingAddress, entity))
               .forEach(entity.shippingAddresses::add);
 

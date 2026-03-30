@@ -67,7 +67,12 @@ public class Member {
         this.withdrawnAt = withdrawnAt;
     }
 
-    public static Member create(CreateMemberCommand command, MemberPasswordEncoder passwordEncoder, IdGenerator idGenerator, ClockHolder clockHolder) {
+    public static Member create(
+            CreateMemberCommand command,
+            MemberPasswordEncoder passwordEncoder,
+            IdGenerator idGenerator,
+            ClockHolder clockHolder
+    ) {
         return new Member(
                 new MemberId(idGenerator.nextId()),
                 command.email(),

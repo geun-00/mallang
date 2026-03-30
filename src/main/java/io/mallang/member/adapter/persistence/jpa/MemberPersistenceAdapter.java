@@ -5,8 +5,8 @@ import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Email;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
-import io.mallang.member.domain.exception.MemberNotFoundException;
 import io.mallang.member.domain.Nickname;
+import io.mallang.member.domain.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

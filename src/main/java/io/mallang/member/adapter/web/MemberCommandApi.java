@@ -2,8 +2,8 @@ package io.mallang.member.adapter.web;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
-import io.mallang.member.application.provided.command.model.RegisterMemberResult;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
+import io.mallang.member.application.provided.command.model.RegisterMemberResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,13 @@ public class MemberCommandApi {
 
     @PostMapping("/members")
     public ResponseEntity<Void> register(@Valid @RequestBody MemberCreateRequest createRequest) {
-        RegisterMemberResult result = registerMemberUseCase.register(new RegisterMemberCommand(createRequest.email(), createRequest.password(), createRequest.nickname()));
+        RegisterMemberResult result = registerMemberUseCase.register(
+                new RegisterMemberCommand(
+                        createRequest.email(),
+                        createRequest.password(),
+                        createRequest.nickname()
+                )
+        );
 
         return ResponseEntity.created(URI.create("/members/" + result.memberId())).build();
     }

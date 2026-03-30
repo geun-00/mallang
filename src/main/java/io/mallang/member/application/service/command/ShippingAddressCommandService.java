@@ -23,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ShippingAddressCommandService implements RegisterShippingAddressUseCase, UpdateDefaultShippingAddressUseCase, UpdateShippingAddressUseCase, RemoveShippingAddressUseCase {
+public class ShippingAddressCommandService implements RegisterShippingAddressUseCase,
+                                                      UpdateDefaultShippingAddressUseCase,
+                                                      UpdateShippingAddressUseCase,
+                                                      RemoveShippingAddressUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadMemberPort loadMemberPort;

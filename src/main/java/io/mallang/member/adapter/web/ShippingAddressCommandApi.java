@@ -20,10 +20,10 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class ShippingAddressCommandApi {
 
-    private final RegisterShippingAddressUseCase registerShippingAddressUseCase;
-    private final UpdateDefaultShippingAddressUseCase updateDefaultShippingAddressUseCase;
     private final UpdateShippingAddressUseCase updateShippingAddressUseCase;
     private final RemoveShippingAddressUseCase removeShippingAddressUseCase;
+    private final RegisterShippingAddressUseCase registerShippingAddressUseCase;
+    private final UpdateDefaultShippingAddressUseCase updateDefaultShippingAddressUseCase;
 
     @PostMapping("/my/shipping-addresses")
     public ResponseEntity<?> registerShippingAddress(
@@ -84,12 +84,10 @@ public class ShippingAddressCommandApi {
             @PathVariable String shippingAddressId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        removeShippingAddressUseCase.remove(
-                new RemoveShippingAddressCommand(
-                        userDetails.getMemberIdValue(),
-                        shippingAddressId
-                )
-        );
+        removeShippingAddressUseCase.remove(new RemoveShippingAddressCommand(
+                userDetails.getMemberIdValue(),
+                shippingAddressId
+        ));
 
         return ResponseEntity.noContent().build();
     }

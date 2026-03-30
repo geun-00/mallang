@@ -28,11 +28,13 @@ public class ShippingAddressJpaEntity {
 
     private boolean isDefault;
 
-    private ShippingAddressJpaEntity(String id,
-                                     ReceiverJpaVO receiver,
-                                     AddressJpaVO address,
-                                     MemberJpaEntity member,
-                                     boolean isDefault) {
+    private ShippingAddressJpaEntity(
+            String id,
+            ReceiverJpaVO receiver,
+            AddressJpaVO address,
+            MemberJpaEntity member,
+            boolean isDefault
+    ) {
         this.id = id;
         this.receiver = receiver;
         this.address = address;
