@@ -178,6 +178,15 @@ public record TestFixture(TestRestTemplate client) {
         );
     }
 
+    public ResponseEntity<Void> clearCart() {
+        return client.exchange(
+                RequestEntity
+                        .delete("/my/cart/items")
+                        .build(),
+                Void.class
+        );
+    }
+
     public ResponseEntity<Void> registerProduct(CreateProductRequest request) {
         return client.postForEntity("/products", request, Void.class);
     }
