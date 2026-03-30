@@ -2,8 +2,6 @@ package io.mallang.test.member.domain;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.exception.InvalidValueException;
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberPasswordEncoder;
 import io.mallang.member.domain.MemberStatus;
@@ -352,8 +350,8 @@ class MemberTest {
 
         // then
         assertThat(modified.getId()).isEqualTo(originShippingAddress.getId());
-        assertThat(modified.getReceiver()).isEqualTo(new Receiver(modifyCommand.receiverName(), modifyCommand.receiverPhoneNumber()));
-        assertThat(modified.getAddress()).isEqualTo(new Address(modifyCommand.zipCode(), modifyCommand.mainAddress(), modifyCommand.detailAddress()));
+        assertThat(modified.getReceiver()).isEqualTo(modifyCommand.receiver());
+        assertThat(modified.getAddress()).isEqualTo(modifyCommand.address());
         assertThat(modified.isDefault()).isTrue();
     }
 

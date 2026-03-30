@@ -1,11 +1,10 @@
 package io.mallang.member.domain.command;
 
-public record ModifyShippingAddressCommand(
-        String receiverName,
-        String receiverPhoneNumber,
-        String zipCode,
-        String mainAddress,
-        String detailAddress
-) {
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 
+public record ModifyShippingAddressCommand(
+        Receiver receiver,
+        Address address
+) {
 }

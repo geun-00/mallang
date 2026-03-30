@@ -1,6 +1,8 @@
 package io.mallang.member.application.service.command;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
 import io.mallang.member.application.provided.command.RemoveShippingAddressUseCase;
 import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;
@@ -33,11 +35,8 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
         ShippingAddress shippingAddress = member.addShippingAddress(
                 new AddShippingAddressCommand(
-                        command.receiverName(),
-                        command.receiverPhoneNumber(),
-                        command.zipCode(),
-                        command.mainAddress(),
-                        command.detailAddress()
+                        new Receiver(command.receiverName(), command.receiverPhoneNumber()),
+                        new Address(command.zipCode(), command.mainAddress(), command.detailAddress())
                 ),
                 idGenerator
         );
@@ -63,11 +62,8 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
         member.modifyShippingAddress(
                 new ShippingAddressId(command.shippingAddressIdValue()),
                 new ModifyShippingAddressCommand(
-                        command.receiverName(),
-                        command.receiverPhoneNumber(),
-                        command.zipCode(),
-                        command.mainAddress(),
-                        command.detailAddress()
+                        new Receiver(command.receiverName(), command.receiverPhoneNumber()),
+                        new Address(command.zipCode(), command.mainAddress(), command.detailAddress())
                 )
         );
 
