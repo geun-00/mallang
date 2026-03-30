@@ -269,6 +269,7 @@ public record TestFixture(TestRestTemplate client) {
 
     public String createOrderThenGetId(CreateOrderRequest request) {
         ResponseEntity<Void> response = createOrder(request);
+        // TODO : lastIndexOf 활용 개선
         return response.getHeaders().getLocation().getPath().substring("/my/orders/".length());
     }
 

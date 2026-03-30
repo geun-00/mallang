@@ -6,11 +6,7 @@ import io.mallang.cart.application.provided.command.AddCartItemUseCase;
 import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
 import io.mallang.cart.application.provided.command.ClearCartUseCase;
 import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
-import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
-import io.mallang.cart.application.provided.command.model.AddItemToCartResult;
-import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
-import io.mallang.cart.application.provided.command.model.ClearCartCommand;
-import io.mallang.cart.application.provided.command.model.RemoveCartItemCommand;
+import io.mallang.cart.application.provided.command.model.*;
 import io.mallang.member.adapter.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +38,7 @@ public class CartCommandApi {
                 )
         );
 
+        // TODO : ServletUriComponentsBuilder 사용으로 개선
         return ResponseEntity.created(URI.create("/my/cart/items/" + result.cartItemId())).build();
     }
 
