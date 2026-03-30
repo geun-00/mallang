@@ -4,10 +4,12 @@ import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
 import io.mallang.cart.application.provided.command.AddCartItemUseCase;
 import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
+import io.mallang.cart.application.provided.command.ClearCartUseCase;
 import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
 import io.mallang.cart.application.provided.command.model.AddItemToCartResult;
 import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
+import io.mallang.cart.application.provided.command.model.ClearCartCommand;
 import io.mallang.cart.application.provided.command.model.RemoveCartItemCommand;
 import io.mallang.member.adapter.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -25,6 +27,7 @@ public class CartCommandApi {
     private final AddCartItemUseCase addCartItemUseCase;
     private final ChangeCartItemQuantityUseCase changeCartItemQuantityUseCase;
     private final RemoveCartItemUseCase removeCartItemUseCase;
+    private final ClearCartUseCase clearCartUseCase;
 
     @PostMapping("/my/cart/items")
     public ResponseEntity<Void> addItem(
@@ -69,6 +72,17 @@ public class CartCommandApi {
                         userDetails.getMemberIdValue(),
                         cartItemId
                 )
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/my/cart/items")
+    public ResponseEntity<Void> clear(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        clearCartUseCase.clear(
+                new ClearCartCommand(userDetails.getMemberIdValue())
         );
 
         return ResponseEntity.noContent().build();
