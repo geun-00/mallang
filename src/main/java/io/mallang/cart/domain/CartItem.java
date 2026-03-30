@@ -2,6 +2,7 @@ package io.mallang.cart.domain;
 
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.cart.domain.command.RestoreCartItemCommand;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductId;
 import lombok.Getter;
 
@@ -51,7 +52,8 @@ public class CartItem {
     }
 
     private static void validateQuantity(int quantity) {
-        if (quantity <= 0)
-            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        if (quantity <= 0) {
+            throw new InvalidValueException("수량은 1개 이상이어야 합니다.");
+        }
     }
 }
