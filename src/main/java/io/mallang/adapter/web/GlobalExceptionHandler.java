@@ -1,5 +1,6 @@
 package io.mallang.adapter.web;
 
+import io.mallang.domain.common.exception.DomainException;
 import io.mallang.domain.common.exception.DomainNotFoundException;
 import io.mallang.domain.common.exception.DuplicateException;
 import io.mallang.domain.common.exception.ForbiddenException;
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidValueException.class)
     public ProblemDetail handle(InvalidValueException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(DomainException.class)
+    public ProblemDetail handle(DomainException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

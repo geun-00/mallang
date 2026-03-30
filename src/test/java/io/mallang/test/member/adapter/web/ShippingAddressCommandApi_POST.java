@@ -19,9 +19,7 @@ import java.net.URI;
 import static io.mallang.fixtures.MemberFixture.generateRegisterShippingAddressRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(TestFixtureConfiguration.class)
@@ -202,6 +200,23 @@ class ShippingAddressCommandApi_POST {
                 "서울시 강남구 테헤란로 1",
                 "101호"
         );
+
+        // when
+        ResponseEntity<Void> response = fixture.registerShippingAddress(request);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void 배송지를_6개째_등록하면_400_Bad_Request_상태코드를_반환한다(@Autowired TestFixture fixture) {
+        // given
+        fixture.createMemberThenLogin();
+        var request = generateRegisterShippingAddressRequest();
+
+        for (int i = 0; i < 5; i++) {
+            fixture.registerShippingAddress(request);
+        }
 
         // when
         ResponseEntity<Void> response = fixture.registerShippingAddress(request);

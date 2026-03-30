@@ -4,10 +4,14 @@ import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
-import io.mallang.member.domain.*;
+import io.mallang.member.domain.Member;
+import io.mallang.member.domain.MemberPasswordEncoder;
+import io.mallang.member.domain.MemberStatus;
+import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.command.CreateMemberCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import io.mallang.member.domain.command.RestoreMemberCommand;
+import io.mallang.member.domain.exception.InvalidMemberStateException;
 import io.mallang.member.domain.exception.ShippingAddressLimitException;
 import io.mallang.member.domain.exception.ShippingAddressNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -182,7 +186,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.withdraw(generateClockHolder()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidMemberStateException.class);
     }
 
     @Test
@@ -277,7 +281,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidMemberStateException.class);
     }
 
     @Test
@@ -319,7 +323,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.setDefaultShippingAddress(shippingAddress.getId()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidMemberStateException.class);
     }
 
     @Test
@@ -373,7 +377,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.modifyShippingAddress(shippingAddress.getId(), generateModifyShippingAddressCommand()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidMemberStateException.class);
     }
 
     @Test
@@ -416,7 +420,7 @@ class MemberTest {
         // when
         // then
         assertThatThrownBy(() -> member.removeShippingAddress(shippingAddress.getId()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InvalidMemberStateException.class);
     }
 
     @Test

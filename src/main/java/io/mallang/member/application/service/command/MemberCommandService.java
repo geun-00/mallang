@@ -4,18 +4,17 @@ import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.domain.Cart;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.DuplicateException;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
-import io.mallang.member.domain.command.CreateMemberCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
-import io.mallang.member.domain.exception.DuplicateEmailException;
-import io.mallang.member.domain.exception.DuplicateNicknameException;
 import io.mallang.member.domain.Email;
 import io.mallang.member.domain.Member;
-import io.mallang.member.domain.Nickname;
 import io.mallang.member.domain.MemberPasswordEncoder;
+import io.mallang.member.domain.Nickname;
+import io.mallang.member.domain.command.CreateMemberCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,13 +49,13 @@ public class MemberCommandService implements RegisterMemberUseCase {
 
     private void validateDuplicateEmail(Email email) {
         if (loadMemberPort.existsByEmail(email)) {
-            throw new DuplicateEmailException(email);
+            throw new DuplicateException("이미 사용 중인 이메일입니다: " + email.address());
         }
     }
 
     private void validateDuplicateNickname(Nickname nickname) {
         if (loadMemberPort.existsByNickname(nickname)) {
-            throw new DuplicateNicknameException(nickname);
+            throw new DuplicateException("이미 사용 중인 닉네임입니다: " + nickname.value());
         }
     }
 }

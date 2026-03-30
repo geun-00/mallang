@@ -1,6 +1,6 @@
 package io.mallang.domain.common.exception;
 
-public class ForbiddenException extends RuntimeException {
+public abstract class ForbiddenException extends DomainException {
 
     public ForbiddenException(String message) {
         super(message);
