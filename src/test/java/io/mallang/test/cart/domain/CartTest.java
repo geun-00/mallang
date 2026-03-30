@@ -72,7 +72,7 @@ class CartTest {
         Cart cart = generateCart();
 
         assertThatThrownBy(() -> cart.addItem(generateAddCartItemCommand(0), generateIdGenerator()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -80,7 +80,7 @@ class CartTest {
         Cart cart = generateCart();
 
         assertThatThrownBy(() -> cart.addItem(generateAddCartItemCommand(-1), generateIdGenerator()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -109,7 +109,7 @@ class CartTest {
         CartItemId itemId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
 
         assertThatThrownBy(() -> cart.changeQuantity(itemId, 0))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -118,7 +118,7 @@ class CartTest {
         CartItemId itemId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
 
         assertThatThrownBy(() -> cart.changeQuantity(itemId, -1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
