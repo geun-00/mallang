@@ -155,11 +155,25 @@ public record TestFixture(TestRestTemplate client) {
         return client.postForEntity("/my/cart/items", request, Void.class);
     }
 
+    public String addCartItemThenGetId(String productId, int quantity) {
+        ResponseEntity<Void> response = addCartItem(new AddCartItemRequest(productId, quantity));
+        return response.getHeaders().getLocation().getPath().substring("/my/cart/items/".length());
+    }
+
     public ResponseEntity<Void> changeCartItemQuantity(String cartItemId, ChangeCartItemQuantityRequest request) {
         return client.exchange(
                 RequestEntity
                         .patch("/my/cart/items/" + cartItemId)
                         .body(request),
+                Void.class
+        );
+    }
+
+    public ResponseEntity<Void> removeCartItem(String cartItemId) {
+        return client.exchange(
+                RequestEntity
+                        .delete("/my/cart/items/" + cartItemId)
+                        .build(),
                 Void.class
         );
     }
@@ -252,10 +266,5 @@ public record TestFixture(TestRestTemplate client) {
     public String registerProductThenGetId() {
         ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
         return response.getHeaders().getLocation().getPath().substring("/products/".length());
-    }
-
-    public String addCartItemThenGetId(String productId, int quantity) {
-        ResponseEntity<Void> response = addCartItem(new AddCartItemRequest(productId, quantity));
-        return response.getHeaders().getLocation().getPath().substring("/my/cart/items/".length());
     }
 }
