@@ -1,5 +1,6 @@
 package io.mallang;
 
+import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
@@ -147,6 +148,10 @@ public record TestFixture(TestRestTemplate client) {
 
     public ResponseEntity<Void> registerMember(MemberCreateRequest request) {
         return client.postForEntity("/members", request, Void.class);
+    }
+
+    public ResponseEntity<Void> addCartItem(AddCartItemRequest request) {
+        return client.postForEntity("/my/cart/items", request, Void.class);
     }
 
     public ResponseEntity<Void> registerProduct(CreateProductRequest request) {
