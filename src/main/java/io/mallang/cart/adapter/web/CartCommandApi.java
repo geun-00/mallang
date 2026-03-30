@@ -4,19 +4,17 @@ import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
 import io.mallang.cart.application.provided.command.AddCartItemUseCase;
 import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
+import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
 import io.mallang.cart.application.provided.command.model.AddItemToCartResult;
 import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
+import io.mallang.cart.application.provided.command.model.RemoveCartItemCommand;
 import io.mallang.member.adapter.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -26,6 +24,7 @@ public class CartCommandApi {
 
     private final AddCartItemUseCase addCartItemUseCase;
     private final ChangeCartItemQuantityUseCase changeCartItemQuantityUseCase;
+    private final RemoveCartItemUseCase removeCartItemUseCase;
 
     @PostMapping("/my/cart/items")
     public ResponseEntity<Void> addItem(
@@ -54,6 +53,21 @@ public class CartCommandApi {
                         userDetails.getMemberIdValue(),
                         cartItemId,
                         request.quantity()
+                )
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/my/cart/items/{cartItemId}")
+    public ResponseEntity<Void> removeItem(
+            @PathVariable String cartItemId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        removeCartItemUseCase.removeItem(
+                new RemoveCartItemCommand(
+                        userDetails.getMemberIdValue(),
+                        cartItemId
                 )
         );
 
