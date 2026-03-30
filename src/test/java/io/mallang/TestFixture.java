@@ -1,6 +1,7 @@
 package io.mallang;
 
 import io.mallang.cart.adapter.web.model.AddCartItemRequest;
+import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
@@ -154,6 +155,15 @@ public record TestFixture(TestRestTemplate client) {
         return client.postForEntity("/my/cart/items", request, Void.class);
     }
 
+    public ResponseEntity<Void> changeCartItemQuantity(String cartItemId, ChangeCartItemQuantityRequest request) {
+        return client.exchange(
+                RequestEntity
+                        .patch("/my/cart/items/" + cartItemId)
+                        .body(request),
+                Void.class
+        );
+    }
+
     public ResponseEntity<Void> registerProduct(CreateProductRequest request) {
         return client.postForEntity("/products", request, Void.class);
     }
@@ -242,5 +252,10 @@ public record TestFixture(TestRestTemplate client) {
     public String registerProductThenGetId() {
         ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
         return response.getHeaders().getLocation().getPath().substring("/products/".length());
+    }
+
+    public String addCartItemThenGetId(String productId, int quantity) {
+        ResponseEntity<Void> response = addCartItem(new AddCartItemRequest(productId, quantity));
+        return response.getHeaders().getLocation().getPath().substring("/my/cart/items/".length());
     }
 }
