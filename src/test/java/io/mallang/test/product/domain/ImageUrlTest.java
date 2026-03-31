@@ -1,5 +1,6 @@
 package io.mallang.test.product.domain;
 
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ImageUrl;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -14,13 +15,13 @@ class ImageUrlTest {
     @NullSource
     @ValueSource(strings = {"   "})
     void URL은_null_또는_공백이_아니어야_한다(String invalidValue) {
-         assertThatThrownBy(() -> new ImageUrl(invalidValue)).isInstanceOf(IllegalArgumentException.class);
+         assertThatThrownBy(() -> new ImageUrl(invalidValue)).isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"invalid-url", "http://", "not-a-url", "ftp://example.com"})
     void URL은_유효한_형식이어야_한다(String invalidValue) {
-        assertThatThrownBy(() -> new ImageUrl(invalidValue)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new ImageUrl(invalidValue)).isInstanceOf(InvalidValueException.class);
     }
     
     @ParameterizedTest

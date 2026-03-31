@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.toCollection;
 
 class ProductImages {
 
@@ -35,7 +37,7 @@ class ProductImages {
         }
 
         Map<Boolean, List<CreateProductImageCommand>> partitioned = images.stream()
-                                                                          .collect(Collectors.partitioningBy(CreateProductImageCommand::isThumbnail));
+                                                                          .collect(partitioningBy(CreateProductImageCommand::isThumbnail));
 
         List<CreateProductImageCommand> thumbnail = partitioned.get(true);
         List<CreateProductImageCommand> others = partitioned.get(false);
@@ -58,7 +60,7 @@ class ProductImages {
                                                        new ProductImageId(idGenerator.nextId()),
                                                        new ImageUrl(imageCommand.imageUrl())
                                                ))
-                                               .collect(Collectors.toCollection(ArrayList::new));
+                                               .collect(toCollection(ArrayList::new));
 
         return new ProductImages(thumbnailImage, otherImages);
     }

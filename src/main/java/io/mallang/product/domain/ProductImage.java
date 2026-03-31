@@ -1,11 +1,15 @@
 package io.mallang.product.domain;
 
+import io.mallang.domain.common.exception.InvalidValueException;
+
 public record ProductImage(ProductImageId id, ImageUrl imageUrl) {
 
     public ProductImage {
-        if (id == null)
-            throw new IllegalArgumentException("ProductImageId는 null일 수 없습니다.");
-        if (imageUrl == null)
-            throw new IllegalArgumentException("ImageUrl은 null일 수 없습니다.");
+        if (id == null) {
+            throw new InvalidValueException("ProductImageId는 null일 수 없습니다.");
+        }
+        if (imageUrl == null) {
+            throw new InvalidValueException("ImageUrl은 null일 수 없습니다.");
+        }
     }
 }
