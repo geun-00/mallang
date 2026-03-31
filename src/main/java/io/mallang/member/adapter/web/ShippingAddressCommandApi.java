@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
@@ -26,7 +27,7 @@ public class ShippingAddressCommandApi {
     private final UpdateDefaultShippingAddressUseCase updateDefaultShippingAddressUseCase;
 
     @PostMapping("/my/shipping-addresses")
-    public ResponseEntity<?> registerShippingAddress(
+    public ResponseEntity<Void> registerShippingAddress(
             @Valid @RequestBody RegisterShippingAddressRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -41,11 +42,16 @@ public class ShippingAddressCommandApi {
                 )
         );
 
-        return ResponseEntity.created(URI.create("/my/shipping-addresses/" + result.shippingAddressId())).build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                                                  .path("/{id}")
+                                                  .buildAndExpand(result.shippingAddressId())
+                                                  .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     @PatchMapping("/my/shipping-addresses/{shippingAddressId}/default")
-    public ResponseEntity<?> updateDefault(
+    public ResponseEntity<Void> updateDefault(
             @PathVariable String shippingAddressId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -59,7 +65,7 @@ public class ShippingAddressCommandApi {
     }
 
     @PutMapping("/my/shipping-addresses/{shippingAddressId}")
-    public ResponseEntity<?> updateShippingAddress(
+    public ResponseEntity<Void> updateShippingAddress(
             @PathVariable String shippingAddressId,
             @Valid @RequestBody UpdateShippingAddressRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -80,7 +86,7 @@ public class ShippingAddressCommandApi {
     }
 
     @DeleteMapping("/my/shipping-addresses/{shippingAddressId}")
-    public ResponseEntity<?> removeShippingAddress(
+    public ResponseEntity<Void> removeShippingAddress(
             @PathVariable String shippingAddressId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
