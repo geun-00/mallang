@@ -1,15 +1,20 @@
 package io.mallang.test.member.domain;
 
+import io.mallang.DomainTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.Nickname;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DomainTest
+@DisplayName("Nickname VO")
 class NicknameTest {
     
     @Nested
@@ -35,12 +40,7 @@ class NicknameTest {
         }
         
         @ParameterizedTest
-        @ValueSource(strings = {
-                "nickname!", "nickname@", "nickname#", "nickname$", "nickname%", "nickname^",
-                "nickname&", "nickname*", "nickname(", "nickname)", "nickname+", "nickname=",
-                "nickname|", "nickname\\", "nickname/", "nickname?", "nickname<", "nickname>",
-                "nickname~", "nickname`"
-        })
+        @MethodSource("io.mallang.TestDataSource#invalidNicknameValues")
         void 닉네임은_허용된_특수문자만_포함할_수_있다(String invalidNickname) {
             assertThatThrownBy(() -> new Nickname(invalidNickname)).isInstanceOf(InvalidValueException.class);
         }

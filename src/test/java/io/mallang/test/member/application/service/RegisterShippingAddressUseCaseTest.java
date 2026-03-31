@@ -1,6 +1,6 @@
 package io.mallang.test.member.application.service;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressResult;
@@ -11,17 +11,16 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.exception.MemberNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.MemberFixture.savedMemberId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("RegisterShippingAddress UseCase")
 class RegisterShippingAddressUseCaseTest {
 
     @Test
@@ -37,7 +36,7 @@ class RegisterShippingAddressUseCaseTest {
         RegisterShippingAddressResult result = registerShippingAddressUseCase.register(command(memberId));
 
         // then
-        Member member = loadMemberPort.getById(memberId);
+        Member member = loadMemberPort.getByIdWithAddresses(memberId);
         assertThat(member.getShippingAddresses())
                 .hasSize(1)
                 .extracting(ShippingAddress::getId)

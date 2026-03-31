@@ -1,6 +1,8 @@
 package io.mallang.member.application.service.command;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
 import io.mallang.member.application.provided.command.RemoveShippingAddressUseCase;
 import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;
@@ -21,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ShippingAddressCommandService implements RegisterShippingAddressUseCase, UpdateDefaultShippingAddressUseCase, UpdateShippingAddressUseCase, RemoveShippingAddressUseCase {
+public class ShippingAddressCommandService implements RegisterShippingAddressUseCase,
+                                                      UpdateDefaultShippingAddressUseCase,
+                                                      UpdateShippingAddressUseCase,
+                                                      RemoveShippingAddressUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadMemberPort loadMemberPort;
@@ -29,15 +34,12 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public RegisterShippingAddressResult register(RegisterShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         ShippingAddress shippingAddress = member.addShippingAddress(
                 new AddShippingAddressCommand(
-                        command.receiverName(),
-                        command.receiverPhoneNumber(),
-                        command.zipCode(),
-                        command.mainAddress(),
-                        command.detailAddress()
+                        new Receiver(command.receiverName(), command.receiverPhoneNumber()),
+                        new Address(command.zipCode(), command.mainAddress(), command.detailAddress())
                 ),
                 idGenerator
         );
@@ -49,7 +51,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void update(UpdateDefaultShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         member.setDefaultShippingAddress(new ShippingAddressId(command.shippingAddressIdValue()));
 
@@ -58,16 +60,13 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void update(UpdateShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         member.modifyShippingAddress(
                 new ShippingAddressId(command.shippingAddressIdValue()),
                 new ModifyShippingAddressCommand(
-                        command.receiverName(),
-                        command.receiverPhoneNumber(),
-                        command.zipCode(),
-                        command.mainAddress(),
-                        command.detailAddress()
+                        new Receiver(command.receiverName(), command.receiverPhoneNumber()),
+                        new Address(command.zipCode(), command.mainAddress(), command.detailAddress())
                 )
         );
 
@@ -76,7 +75,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void remove(RemoveShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         member.removeShippingAddress(new ShippingAddressId(command.shippingAddressIdValue()));
 

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import static io.mallang.CartAssertions.isSameAs;
+import static io.mallang.assertions.CartAssertions.isSameAs;
 import static io.mallang.fixtures.CartFixture.generateCartWithItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

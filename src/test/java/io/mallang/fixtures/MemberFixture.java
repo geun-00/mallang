@@ -2,6 +2,8 @@ package io.mallang.fixtures;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
@@ -91,21 +93,15 @@ public class MemberFixture {
 
     public static AddShippingAddressCommand generateAddShippingAddressCommand() {
         return new AddShippingAddressCommand(
-                "홍길동",
-                "01011112222",
-                "12345",
-                "서울시 강남구 테헤란로 1",
-                "101호"
+                new Receiver("홍길동", "01011112222"),
+                new Address("12345", "서울시 강남구 테헤란로 1", "101호")
         );
     }
 
     public static ModifyShippingAddressCommand generateModifyShippingAddressCommand() {
         return new ModifyShippingAddressCommand(
-                "이순신",
-                "01022223333",
-                "13579",
-                "경기도 부천시 원미구",
-                "2층"
+                new Receiver("이순신", "01022223333"),
+                new Address("13579", "경기도 부천시 원미구", "2층")
         );
     }
 

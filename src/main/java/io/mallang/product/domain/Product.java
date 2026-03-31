@@ -1,6 +1,7 @@
 package io.mallang.product.domain;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.AggregateNotLoadedException;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
@@ -167,7 +168,7 @@ public class Product {
 
     private void validateImagesLoaded() {
         if (!this.imagesLoaded) {
-            throw new IllegalStateException("이미지가 로딩되지 않은 상품입니다.");
+            throw new AggregateNotLoadedException("이미지가 로딩되지 않은 상품입니다.");
         }
     }
 }

@@ -1,6 +1,6 @@
 package io.mallang.test.member.application.service;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.UpdateDefaultShippingAddressCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
@@ -10,17 +10,16 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.exception.MemberNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.MemberFixture.savedMemberIdWithShippingAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("UpdateDefaultShippingAddress UseCase")
 class UpdateDefaultShippingAddressUseCaseTest {
 
     @Test
@@ -37,7 +36,7 @@ class UpdateDefaultShippingAddressUseCaseTest {
         updateDefaultShippingAddressUseCase.update(command(memberId, targetId));
 
         // then
-        Member member = loadMemberPort.getById(memberId);
+        Member member = loadMemberPort.getByIdWithAddresses(memberId);
         assertThat(member.getShippingAddresses())
                 .filteredOn(ShippingAddress::isDefault)
                 .extracting(ShippingAddress::getId)
@@ -58,7 +57,7 @@ class UpdateDefaultShippingAddressUseCaseTest {
     }
 
     private ShippingAddressId secondShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {
-        return loadMemberPort.getById(memberId).getShippingAddresses().get(1).getId();
+        return loadMemberPort.getByIdWithAddresses(memberId).getShippingAddresses().get(1).getId();
     }
 
     private UpdateDefaultShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {

@@ -13,6 +13,7 @@ public record RestoreMemberCommand(
         LocalDateTime joinedAt,
         MemberStatus status,
         LocalDateTime withdrawnAt,
-        List<ShippingAddress> shippingAddresses
+        List<ShippingAddress> shippingAddresses,
+        boolean shippingAddressesLoaded
 ) {
 }

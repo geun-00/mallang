@@ -1,6 +1,6 @@
 package io.mallang.domain.common.exception;
 
-public class DomainNotFoundException extends RuntimeException {
+public abstract class DomainNotFoundException extends DomainException {
 
     public DomainNotFoundException(String message) {
         super(message);

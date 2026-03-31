@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.assertions;
 
 import io.mallang.product.domain.*;
 import io.mallang.product.domain.command.CreateProductCommand;

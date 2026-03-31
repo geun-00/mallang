@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import static io.mallang.ProductAssertions.isDerivedFrom;
+import static io.mallang.assertions.ProductAssertions.isDerivedFrom;
 import static io.mallang.fixtures.ProductFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

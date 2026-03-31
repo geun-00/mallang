@@ -16,6 +16,11 @@ public interface LoadMemberPort {
     /**
      * @throws MemberNotFoundException
      */
+    Member getByIdWithAddresses(MemberId memberId);
+
+    /**
+     * @throws MemberNotFoundException
+     */
     Member getByEmail(Email email);
 
     boolean existsByEmail(Email email);

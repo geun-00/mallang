@@ -1,28 +1,21 @@
 package io.mallang.test.member.application.service;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.cart.application.required.query.LoadCartPort;
+import io.mallang.domain.common.exception.DuplicateException;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
 import io.mallang.member.domain.MemberId;
-import io.mallang.member.domain.exception.DuplicateEmailException;
-import io.mallang.member.domain.exception.DuplicateNicknameException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-import static io.mallang.fixtures.MemberFixture.DEFAULT_PASSWORD;
-import static io.mallang.fixtures.MemberFixture.generateEmailValue;
-import static io.mallang.fixtures.MemberFixture.generateNicknameValue;
-import static io.mallang.fixtures.MemberFixture.generateRegisterCommand;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static io.mallang.fixtures.MemberFixture.*;
+import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("RegisterMember UseCase")
 class RegisterMemberUseCaseTest {
 
     @Test
@@ -56,7 +49,7 @@ class RegisterMemberUseCaseTest {
     }
 
     @Test
-    void 동일한_이메일로_중복_가입하면_DuplicateEmailException이_발생한다(
+    void 동일한_이메일로_중복_가입하면_DuplicateException이_발생한다(
             @Autowired RegisterMemberUseCase registerMemberUseCase
     ) {
         // given
@@ -66,11 +59,11 @@ class RegisterMemberUseCaseTest {
         // when & then
         assertThatThrownBy(() -> registerMemberUseCase.register(
                 new RegisterMemberCommand(email, DEFAULT_PASSWORD, generateNicknameValue())))
-                .isInstanceOf(DuplicateEmailException.class);
+                .isInstanceOf(DuplicateException.class);
     }
 
     @Test
-    void 동일한_닉네임으로_중복_가입하면_DuplicateNicknameException이_발생한다(
+    void 동일한_닉네임으로_중복_가입하면_DuplicateException이_발생한다(
             @Autowired RegisterMemberUseCase registerMemberUseCase
     ) {
         // given
@@ -80,6 +73,6 @@ class RegisterMemberUseCaseTest {
         // when & then
         assertThatThrownBy(() -> registerMemberUseCase.register(
                 new RegisterMemberCommand(generateEmailValue(), DEFAULT_PASSWORD, nickname)))
-                .isInstanceOf(DuplicateNicknameException.class);
+                .isInstanceOf(DuplicateException.class);
     }
 }

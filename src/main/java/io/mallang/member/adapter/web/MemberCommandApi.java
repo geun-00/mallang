@@ -2,14 +2,15 @@ package io.mallang.member.adapter.web;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
-import io.mallang.member.application.provided.command.model.RegisterMemberResult;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
+import io.mallang.member.application.provided.command.model.RegisterMemberResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
@@ -21,8 +22,19 @@ public class MemberCommandApi {
 
     @PostMapping("/members")
     public ResponseEntity<Void> register(@Valid @RequestBody MemberCreateRequest createRequest) {
-        RegisterMemberResult result = registerMemberUseCase.register(new RegisterMemberCommand(createRequest.email(), createRequest.password(), createRequest.nickname()));
+        RegisterMemberResult result = registerMemberUseCase.register(
+                new RegisterMemberCommand(
+                        createRequest.email(),
+                        createRequest.password(),
+                        createRequest.nickname()
+                )
+        );
 
-        return ResponseEntity.created(URI.create("/members/" + result.memberId())).build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                                                  .path("/{id}")
+                                                  .buildAndExpand(result.memberId())
+                                                  .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 }

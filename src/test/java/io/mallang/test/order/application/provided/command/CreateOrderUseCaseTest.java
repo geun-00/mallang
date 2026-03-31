@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-import static io.mallang.OrderAssertions.isCreatedFrom;
+import static io.mallang.assertions.OrderAssertions.isCreatedFrom;
 import static io.mallang.fixtures.MemberFixture.generateMember;
 import static io.mallang.fixtures.MemberFixture.generateWithdrawnMember;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderCommand;

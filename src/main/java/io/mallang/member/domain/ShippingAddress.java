@@ -1,7 +1,7 @@
 package io.mallang.member.domain;
 
-import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
@@ -33,15 +33,15 @@ public class ShippingAddress {
     static ShippingAddress create(AddShippingAddressCommand command, boolean isDefault, IdGenerator idGenerator) {
         return new ShippingAddress(
                 new ShippingAddressId(idGenerator.nextId()),
-                new Receiver(command.receiverName(), command.receiverPhoneNumber()),
-                new Address(command.zipCode(), command.mainAddress(), command.detailAddress()),
+                command.receiver(),
+                command.address(),
                 isDefault
         );
     }
 
     void modify(ModifyShippingAddressCommand command) {
-        this.receiver = new Receiver(command.receiverName(), command.receiverPhoneNumber());
-        this.address = new Address(command.zipCode(), command.mainAddress(), command.detailAddress());
+        this.receiver = command.receiver();
+        this.address = command.address();
     }
 
     void unsetDefault() {

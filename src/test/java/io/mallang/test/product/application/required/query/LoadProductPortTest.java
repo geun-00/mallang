@@ -1,10 +1,11 @@
 package io.mallang.test.product.application.required.query;
 
+import io.mallang.domain.common.exception.AggregateNotLoadedException;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
+import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.exception.ProductNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ class LoadProductPortTest {
 
         // when & then
         assertThatThrownBy(() -> loaded.addImages(List.of(new AddProductImageCommand("https://test.com/new-image.jpg")), () -> "new-id"))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(AggregateNotLoadedException.class);
     }
 
     @Test

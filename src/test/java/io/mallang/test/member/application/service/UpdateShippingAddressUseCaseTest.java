@@ -1,6 +1,6 @@
 package io.mallang.test.member.application.service;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.member.application.provided.command.UpdateShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.UpdateShippingAddressCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;
@@ -8,18 +8,17 @@ import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.exception.MemberNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-import static io.mallang.MemberAssertions.isModifiedBy;
+import static io.mallang.assertions.MemberAssertions.isModifiedBy;
 import static io.mallang.fixtures.MemberFixture.savedMemberIdWithShippingAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("UpdateShippingAddress UseCase")
 class UpdateShippingAddressUseCaseTest {
 
     @Test
@@ -37,7 +36,7 @@ class UpdateShippingAddressUseCaseTest {
         updateShippingAddressUseCase.update(command);
 
         // then
-        assertThat(loadMemberPort.getById(memberId).getShippingAddresses().getFirst())
+        assertThat(loadMemberPort.getByIdWithAddresses(memberId).getShippingAddresses().getFirst())
                 .satisfies(isModifiedBy(command));
     }
 
@@ -55,7 +54,7 @@ class UpdateShippingAddressUseCaseTest {
     }
 
     private ShippingAddressId firstShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {
-        return loadMemberPort.getById(memberId).getShippingAddresses().getFirst().getId();
+        return loadMemberPort.getByIdWithAddresses(memberId).getShippingAddresses().getFirst().getId();
     }
 
     private UpdateShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {

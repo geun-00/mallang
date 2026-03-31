@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.assertions;
 
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
