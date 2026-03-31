@@ -37,7 +37,7 @@ class UpdateDefaultShippingAddressUseCaseTest {
         updateDefaultShippingAddressUseCase.update(command(memberId, targetId));
 
         // then
-        Member member = loadMemberPort.getById(memberId);
+        Member member = loadMemberPort.getByIdWithAddresses(memberId);
         assertThat(member.getShippingAddresses())
                 .filteredOn(ShippingAddress::isDefault)
                 .extracting(ShippingAddress::getId)
@@ -58,7 +58,7 @@ class UpdateDefaultShippingAddressUseCaseTest {
     }
 
     private ShippingAddressId secondShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {
-        return loadMemberPort.getById(memberId).getShippingAddresses().get(1).getId();
+        return loadMemberPort.getByIdWithAddresses(memberId).getShippingAddresses().get(1).getId();
     }
 
     private UpdateDefaultShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {

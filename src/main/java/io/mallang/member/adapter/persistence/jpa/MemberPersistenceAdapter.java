@@ -8,24 +8,36 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.Nickname;
 import io.mallang.member.domain.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class MemberPersistenceAdapter implements SaveMemberPort, LoadMemberPort {
 
     private final MemberJpaRepository memberJpaRepository;
 
     @Override
+    @Transactional
     public void save(Member member) {
-        MemberJpaEntity memberEntity = MemberJpaEntity.from(member);
-        memberJpaRepository.save(memberEntity);
+        memberJpaRepository.findById(member.getId().value())
+                           .ifPresentOrElse(
+                                   entity -> entity.updateFrom(member),
+                                   () -> memberJpaRepository.save(MemberJpaEntity.from(member))
+                           );
     }
 
     @Override
     public Member getById(MemberId memberId) {
         return memberJpaRepository.findById(memberId.value())
                                   .map(MemberJpaEntity::toDomain)
+                                  .orElseThrow(() -> new MemberNotFoundException(memberId));
+    }
+
+    @Override
+    public Member getByIdWithAddresses(MemberId memberId) {
+        return memberJpaRepository.findWithShippingAddressesByMemberId(memberId.value())
+                                  .map(MemberJpaEntity::toDomainWithShippingAddresses)
                                   .orElseThrow(() -> new MemberNotFoundException(memberId));
     }
 

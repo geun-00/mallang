@@ -1,5 +1,6 @@
 package io.mallang.test.member.application.required.query;
 
+import io.mallang.domain.common.exception.AggregateNotLoadedException;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.*;
@@ -8,8 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static io.mallang.fixtures.MemberFixture.generateAddShippingAddressCommand;
 import static io.mallang.fixtures.MemberFixture.generateEmailValue;
+import static io.mallang.fixtures.MemberFixture.generateIdGenerator;
 import static io.mallang.fixtures.MemberFixture.generateMember;
+import static io.mallang.fixtures.MemberFixture.generateMemberWithShippingAddress;
 import static io.mallang.fixtures.MemberFixture.generateNicknameValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -33,6 +37,19 @@ class LoadMemberPortTest {
     }
 
     @Test
+    void getById로_조회한_Member는_배송지_관련_기능을_사용할_수_없다() {
+        // given
+        Member member = generateMember();
+        saveMemberPort.save(member);
+
+        Member loaded = loadMemberPort.getById(member.getId());
+
+        // when & then
+        assertThatThrownBy(() -> loaded.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator()))
+                .isInstanceOf(AggregateNotLoadedException.class);
+    }
+
+    @Test
     void 존재하지_않는_ID로_조회하면_MemberNotFoundException_예외가_발생한다() {
         // given
         MemberId unknownId = new MemberId("unknown");
@@ -51,6 +68,27 @@ class LoadMemberPortTest {
         // when & then
         assertThatCode(() -> loadMemberPort.getByEmail(member.getEmail()))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    void getByIdWithAddresses로_Member를_조회한다() {
+        // given
+        Member member = generateMemberWithShippingAddress();
+        saveMemberPort.save(member);
+
+        // when & then
+        assertThatCode(() -> loadMemberPort.getByIdWithAddresses(member.getId()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void getByIdWithAddresses는_존재하지_않는_ID로_조회하면_MemberNotFoundException_예외가_발생한다() {
+        // given
+        MemberId unknownId = new MemberId("unknown");
+
+        // when & then
+        assertThatThrownBy(() -> loadMemberPort.getByIdWithAddresses(unknownId))
+                .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test

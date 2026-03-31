@@ -34,7 +34,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public RegisterShippingAddressResult register(RegisterShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         ShippingAddress shippingAddress = member.addShippingAddress(
                 new AddShippingAddressCommand(
@@ -51,7 +51,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void update(UpdateDefaultShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         member.setDefaultShippingAddress(new ShippingAddressId(command.shippingAddressIdValue()));
 
@@ -60,7 +60,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void update(UpdateShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         member.modifyShippingAddress(
                 new ShippingAddressId(command.shippingAddressIdValue()),
@@ -75,7 +75,7 @@ public class ShippingAddressCommandService implements RegisterShippingAddressUse
 
     @Override
     public void remove(RemoveShippingAddressCommand command) {
-        Member member = loadMemberPort.getById(new MemberId(command.memberIdValue()));
+        Member member = loadMemberPort.getByIdWithAddresses(new MemberId(command.memberIdValue()));
 
         member.removeShippingAddress(new ShippingAddressId(command.shippingAddressIdValue()));
 

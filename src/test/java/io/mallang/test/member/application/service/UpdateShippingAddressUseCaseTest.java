@@ -37,7 +37,7 @@ class UpdateShippingAddressUseCaseTest {
         updateShippingAddressUseCase.update(command);
 
         // then
-        assertThat(loadMemberPort.getById(memberId).getShippingAddresses().getFirst())
+        assertThat(loadMemberPort.getByIdWithAddresses(memberId).getShippingAddresses().getFirst())
                 .satisfies(isModifiedBy(command));
     }
 
@@ -55,7 +55,7 @@ class UpdateShippingAddressUseCaseTest {
     }
 
     private ShippingAddressId firstShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {
-        return loadMemberPort.getById(memberId).getShippingAddresses().getFirst().getId();
+        return loadMemberPort.getByIdWithAddresses(memberId).getShippingAddresses().getFirst().getId();
     }
 
     private UpdateShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {

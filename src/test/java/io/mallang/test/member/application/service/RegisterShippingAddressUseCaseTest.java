@@ -37,7 +37,7 @@ class RegisterShippingAddressUseCaseTest {
         RegisterShippingAddressResult result = registerShippingAddressUseCase.register(command(memberId));
 
         // then
-        Member member = loadMemberPort.getById(memberId);
+        Member member = loadMemberPort.getByIdWithAddresses(memberId);
         assertThat(member.getShippingAddresses())
                 .hasSize(1)
                 .extracting(ShippingAddress::getId)

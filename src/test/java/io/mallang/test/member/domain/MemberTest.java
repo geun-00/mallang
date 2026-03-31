@@ -42,7 +42,8 @@ class MemberTest {
                 original.getJoinedAt(),
                 original.getStatus(),
                 original.getWithdrawnAt(),
-                original.getShippingAddresses()
+                original.getShippingAddresses(),
+                true
         );
 
         // when

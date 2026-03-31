@@ -37,7 +37,7 @@ class RemoveShippingAddressUseCaseTest {
         removeShippingAddressUseCase.remove(command(memberId, shippingAddressId));
 
         // then
-        Member member = loadMemberPort.getById(memberId);
+        Member member = loadMemberPort.getByIdWithAddresses(memberId);
         assertThat(member.getShippingAddresses())
                 .extracting(ShippingAddress::getId)
                 .doesNotContain(shippingAddressId);
@@ -57,7 +57,7 @@ class RemoveShippingAddressUseCaseTest {
     }
 
     private ShippingAddressId firstShippingAddressId(MemberId memberId, LoadMemberPort loadMemberPort) {
-        return loadMemberPort.getById(memberId).getShippingAddresses().getFirst().getId();
+        return loadMemberPort.getByIdWithAddresses(memberId).getShippingAddresses().getFirst().getId();
     }
 
     private RemoveShippingAddressCommand command(MemberId memberId, ShippingAddressId shippingAddressId) {
