@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static io.mallang.ProductAssertions.isDerivedFrom;
+import static io.mallang.assertions.ProductAssertions.isDerivedFrom;
 import static io.mallang.fixtures.ProductFixture.*;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -106,7 +106,7 @@ class ProductTest {
         product.deductStock(3);
 
         // then
-        assertThat(product.getStockQuantity().value()).isEqualTo(0);
+        assertThat(product.getStockQuantity().value()).isZero();
         assertThat(product.getStatus()).isEqualTo(ProductStatus.SOLD_OUT);
     }
 

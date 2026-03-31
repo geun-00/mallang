@@ -1,6 +1,6 @@
 package io.mallang.test.member.application.required.command;
 
-import io.mallang.MemberAssertions;
+import io.mallang.assertions.MemberAssertions;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;

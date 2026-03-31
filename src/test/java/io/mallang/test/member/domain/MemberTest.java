@@ -19,8 +19,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-import static io.mallang.MemberAssertions.isDerivedFrom;
-import static io.mallang.MemberAssertions.isRestoredFrom;
+import static io.mallang.assertions.MemberAssertions.isDerivedFrom;
+import static io.mallang.assertions.MemberAssertions.isRestoredFrom;
 import static io.mallang.fixtures.MemberFixture.*;
 import static io.mallang.member.domain.Member.create;
 import static org.assertj.core.api.Assertions.assertThat;

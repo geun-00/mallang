@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.assertions;
 
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;

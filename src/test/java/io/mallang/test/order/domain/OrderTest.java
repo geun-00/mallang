@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static io.mallang.OrderAssertions.isDerivedFrom;
+import static io.mallang.assertions.OrderAssertions.isDerivedFrom;
 import static io.mallang.fixtures.OrderFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
