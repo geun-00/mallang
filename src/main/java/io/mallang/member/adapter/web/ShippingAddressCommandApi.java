@@ -19,6 +19,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/my/shipping-addresses")
 public class ShippingAddressCommandApi {
 
     private final UpdateShippingAddressUseCase updateShippingAddressUseCase;
@@ -26,7 +27,7 @@ public class ShippingAddressCommandApi {
     private final RegisterShippingAddressUseCase registerShippingAddressUseCase;
     private final UpdateDefaultShippingAddressUseCase updateDefaultShippingAddressUseCase;
 
-    @PostMapping("/my/shipping-addresses")
+    @PostMapping
     public ResponseEntity<Void> registerShippingAddress(
             @Valid @RequestBody RegisterShippingAddressRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -50,7 +51,7 @@ public class ShippingAddressCommandApi {
         return ResponseEntity.created(location).build();
     }
 
-    @PatchMapping("/my/shipping-addresses/{shippingAddressId}/default")
+    @PatchMapping("/{shippingAddressId}/default")
     public ResponseEntity<Void> updateDefault(
             @PathVariable String shippingAddressId,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -64,7 +65,7 @@ public class ShippingAddressCommandApi {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/my/shipping-addresses/{shippingAddressId}")
+    @PutMapping("/{shippingAddressId}")
     public ResponseEntity<Void> updateShippingAddress(
             @PathVariable String shippingAddressId,
             @Valid @RequestBody UpdateShippingAddressRequest request,
@@ -85,7 +86,7 @@ public class ShippingAddressCommandApi {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/my/shipping-addresses/{shippingAddressId}")
+    @DeleteMapping("/{shippingAddressId}")
     public ResponseEntity<Void> removeShippingAddress(
             @PathVariable String shippingAddressId,
             @AuthenticationPrincipal CustomUserDetails userDetails
