@@ -4,13 +4,13 @@ import io.mallang.domain.common.vo.Receiver;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public record ReceiverJpaVO(String name, String phoneNumber) {
+record ReceiverJpaVO(String name, String phoneNumber) {
 
-    public static ReceiverJpaVO from(Receiver receiver) {
+    static ReceiverJpaVO from(Receiver receiver) {
         return new ReceiverJpaVO(receiver.name(), receiver.phoneNumber());
     }
 
-    public Receiver toDomain() {
+    Receiver toDomain() {
         return new Receiver(name, phoneNumber);
     }
 }

@@ -1,5 +1,6 @@
 package io.mallang.member.adapter.persistence.jpa;
 
+import io.mallang.adapter.persistence.jpa.BaseEntity;
 import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.command.RestoreShippingAddressCommand;
@@ -8,9 +9,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "shipping_address")
+@Table(name = "shipping_addresses")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ShippingAddressJpaEntity {
+class ShippingAddressJpaEntity extends BaseEntity {
 
     @Id
     @Column(name = "shipping_address_id")
@@ -42,7 +43,7 @@ public class ShippingAddressJpaEntity {
         this.isDefault = isDefault;
     }
 
-    public static ShippingAddressJpaEntity from(ShippingAddress shippingAddress, MemberJpaEntity member) {
+    static ShippingAddressJpaEntity from(ShippingAddress shippingAddress, MemberJpaEntity member) {
         return new ShippingAddressJpaEntity(
                 shippingAddress.getId().value(),
                 ReceiverJpaVO.from(shippingAddress.getReceiver()),
@@ -52,12 +53,22 @@ public class ShippingAddressJpaEntity {
         );
     }
 
-    public ShippingAddress toDomain() {
+    ShippingAddress toDomain() {
         return ShippingAddress.restore(new RestoreShippingAddressCommand(
                 new ShippingAddressId(id),
                 receiver.toDomain(),
                 address.toDomain(),
                 isDefault
         ));
+    }
+
+    void updateFrom(ShippingAddress shippingAddress) {
+        this.receiver = ReceiverJpaVO.from(shippingAddress.getReceiver());
+        this.address = AddressJpaVO.from(shippingAddress.getAddress());
+        this.isDefault = shippingAddress.isDefault();
+    }
+
+    String getId() {
+        return id;
     }
 }
