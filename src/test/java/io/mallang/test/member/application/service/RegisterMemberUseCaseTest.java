@@ -1,22 +1,21 @@
 package io.mallang.test.member.application.service;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.cart.application.required.query.LoadCartPort;
 import io.mallang.domain.common.exception.DuplicateException;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
 import io.mallang.member.domain.MemberId;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.MemberFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("RegisterMember UseCase")
 class RegisterMemberUseCaseTest {
 
     @Test

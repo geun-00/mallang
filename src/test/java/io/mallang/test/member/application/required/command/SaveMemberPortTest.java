@@ -1,17 +1,19 @@
 package io.mallang.test.member.application.required.command;
 
+import io.mallang.PortTest;
 import io.mallang.assertions.MemberAssertions;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static io.mallang.fixtures.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@PortTest
+@DisplayName("SaveMember Port")
 class SaveMemberPortTest {
 
     @Test
