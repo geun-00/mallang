@@ -45,7 +45,7 @@ public class MemberJpaEntity extends BaseEntity {
     private MemberStatus status;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<ShippingAddressJpaEntity> shippingAddresses = new ArrayList<>();
+    private List<ShippingAddressJpaEntity> shippingAddresses = new ArrayList<>();
 
     private MemberJpaEntity(
             String memberId,
@@ -118,7 +118,6 @@ public class MemberJpaEntity extends BaseEntity {
         this.email = member.getEmail().address();
         this.nickname = member.getNickname().value();
         this.password = member.getPassword().value();
-        this.joinedAt = member.getJoinedAt();
         this.withdrawnAt = member.getWithdrawnAt();
         this.status = member.getStatus();
 
