@@ -1,5 +1,6 @@
 package io.mallang.product.adapter.persistence.jpa;
 
+import io.mallang.adapter.persistence.jpa.BaseEntity;
 import io.mallang.product.domain.ImageUrl;
 import io.mallang.product.domain.ProductImage;
 import io.mallang.product.domain.ProductImageId;
@@ -8,9 +9,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "product_image")
+@Table(name = "product_images")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductImageJpaEntity {
+class ProductImageJpaEntity extends BaseEntity {
 
     @Id
     @Column(name = "product_image_id")
@@ -33,7 +34,7 @@ public class ProductImageJpaEntity {
         this.product = product;
     }
 
-    public static ProductImageJpaEntity fromThumbnail(ProductImage image, ProductJpaEntity product) {
+    static ProductImageJpaEntity fromThumbnail(ProductImage image, ProductJpaEntity product) {
         return new ProductImageJpaEntity(
                 image.id().value(),
                 image.imageUrl().value(),
@@ -42,7 +43,7 @@ public class ProductImageJpaEntity {
         );
     }
 
-    public static ProductImageJpaEntity fromImage(ProductImage image, ProductJpaEntity product) {
+    static ProductImageJpaEntity fromImage(ProductImage image, ProductJpaEntity product) {
         return new ProductImageJpaEntity(
                 image.id().value(),
                 image.imageUrl().value(),
@@ -51,14 +52,23 @@ public class ProductImageJpaEntity {
         );
     }
 
-    public boolean isThumbnail() {
+    boolean isThumbnail() {
         return isThumbnail;
     }
 
-    public ProductImage toDomain() {
+    String getId() {
+        return id;
+    }
+
+    ProductImage toDomain() {
         return new ProductImage(
                 new ProductImageId(id),
                 new ImageUrl(imageUrl)
         );
+    }
+
+    void updateFrom(ProductImage image, boolean thumbnail) {
+        this.imageUrl = image.imageUrl().value();
+        this.isThumbnail = thumbnail;
     }
 }

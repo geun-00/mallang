@@ -1,5 +1,6 @@
 package io.mallang.product.adapter.persistence.jpa;
 
+import io.mallang.adapter.persistence.jpa.BaseEntity;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.*;
@@ -12,13 +13,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static java.util.stream.Collectors.partitioningBy;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductJpaEntity {
+public class ProductJpaEntity extends BaseEntity {
 
     @Id
     @Column(name = "product_id")
@@ -47,17 +50,19 @@ public class ProductJpaEntity {
     @Column(nullable = false)
     private ProductCategory category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImageJpaEntity> images = new ArrayList<>();
 
-    private ProductJpaEntity(String id,
-                             String sellerId,
-                             String name,
-                             String description,
-                             BigDecimal price,
-                             int stockQuantity,
-                             ProductStatus status,
-                             ProductCategory category) {
+    private ProductJpaEntity(
+            String id,
+            String sellerId,
+            String name,
+            String description,
+            BigDecimal price,
+            int stockQuantity,
+            ProductStatus status,
+            ProductCategory category
+    ) {
         this.id = id;
         this.sellerId = sellerId;
         this.name = name;
@@ -68,7 +73,7 @@ public class ProductJpaEntity {
         this.category = category;
     }
 
-    public static ProductJpaEntity from(Product product) {
+    static ProductJpaEntity from(Product product) {
         ProductJpaEntity entity = new ProductJpaEntity(
                 product.getId().value(),
                 product.getSellerId().value(),
@@ -85,22 +90,24 @@ public class ProductJpaEntity {
             entity.images.add(ProductImageJpaEntity.fromThumbnail(thumbnailImage, entity));
         }
 
-        product.getImages().stream()
+        product.getImages()
+               .stream()
                .map(image -> ProductImageJpaEntity.fromImage(image, entity))
                .forEach(entity.images::add);
 
         return entity;
     }
 
-    public Product toDomainWithImages() {
-        Map<Boolean, List<ProductImageJpaEntity>> partitioned =
-                images.stream().collect(partitioningBy(ProductImageJpaEntity::isThumbnail));
+    Product toDomainWithImages() {
+        Map<Boolean, List<ProductImageJpaEntity>> partitioned = images.stream()
+                                                                      .collect(partitioningBy(ProductImageJpaEntity::isThumbnail));
 
         ProductImage thumbnailImage = partitioned.get(true).isEmpty()
                 ? null
                 : partitioned.get(true).getFirst().toDomain();
 
-        List<ProductImage> otherImages = partitioned.get(false).stream()
+        List<ProductImage> otherImages = partitioned.get(false)
+                                                    .stream()
                                                     .map(ProductImageJpaEntity::toDomain)
                                                     .toList();
         return Product.restore(
@@ -120,7 +127,7 @@ public class ProductJpaEntity {
         );
     }
 
-    public Product toDomainWithoutImages() {
+    Product toDomain() {
         return Product.restore(
                 new RestoreProductCommand(
                         new ProductId(id),
@@ -137,4 +144,88 @@ public class ProductJpaEntity {
                 )
         );
     }
+
+    void updateFrom(Product product) {
+        this.sellerId = product.getSellerId().value();
+        this.name = product.getName().value();
+        this.description = product.getDescription().value();
+        this.price = product.getPrice().value();
+        this.stockQuantity = product.getStockQuantity().value();
+        this.status = product.getStatus();
+        this.category = product.getCategory();
+
+        if (product.isImagesLoaded()) {
+            syncImages(product);
+        }
+    }
+
+    private void syncImages(Product product) {
+        Map<String, ProductImageJpaEntity> existingImagesById = indexExistingImagesById();
+        Set<String> targetImageIds = collectTargetImageIds(product);
+
+        removeImagesFrom(targetImageIds);
+        upsertThumbnailImage(product.getThumbnailImage(), existingImagesById);
+        upsertImages(product.getImages(), existingImagesById);
+    }
+
+    private Map<String, ProductImageJpaEntity> indexExistingImagesById() {
+        return images.stream()
+                     .collect(toMap(
+                             ProductImageJpaEntity::getId,
+                             identity())
+                     );
+    }
+
+    private Set<String> collectTargetImageIds(Product product) {
+        Set<String> targetImageIds = product.getImages()
+                                            .stream()
+                                            .map(image -> image.id().value())
+                                            .collect(toSet());
+
+        ProductImage thumbnailImage = product.getThumbnailImage();
+        if (thumbnailImage != null) {
+            targetImageIds.add(thumbnailImage.id().value());
+        }
+
+        return targetImageIds;
+    }
+
+    private void removeImagesFrom(Set<String> targetImageIds) {
+        this.images.removeIf(image -> !targetImageIds.contains(image.getId()));
+    }
+
+    private void upsertThumbnailImage(
+            ProductImage thumbnailImage,
+            Map<String, ProductImageJpaEntity> existingImagesById
+    ) {
+        if (thumbnailImage == null) {
+            return;
+        }
+
+        ProductImageJpaEntity existingImage = existingImagesById.get(thumbnailImage.id().value());
+
+        if (existingImage == null) {
+            this.images.add(ProductImageJpaEntity.fromThumbnail(thumbnailImage, this));
+            return;
+        }
+
+        existingImage.updateFrom(thumbnailImage, true);
+    }
+
+    private void upsertImages(
+            List<ProductImage> images,
+            Map<String, ProductImageJpaEntity> existingImagesById
+    ) {
+        images.forEach(image -> {
+            ProductImageJpaEntity existingImage = existingImagesById.get(image.id().value());
+
+            if (existingImage == null) {
+                this.images.add(ProductImageJpaEntity.fromImage(image, this));
+                return;
+            }
+
+            existingImage.updateFrom(image, false);
+        });
+    }
+
 }
