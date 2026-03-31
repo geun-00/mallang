@@ -2,6 +2,7 @@ package io.mallang.member.domain;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.AggregateNotLoadedException;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.CreateMemberCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
@@ -27,6 +28,8 @@ public class Member {
 
     private final ShippingAddresses shippingAddresses;
 
+    private final boolean shippingAddressesLoaded;
+
     private MemberStatus status;
 
     private LocalDateTime withdrawnAt;
@@ -45,6 +48,7 @@ public class Member {
         this.joinedAt = joinedAt;
         this.status = MemberStatus.ACTIVE;
         this.shippingAddresses = new ShippingAddresses();
+        this.shippingAddressesLoaded = true;
     }
 
     private Member(
@@ -54,6 +58,7 @@ public class Member {
             Password password,
             LocalDateTime joinedAt,
             ShippingAddresses shippingAddresses,
+            boolean shippingAddressesLoaded,
             MemberStatus status,
             LocalDateTime withdrawnAt
     ) {
@@ -63,6 +68,7 @@ public class Member {
         this.password = password;
         this.joinedAt = joinedAt;
         this.shippingAddresses = shippingAddresses;
+        this.shippingAddressesLoaded = shippingAddressesLoaded;
         this.status = status;
         this.withdrawnAt = withdrawnAt;
     }
@@ -93,6 +99,7 @@ public class Member {
                 command.password(),
                 command.joinedAt(),
                 shippingAddresses,
+                command.shippingAddressesLoaded(),
                 command.status(),
                 command.withdrawnAt()
         );
@@ -119,24 +126,28 @@ public class Member {
 
     public ShippingAddress addShippingAddress(AddShippingAddressCommand command, IdGenerator idGenerator) {
         validateActive("ACTIVE 상태에서만 배송지를 추가할 수 있습니다.");
+        validateShippingAddressesLoaded();
 
         return shippingAddresses.add(command, idGenerator);
     }
 
     public void setDefaultShippingAddress(ShippingAddressId shippingAddressId) {
         validateActive("ACTIVE 상태에서만 기본 배송지를 변경할 수 있습니다.");
+        validateShippingAddressesLoaded();
 
         shippingAddresses.setDefault(shippingAddressId);
     }
 
     public ShippingAddress modifyShippingAddress(ShippingAddressId id, ModifyShippingAddressCommand command) {
         validateActive("ACTIVE 상태에서만 배송지를 수정할 수 있습니다.");
+        validateShippingAddressesLoaded();
 
         return shippingAddresses.modify(id, command);
     }
 
     public void removeShippingAddress(ShippingAddressId id) {
         validateActive("ACTIVE 상태에서만 배송지를 삭제할 수 있습니다.");
+        validateShippingAddressesLoaded();
 
         shippingAddresses.remove(id);
     }
@@ -148,6 +159,12 @@ public class Member {
     private void validateActive(String message) {
         if (!status.isActive()) {
             throw new InvalidMemberStateException(message);
+        }
+    }
+
+    private void validateShippingAddressesLoaded() {
+        if (!shippingAddressesLoaded) {
+            throw new AggregateNotLoadedException("배송지가 로딩되지 않은 회원입니다.");
         }
     }
 }
