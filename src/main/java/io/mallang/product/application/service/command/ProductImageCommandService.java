@@ -10,6 +10,7 @@ import io.mallang.product.application.provided.command.model.ChangeThumbnailImag
 import io.mallang.product.application.provided.command.model.RemoveProductImageCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
+import io.mallang.product.domain.ImageUrl;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.ProductImageId;
@@ -24,7 +25,9 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductImageCommandService implements AddProductImagesUseCase, RemoveProductImageUseCase, ChangeThumbnailImageUseCase {
+public class ProductImageCommandService implements AddProductImagesUseCase,
+                                                   RemoveProductImageUseCase,
+                                                   ChangeThumbnailImageUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadProductPort loadProductPort;
@@ -36,6 +39,7 @@ public class ProductImageCommandService implements AddProductImagesUseCase, Remo
 
         List<AddProductImageCommand> addCommands = command.imageUrls()
                                                           .stream()
+                                                          .map(ImageUrl::new)
                                                           .map(AddProductImageCommand::new)
                                                           .toList();
         product.addImages(addCommands, idGenerator);

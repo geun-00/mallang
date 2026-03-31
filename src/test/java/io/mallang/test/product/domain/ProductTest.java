@@ -229,8 +229,8 @@ class ProductTest {
     @Test
     void 이미지가_있는데_대표이미지가_없으면_예외가_발생한다() {
         List<CreateProductImageCommand> nonThumbnailImages = List.of(
-                new CreateProductImageCommand("https://test.com/image1.jpg", false),
-                new CreateProductImageCommand("https://test.com/image2.jpg", false)
+                new CreateProductImageCommand(new ImageUrl("https://test.com/image1.jpg"), false),
+                new CreateProductImageCommand(new ImageUrl("https://test.com/image2.jpg"), false)
         );
         CreateProductCommand createCommand = generateProductCreateCommand(nonThumbnailImages);
 
@@ -264,7 +264,7 @@ class ProductTest {
         String imageUrl = "https://test.com/image.jpg";
 
         // when
-        product.addImages(List.of(new AddProductImageCommand(imageUrl)), generateIdGenerator());
+        product.addImages(List.of(new AddProductImageCommand(new ImageUrl(imageUrl))), generateIdGenerator());
 
         // then
         ProductImage productImage = product.getThumbnailImage();
@@ -284,7 +284,7 @@ class ProductTest {
 
         // then
         assertThat(product.getThumbnailImage()).isNotNull();
-        assertThat(product.getThumbnailImage().imageUrl().value()).isEqualTo(addImageCommands.getFirst().imageUrl());
+        assertThat(product.getThumbnailImage().imageUrl().value()).isEqualTo(addImageCommands.getFirst().imageUrl().value());
     }
 
     @Test
@@ -306,7 +306,7 @@ class ProductTest {
         assertThat(product.getImages())
                 .extracting(ProductImage::imageUrl)
                 .extracting(ImageUrl::value)
-                .containsAll(addImageCommands.stream().map(AddProductImageCommand::imageUrl).toList());
+                .containsAll(addImageCommands.stream().map(command -> command.imageUrl().value()).toList());
     }
 
     @Test

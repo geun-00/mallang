@@ -1,9 +1,13 @@
 package io.mallang.test.product.application.required.command;
 
 import io.mallang.assertions.ProductAssertions;
+import io.mallang.domain.common.vo.Money;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductCategory;
+import io.mallang.product.domain.ProductDescription;
+import io.mallang.product.domain.ProductName;
 import io.mallang.product.domain.command.ModifyProductCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +66,10 @@ class SaveProductPortTest {
         saveProductPort.save(product);
 
         product.modify(new ModifyProductCommand(
-                "수정된 상품명",
-                "수정된 상품 설명",
-                new BigDecimal("15000"),
-                "FOOD"
+                new ProductName("수정된 상품명"),
+                new ProductDescription("수정된 상품 설명"),
+                new Money(new BigDecimal("15000")),
+                ProductCategory.FOOD
         ));
 
         // when

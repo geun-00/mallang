@@ -1,11 +1,14 @@
 package io.mallang.product.domain.command;
 
-import java.math.BigDecimal;
+import io.mallang.domain.common.vo.Money;
+import io.mallang.product.domain.ProductCategory;
+import io.mallang.product.domain.ProductDescription;
+import io.mallang.product.domain.ProductName;
 
 public record ModifyProductCommand(
-        String name,
-        String description,
-        BigDecimal price,
-        String category
+        ProductName name,
+        ProductDescription description,
+        Money price,
+        ProductCategory category
 ) {
 }

@@ -15,20 +15,20 @@ public class ProductAssertions {
 
     public static ThrowingConsumer<Product> isDerivedFrom(CreateProductCommand command) {
         return product -> {
-            assertThat(product.getName()).isEqualTo(new ProductName(command.name()));
-            assertThat(product.getDescription()).isEqualTo(new ProductDescription(command.description()));
-            assertThat(product.getPrice().value()).matches(priceEquals(command.price()));
-            assertThat(product.getStockQuantity()).isEqualTo(new StockQuantity(command.stockQuantity()));
-            assertThat(product.getCategory()).isEqualTo(ProductCategory.valueOf(command.category()));
+            assertThat(product.getName()).isEqualTo(command.name());
+            assertThat(product.getDescription()).isEqualTo(command.description());
+            assertThat(product.getPrice().value()).matches(priceEquals(command.price().value()));
+            assertThat(product.getStockQuantity()).isEqualTo(command.stockQuantity());
+            assertThat(product.getCategory()).isEqualTo(command.category());
         };
     }
 
     public static ThrowingConsumer<Product> isDerivedFrom(ModifyProductCommand command) {
         return product -> {
-            assertThat(product.getName()).isEqualTo(new ProductName(command.name()));
-            assertThat(product.getDescription()).isEqualTo(new ProductDescription(command.description()));
-            assertThat(product.getPrice().value()).matches(priceEquals(command.price()));
-            assertThat(product.getCategory()).isEqualTo(ProductCategory.valueOf(command.category()));
+            assertThat(product.getName()).isEqualTo(command.name());
+            assertThat(product.getDescription()).isEqualTo(command.description());
+            assertThat(product.getPrice().value()).matches(priceEquals(command.price().value()));
+            assertThat(product.getCategory()).isEqualTo(command.category());
         };
     }
 

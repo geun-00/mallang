@@ -1,4 +1,6 @@
 package io.mallang.product.domain.command;
 
-public record CreateProductImageCommand(String imageUrl, boolean isThumbnail) {
+import io.mallang.product.domain.ImageUrl;
+
+public record CreateProductImageCommand(ImageUrl imageUrl, boolean isThumbnail) {
 }

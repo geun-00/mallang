@@ -1,13 +1,13 @@
 package io.mallang.product.application.service.command;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.*;
 import io.mallang.product.application.provided.command.model.*;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.Product;
-import io.mallang.product.domain.ProductId;
+import io.mallang.product.domain.*;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
 import io.mallang.product.domain.command.ModifyProductCommand;
@@ -21,7 +21,11 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductCommandService implements RegisterProductUseCase, AddStockUseCase, DeductStockUseCase, UpdateProductUseCase, DiscontinueProductUseCase {
+public class ProductCommandService implements RegisterProductUseCase,
+                                              AddStockUseCase,
+                                              DeductStockUseCase,
+                                              UpdateProductUseCase,
+                                              DiscontinueProductUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadProductPort loadProductPort;
@@ -29,19 +33,21 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
 
     @Override
     public RegisterProductResult register(RegisterProductCommand command) {
-        List<CreateProductImageCommand> imageCommands =
-                command.images()
-                       .stream()
-                       .map(image -> new CreateProductImageCommand(image.imageUrl(), image.isThumbnail()))
-                       .toList();
+        List<CreateProductImageCommand> imageCommands = command.images()
+                                                               .stream()
+                                                               .map(image -> new CreateProductImageCommand(
+                                                                       new ImageUrl(image.imageUrl()),
+                                                                       image.isThumbnail()
+                                                               ))
+                                                               .toList();
 
         Product product = Product.create(
                 new CreateProductCommand(
-                        command.name(),
-                        command.description(),
-                        command.price(),
-                        command.stockQuantity(),
-                        command.category(),
+                        new ProductName(command.name()),
+                        new ProductDescription(command.description()),
+                        new Money(command.price()),
+                        new StockQuantity(command.stockQuantity()),
+                        ProductCategory.from(command.category()),
                         imageCommands
                 ),
                 new MemberId(command.sellerIdValue()),
@@ -74,10 +80,10 @@ public class ProductCommandService implements RegisterProductUseCase, AddStockUs
         Product product = loadProductAndValidateSeller(command.productIdValue(), command.memberIdValue());
 
         product.modify(new ModifyProductCommand(
-                command.name(),
-                command.description(),
-                command.price(),
-                command.category()
+                new ProductName(command.name()),
+                new ProductDescription(command.description()),
+                new Money(command.price()),
+                ProductCategory.from(command.category())
         ));
 
         saveProductPort.save(product);

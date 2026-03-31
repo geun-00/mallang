@@ -52,13 +52,13 @@ class ProductImages {
 
         ProductImage thumbnailImage = new ProductImage(
                 new ProductImageId(idGenerator.nextId()),
-                new ImageUrl(thumbnail.getFirst().imageUrl())
+                thumbnail.getFirst().imageUrl()
         );
 
         List<ProductImage> otherImages = others.stream()
                                                .map(imageCommand -> new ProductImage(
                                                        new ProductImageId(idGenerator.nextId()),
-                                                       new ImageUrl(imageCommand.imageUrl())
+                                                       imageCommand.imageUrl()
                                                ))
                                                .collect(toCollection(ArrayList::new));
 
@@ -83,7 +83,7 @@ class ProductImages {
         List<ProductImage> addedImages = addCommands.stream()
                                                     .map(command -> new ProductImage(
                                                             new ProductImageId(idGenerator.nextId()),
-                                                            new ImageUrl(command.imageUrl())
+                                                            command.imageUrl()
                                                     ))
                                                     .toList();
         if (thumbnailImage == null) {
