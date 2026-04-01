@@ -1,6 +1,6 @@
 package io.mallang.test.product.application.provided.command;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.DeductStockUseCase;
 import io.mallang.product.application.provided.command.model.DeductStockCommand;
@@ -9,18 +9,17 @@ import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.exception.NotProductSellerException;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.ProductFixture.generateSellerId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("DeductStockUseCase UseCase")
 class DeductStockUseCaseTest {
 
     @Test
@@ -33,7 +32,11 @@ class DeductStockUseCaseTest {
         MemberId sellerId = generateSellerId();
         Product before = generateProduct(sellerId, 5);
         saveProductPort.save(before);
-        DeductStockCommand command = new DeductStockCommand(sellerId.value(), before.getId().value(), 3);
+        DeductStockCommand command = new DeductStockCommand(
+                sellerId.value(),
+                before.getId().value(),
+                3
+        );
 
         // when
         deductStockUseCase.deductStock(command);
@@ -53,7 +56,11 @@ class DeductStockUseCaseTest {
         // given
         Product product = generateProduct(5);
         saveProductPort.save(product);
-        DeductStockCommand command = new DeductStockCommand(generateSellerId().value(), product.getId().value(), 3);
+        DeductStockCommand command = new DeductStockCommand(
+                generateSellerId().value(),
+                product.getId().value(),
+                3
+        );
 
         // when & then
         assertThatThrownBy(() -> deductStockUseCase.deductStock(command))
@@ -65,7 +72,11 @@ class DeductStockUseCaseTest {
             @Autowired DeductStockUseCase deductStockUseCase
     ) {
         // given
-        DeductStockCommand command = new DeductStockCommand(generateSellerId().value(), "unknown-id", 3);
+        DeductStockCommand command = new DeductStockCommand(
+                generateSellerId().value(),
+                "unknown-id",
+                3
+        );
 
         // when & then
         assertThatThrownBy(() -> deductStockUseCase.deductStock(command))

@@ -12,21 +12,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/products")
 public class ProductCommandApi {
 
-    private final RegisterProductUseCase registerProductUseCase;
-    private final UpdateProductUseCase updateProductUseCase;
     private final AddStockUseCase addStockUseCase;
     private final DeductStockUseCase deductStockUseCase;
+    private final UpdateProductUseCase updateProductUseCase;
+    private final RegisterProductUseCase registerProductUseCase;
     private final DiscontinueProductUseCase discontinueProductUseCase;
 
-    @PostMapping("/products")
+    @PostMapping
     public ResponseEntity<Void> register(
             @Valid @RequestBody CreateProductRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -34,7 +36,8 @@ public class ProductCommandApi {
         List<RegisterProductImageCommand> imageCommands =
                 request.images() == null
                         ? List.of()
-                        : request.images().stream()
+                        : request.images()
+                                 .stream()
                                  .map(image -> new RegisterProductImageCommand(image.imageUrl(), image.isThumbnail()))
                                  .toList();
 
@@ -50,10 +53,15 @@ public class ProductCommandApi {
                 )
         );
 
-        return ResponseEntity.created(URI.create("/products/" + result.productId())).build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                                                  .path("/{id}")
+                                                  .buildAndExpand(result.productId())
+                                                  .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/products/{productId}")
+    @PutMapping("/{productId}")
     public ResponseEntity<Void> update(
             @PathVariable String productId,
             @Valid @RequestBody UpdateProductRequest request,
@@ -73,7 +81,7 @@ public class ProductCommandApi {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/products/{productId}/stock/add")
+    @PatchMapping("/{productId}/stock/add")
     public ResponseEntity<Void> addStock(
             @PathVariable String productId,
             @Valid @RequestBody AddStockRequest request,
@@ -90,7 +98,7 @@ public class ProductCommandApi {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/products/{productId}/stock/deduct")
+    @PatchMapping("/{productId}/stock/deduct")
     public ResponseEntity<Void> deductStock(
             @PathVariable String productId,
             @Valid @RequestBody DeductStockRequest request,
@@ -107,7 +115,7 @@ public class ProductCommandApi {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/products/{productId}/discontinue")
+    @PatchMapping("/{productId}/discontinue")
     public ResponseEntity<Void> discontinue(
             @PathVariable String productId,
             @AuthenticationPrincipal CustomUserDetails userDetails

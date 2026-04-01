@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.toCollection;
 
 class ProductImages {
 
@@ -35,7 +37,7 @@ class ProductImages {
         }
 
         Map<Boolean, List<CreateProductImageCommand>> partitioned = images.stream()
-                                                                          .collect(Collectors.partitioningBy(CreateProductImageCommand::isThumbnail));
+                                                                          .collect(partitioningBy(CreateProductImageCommand::isThumbnail));
 
         List<CreateProductImageCommand> thumbnail = partitioned.get(true);
         List<CreateProductImageCommand> others = partitioned.get(false);
@@ -50,15 +52,15 @@ class ProductImages {
 
         ProductImage thumbnailImage = new ProductImage(
                 new ProductImageId(idGenerator.nextId()),
-                new ImageUrl(thumbnail.getFirst().imageUrl())
+                thumbnail.getFirst().imageUrl()
         );
 
         List<ProductImage> otherImages = others.stream()
                                                .map(imageCommand -> new ProductImage(
                                                        new ProductImageId(idGenerator.nextId()),
-                                                       new ImageUrl(imageCommand.imageUrl())
+                                                       imageCommand.imageUrl()
                                                ))
-                                               .collect(Collectors.toCollection(ArrayList::new));
+                                               .collect(toCollection(ArrayList::new));
 
         return new ProductImages(thumbnailImage, otherImages);
     }
@@ -81,7 +83,7 @@ class ProductImages {
         List<ProductImage> addedImages = addCommands.stream()
                                                     .map(command -> new ProductImage(
                                                             new ProductImageId(idGenerator.nextId()),
-                                                            new ImageUrl(command.imageUrl())
+                                                            command.imageUrl()
                                                     ))
                                                     .toList();
         if (thumbnailImage == null) {

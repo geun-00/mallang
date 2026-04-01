@@ -76,17 +76,17 @@ public class Product {
     }
 
     public static Product create(CreateProductCommand command, MemberId sellerId, IdGenerator idGenerator) {
-        StockQuantity stockQuantity = new StockQuantity(command.stockQuantity());
+        StockQuantity stockQuantity = command.stockQuantity();
 
         return new Product(
                 new ProductId(idGenerator.nextId()),
                 sellerId,
-                new ProductName(command.name()),
-                new ProductDescription(command.description()),
-                new Money(command.price()),
+                command.name(),
+                command.description(),
+                command.price(),
                 stockQuantity,
                 ProductStatus.of(stockQuantity),
-                ProductCategory.from(command.category()),
+                command.category(),
                 ProductImages.from(command.images(), idGenerator),
                 true
         );
@@ -109,10 +109,10 @@ public class Product {
     public void modify(ModifyProductCommand command) {
         validateNotDiscontinued("상품을 수정할 수 없는 상품입니다.");
 
-        this.name = new ProductName(command.name());
-        this.description = new ProductDescription(command.description());
-        this.price = new Money(command.price());
-        this.category = ProductCategory.from(command.category());
+        this.name = command.name();
+        this.description = command.description();
+        this.price = command.price();
+        this.category = command.category();
     }
 
     public void validateEnoughStock(int quantity) {

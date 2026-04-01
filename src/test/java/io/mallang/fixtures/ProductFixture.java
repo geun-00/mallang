@@ -1,16 +1,13 @@
 package io.mallang.fixtures;
 
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
-import io.mallang.product.adapter.web.model.AddProductImagesRequest;
-import io.mallang.product.adapter.web.model.AddStockRequest;
-import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.*;
 import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
-import io.mallang.product.adapter.web.model.DeductStockRequest;
-import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
-import io.mallang.product.domain.Product;
+import io.mallang.product.domain.*;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
@@ -106,32 +103,32 @@ public class ProductFixture {
 
     public static CreateProductCommand generateProductCreateCommand(int stockQuantity) {
         return new CreateProductCommand(
-                generateProductName(),
-                generateProductDescription(),
-                generateProductPriceAmount(),
-                stockQuantity,
-                "FOOD",
+                new ProductName(generateProductName()),
+                new ProductDescription(generateProductDescription()),
+                new Money(generateProductPriceAmount()),
+                new StockQuantity(stockQuantity),
+                ProductCategory.FOOD,
                 List.of()
         );
     }
 
     public static CreateProductCommand generateProductCreateCommand(List<CreateProductImageCommand> images) {
         return new CreateProductCommand(
-                generateProductName(),
-                generateProductDescription(),
-                generateProductPriceAmount(),
-                generateProductStockQuantity(),
-                "FOOD",
+                new ProductName(generateProductName()),
+                new ProductDescription(generateProductDescription()),
+                new Money(generateProductPriceAmount()),
+                new StockQuantity(generateProductStockQuantity()),
+                ProductCategory.FOOD,
                 images
         );
     }
 
     public static ModifyProductCommand generateModifyProductCommand() {
         return new ModifyProductCommand(
-                generateProductName(),
-                generateProductDescription(),
-                generateProductPriceAmount(),
-                "BOOKS"
+                new ProductName(generateProductName()),
+                new ProductDescription(generateProductDescription()),
+                new Money(generateProductPriceAmount()),
+                ProductCategory.BOOKS
         );
     }
 
@@ -170,36 +167,36 @@ public class ProductFixture {
 
     private static List<CreateProductImageCommand> generateProductImageCommand(int nonThumbnailCount) {
         List<CreateProductImageCommand> images = new ArrayList<>();
-        images.add(new CreateProductImageCommand(generateProductImageUrl(), true));
+        images.add(new CreateProductImageCommand(new ImageUrl(generateProductImageUrl()), true));
 
         for (int i = 0; i < nonThumbnailCount; i++) {
-            images.add(new CreateProductImageCommand(generateProductImageUrl(), false));
+            images.add(new CreateProductImageCommand(new ImageUrl(generateProductImageUrl()), false));
         }
         return images;
     }
 
     public static CreateProductCommand generateProductCreateCommandWithImages(int nonThumbnailCount) {
         return new CreateProductCommand(
-                generateProductName(),
-                generateProductDescription(),
-                generateProductPriceAmount(),
-                generateProductStockQuantity(),
-                "FOOD",
+                new ProductName(generateProductName()),
+                new ProductDescription(generateProductDescription()),
+                new Money(generateProductPriceAmount()),
+                new StockQuantity(generateProductStockQuantity()),
+                ProductCategory.FOOD,
                 generateProductImageCommand(nonThumbnailCount)
         );
     }
 
     public static CreateProductCommand generateProductCreateCommandWithImages() {
         return new CreateProductCommand(
-                generateProductName(),
-                generateProductDescription(),
-                generateProductPriceAmount(),
-                generateProductStockQuantity(),
-                "FOOD",
+                new ProductName(generateProductName()),
+                new ProductDescription(generateProductDescription()),
+                new Money(generateProductPriceAmount()),
+                new StockQuantity(generateProductStockQuantity()),
+                ProductCategory.FOOD,
                 List.of(
-                        new CreateProductImageCommand(generateProductImageUrl(), true),
-                        new CreateProductImageCommand(generateProductImageUrl(), false),
-                        new CreateProductImageCommand(generateProductImageUrl(), false)
+                        new CreateProductImageCommand(new ImageUrl(generateProductImageUrl()), true),
+                        new CreateProductImageCommand(new ImageUrl(generateProductImageUrl()), false),
+                        new CreateProductImageCommand(new ImageUrl(generateProductImageUrl()), false)
                 )
         );
     }
@@ -207,7 +204,7 @@ public class ProductFixture {
     public static List<AddProductImageCommand> generateAddProductImageCommand(int count) {
         List<AddProductImageCommand> addImageCommands = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            addImageCommands.add(new AddProductImageCommand(generateProductImageUrl()));
+            addImageCommands.add(new AddProductImageCommand(new ImageUrl(generateProductImageUrl())));
         }
 
         return addImageCommands;

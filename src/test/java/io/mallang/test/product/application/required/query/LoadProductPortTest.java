@@ -1,15 +1,17 @@
 package io.mallang.test.product.application.required.query;
 
+import io.mallang.PortTest;
 import io.mallang.domain.common.exception.AggregateNotLoadedException;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
+import io.mallang.product.domain.ImageUrl;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
@@ -18,7 +20,8 @@ import static io.mallang.fixtures.ProductFixture.generateProductWithImages;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
+@PortTest
+@DisplayName("LoadProduct Port")
 class LoadProductPortTest {
 
     @Test
@@ -59,7 +62,7 @@ class LoadProductPortTest {
         Product loaded = loadProductPort.getById(product.getId());
 
         // when & then
-        assertThatThrownBy(() -> loaded.addImages(List.of(new AddProductImageCommand("https://test.com/new-image.jpg")), () -> "new-id"))
+        assertThatThrownBy(() -> loaded.addImages(List.of(new AddProductImageCommand(new ImageUrl("https://test.com/new-image.jpg"))), () -> "new-id"))
                 .isInstanceOf(AggregateNotLoadedException.class);
     }
 

@@ -1,18 +1,27 @@
 package io.mallang.test.product.application.required.command;
 
+import io.mallang.PortTest;
 import io.mallang.assertions.ProductAssertions;
+import io.mallang.domain.common.vo.Money;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductCategory;
+import io.mallang.product.domain.ProductDescription;
+import io.mallang.product.domain.ProductName;
+import io.mallang.product.domain.command.ModifyProductCommand;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+
+import java.math.BigDecimal;
 
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.ProductFixture.generateProductWithImages;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@PortTest
+@DisplayName("SaveProduct Port")
 class SaveProductPortTest {
 
     @Test
@@ -47,5 +56,30 @@ class SaveProductPortTest {
         assertThat(loadProductPort.getByIdWithImages(product.getId()))
                 .isNotNull()
                 .satisfies(ProductAssertions.isSameAsWithImages(product));
+    }
+
+    @Test
+    void 저장한_상품을_수정한_뒤_다시_저장하면_변경사항이_반영된다(
+            @Autowired SaveProductPort saveProductPort,
+            @Autowired LoadProductPort loadProductPort
+    ) {
+        // given
+        Product product = generateProduct();
+        saveProductPort.save(product);
+
+        product.modify(new ModifyProductCommand(
+                new ProductName("수정된 상품명"),
+                new ProductDescription("수정된 상품 설명"),
+                new Money(new BigDecimal("15000")),
+                ProductCategory.FOOD
+        ));
+
+        // when
+        saveProductPort.save(product);
+
+        // then
+        assertThat(loadProductPort.getById(product.getId()))
+                .isNotNull()
+                .satisfies(ProductAssertions.isSameAs(product));
     }
 }
