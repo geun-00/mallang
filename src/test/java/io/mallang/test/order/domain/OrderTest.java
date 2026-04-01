@@ -2,11 +2,13 @@ package io.mallang.test.order.domain;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
-import io.mallang.order.domain.command.PlaceOrderItemCommand;
 import io.mallang.order.domain.OrderStatus;
 import io.mallang.order.domain.command.PlaceOrderCommand;
+import io.mallang.order.domain.command.PlaceOrderItemCommand;
+import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -47,7 +49,7 @@ class OrderTest {
         PlaceOrderCommand command = generatePlaceOrderCommand();
         Order order = Order.place(command, generateIdGenerator(), generateClockHolder());
 
-        assertThat(order.getMemberId().value()).isEqualTo(command.memberId());
+        assertThat(order.getMemberId()).isEqualTo(command.memberId());
     }
 
     @Test
@@ -89,8 +91,8 @@ class OrderTest {
     void 주문을_생성하면_총_가격은_주문_상품들의_단가와_수량의_합산이다() {
         // given
         List<PlaceOrderItemCommand> items = List.of(
-                new PlaceOrderItemCommand("product-1", 2, BigDecimal.valueOf(10000)),
-                new PlaceOrderItemCommand("product-2", 3, BigDecimal.valueOf(20000))
+                new PlaceOrderItemCommand(new ProductId("product-1"), 2, new Money(BigDecimal.valueOf(10000))),
+                new PlaceOrderItemCommand(new ProductId("product-2"), 3, new Money(BigDecimal.valueOf(20000)))
         );
 
         // when
@@ -111,7 +113,7 @@ class OrderTest {
 
     @Test
     void 주문_상품_가격이_0원이면_예외가_발생한다() {
-        List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand("product-1", 1, BigDecimal.ZERO));
+        List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand(new ProductId("product-1"), 1, new Money(BigDecimal.ZERO)));
 
         assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
                 .isInstanceOf(InvalidValueException.class);
@@ -120,7 +122,9 @@ class OrderTest {
     @Test
     void 주문_상품_수량이_0_이하이면_예외가_발생한다() {
         int invalidQuantity = 0;
-        List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand("product-1", invalidQuantity, BigDecimal.valueOf(10000)));
+        List<PlaceOrderItemCommand> items = List.of(
+                new PlaceOrderItemCommand(new ProductId("product-1"), invalidQuantity, new Money(BigDecimal.valueOf(10000)))
+        );
 
         assertThatThrownBy(() -> Order.place(generatePlaceOrderCommand(items), generateIdGenerator(), generateClockHolder()))
                 .isInstanceOf(InvalidValueException.class);

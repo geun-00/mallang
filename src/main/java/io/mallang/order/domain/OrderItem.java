@@ -34,9 +34,9 @@ public class OrderItem {
     static OrderItem create(PlaceOrderItemCommand itemCommand, IdGenerator idGenerator) {
         return new OrderItem(
                 new OrderItemId(idGenerator.nextId()),
-                new ProductId(itemCommand.productId()),
+                itemCommand.productId(),
                 itemCommand.quantity(),
-                new Money(itemCommand.price())
+                itemCommand.price()
         );
     }
 

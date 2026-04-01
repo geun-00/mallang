@@ -2,6 +2,8 @@ package io.mallang.order.application.service.command;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
@@ -14,7 +16,9 @@ import io.mallang.order.application.provided.command.model.CreateOrderItemComman
 import io.mallang.order.application.provided.command.model.CreateOrderResult;
 import io.mallang.order.application.required.command.SaveOrderPort;
 import io.mallang.order.application.required.query.LoadOrderPort;
-import io.mallang.order.domain.*;
+import io.mallang.order.domain.Order;
+import io.mallang.order.domain.OrderId;
+import io.mallang.order.domain.OrderItem;
 import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.PlaceOrderItemCommand;
 import io.mallang.order.domain.exception.NotOrdererException;
@@ -100,13 +104,10 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
 
         return Order.place(
                 new PlaceOrderCommand(
-                        member.getId().value(),
+                        member.getId(),
                         itemCommands,
-                        command.receiverName(),
-                        command.receiverPhoneNumber(),
-                        command.zipCode(),
-                        command.mainAddress(),
-                        command.detailAddress()
+                        new Receiver(command.receiverName(), command.receiverPhoneNumber()),
+                        new Address(command.zipCode(), command.mainAddress(), command.detailAddress())
                 ),
                 idGenerator,
                 clockHolder
@@ -117,9 +118,9 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         Product product = orderProducts.get(item.productId());
 
         return new PlaceOrderItemCommand(
-                product.getId().value(),
+                product.getId(),
                 item.quantity(),
-                product.getPrice().value()
+                product.getPrice()
         );
     }
 
