@@ -7,7 +7,7 @@ import io.mallang.order.domain.command.PlaceOrderItemCommand;
 
 import java.util.List;
 
-public class OrderItems {
+class OrderItems {
 
     private final List<OrderItem> items;
 

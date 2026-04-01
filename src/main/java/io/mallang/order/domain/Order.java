@@ -1,8 +1,8 @@
 package io.mallang.order.domain;
 
 import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.domain.common.vo.Receiver;
@@ -31,12 +31,13 @@ public class Order {
 
     private OrderStatus status;
 
-    private Order(OrderId orderId,
-                  MemberId memberId,
-                  OrderItems items,
-                  ShippingInfo shippingInfo,
-                  LocalDateTime orderedAt) {
-
+    private Order(
+            OrderId orderId,
+            MemberId memberId,
+            OrderItems items,
+            ShippingInfo shippingInfo,
+            LocalDateTime orderedAt
+    ) {
         this.id = orderId;
         this.memberId = memberId;
         this.items = items;
@@ -46,7 +47,11 @@ public class Order {
         this.orderedAt = orderedAt;
     }
 
-    public static Order place(PlaceOrderCommand command, IdGenerator idGenerator, ClockHolder clockHolder) {
+    public static Order place(
+            PlaceOrderCommand command,
+            IdGenerator idGenerator,
+            ClockHolder clockHolder
+    ) {
         return new Order(
                 new OrderId(idGenerator.nextId()),
                 new MemberId(command.memberId()),
