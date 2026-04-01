@@ -67,4 +67,28 @@ public class TestDataSource {
                 "qwerwasd12@★"
         };
     }
+
+    public static String[] invalidImageUrlValues() {
+        return new String[] {
+                "invalid-url",
+                "http://",
+                "not-a-url",
+                "ftp://example.com"
+        };
+    }
+
+    public static String[] validImageUrlValues() {
+        return new String[] {
+                "http://example.com/image.jpg",
+                "https://example.com/image.png"
+        };
+    }
+
+    public static String[] validProductNameValues() {
+        return new String[] {
+                "상품명",
+                "Valid Product Name 123",
+                "상품명!@#$%^&*()"
+        };
+    }
 }

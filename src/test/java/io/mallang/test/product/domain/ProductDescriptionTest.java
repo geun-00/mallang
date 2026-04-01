@@ -1,12 +1,16 @@
 package io.mallang.test.product.domain;
 
+import io.mallang.DomainTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductDescription;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DomainTest
+@DisplayName("ProductDescription VO")
 class ProductDescriptionTest {
 
     @Test
@@ -27,8 +31,8 @@ class ProductDescriptionTest {
     void 상품_설명이_공백이면_빈_문자열로_생성된다() {
         ProductDescription description = new ProductDescription("   ");
 
-        assertThat(description.value().isBlank()).isTrue();
-        assertThat(description.value()).isEqualTo("");
+        assertThat(description.value()).isBlank();
+        assertThat(description.value()).isEmpty();
     }
 
     @Test
