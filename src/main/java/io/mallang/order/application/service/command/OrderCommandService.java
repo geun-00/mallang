@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -81,14 +82,8 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                                                                   LinkedHashMap::new
                                                           ));
 
-        Map<String, Product> productsById = new LinkedHashMap<>();
-
-        quantitiesByProductId.forEach((productId, quantity) -> {
-            Product product = loadProductPort.getById(new ProductId(productId));
-            product.deductStock(quantity);
-
-            productsById.put(productId, product);
-        });
+        Map<String, Product> productsById = loadProductsById(quantitiesByProductId.keySet());
+        quantitiesByProductId.forEach((productId, quantity) -> productsById.get(productId).deductStock(quantity));
 
         return productsById;
     }
@@ -98,8 +93,17 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
             Member member,
             Map<String, Product> orderProducts
     ) {
-        List<PlaceOrderItemCommand> itemCommands = command.items().stream()
-                                                          .map(item -> toDomainCommand(item, orderProducts))
+        List<PlaceOrderItemCommand> itemCommands = command.items()
+                                                          .stream()
+                                                          .map(item -> {
+                                                              Product product = orderProducts.get(item.productId());
+
+                                                              return new PlaceOrderItemCommand(
+                                                                      product.getId(),
+                                                                      item.quantity(),
+                                                                      product.getPrice()
+                                                              );
+                                                          })
                                                           .toList();
 
         return Order.place(
@@ -111,16 +115,6 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                 ),
                 idGenerator,
                 clockHolder
-        );
-    }
-
-    private PlaceOrderItemCommand toDomainCommand(CreateOrderItemCommand item, Map<String, Product> orderProducts) {
-        Product product = orderProducts.get(item.productId());
-
-        return new PlaceOrderItemCommand(
-                product.getId(),
-                item.quantity(),
-                product.getPrice()
         );
     }
 
@@ -150,15 +144,25 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                                                                   Integer::sum,
                                                                   LinkedHashMap::new
                                                           ));
-        Map<String, Product> productsById = new LinkedHashMap<>();
 
-        quantitiesByProductId.forEach((productId, quantity) -> {
-            Product product = loadProductPort.getById(new ProductId(productId));
-            product.addStock(quantity);
-
-            productsById.put(productId, product);
-        });
+        Map<String, Product> productsById = loadProductsById(quantitiesByProductId.keySet());
+        quantitiesByProductId.forEach((productId, quantity) -> productsById.get(productId).addStock(quantity));
 
         return productsById;
+    }
+
+    private Map<String, Product> loadProductsById(Set<String> productIds) {
+        List<ProductId> ids = productIds.stream()
+                                        .map(ProductId::new)
+                                        .toList();
+
+        return loadProductPort.getAllByIds(ids)
+                              .stream()
+                              .collect(toMap(
+                                      product -> product.getId().value(),
+                                      product -> product,
+                                      (left, right) -> left,
+                                      LinkedHashMap::new
+                              ));
     }
 }

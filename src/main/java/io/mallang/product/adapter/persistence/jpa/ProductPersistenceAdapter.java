@@ -9,6 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
+
 @Repository
 @RequiredArgsConstructor
 public class ProductPersistenceAdapter implements SaveProductPort, LoadProductPort {
@@ -37,5 +42,31 @@ public class ProductPersistenceAdapter implements SaveProductPort, LoadProductPo
         return productJpaRepository.findWithImagesById(productId.value())
                                    .map(ProductJpaEntity::toDomainWithImages)
                                    .orElseThrow(() -> new ProductNotFoundException(productId));
+    }
+
+    @Override
+    public List<Product> getAllByIds(List<ProductId> productIds) {
+        List<String> targetIds = productIds.stream()
+                                           .map(ProductId::value)
+                                           .toList();
+
+        List<Product> foundProducts = productJpaRepository.findAllById(targetIds)
+                                                          .stream()
+                                                          .map(ProductJpaEntity::toDomain)
+                                                          .toList();
+
+        if (foundProducts.size() != targetIds.size()) {
+            Set<ProductId> foundIds = foundProducts.stream()
+                                                   .map(Product::getId)
+                                                   .collect(toSet());
+
+            List<ProductId> missingProductIds = productIds.stream()
+                                                          .filter(productId -> !foundIds.contains(productId))
+                                                          .toList();
+
+            throw new ProductNotFoundException(missingProductIds);
+        }
+
+        return foundProducts;
     }
 }
