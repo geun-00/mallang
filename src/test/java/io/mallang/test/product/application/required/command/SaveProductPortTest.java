@@ -1,5 +1,6 @@
 package io.mallang.test.product.application.required.command;
 
+import io.mallang.PortTest;
 import io.mallang.assertions.ProductAssertions;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.product.application.required.command.SaveProductPort;
@@ -9,9 +10,9 @@ import io.mallang.product.domain.ProductCategory;
 import io.mallang.product.domain.ProductDescription;
 import io.mallang.product.domain.ProductName;
 import io.mallang.product.domain.command.ModifyProductCommand;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
@@ -19,7 +20,8 @@ import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.ProductFixture.generateProductWithImages;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@PortTest
+@DisplayName("SaveProduct Port")
 class SaveProductPortTest {
 
     @Test

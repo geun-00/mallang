@@ -1,20 +1,19 @@
 package io.mallang.test.product.application.provided.command;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.product.application.provided.command.RegisterProductUseCase;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductResult;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.ProductFixture.generateRegisterProductCommand;
 import static io.mallang.fixtures.ProductFixture.generateRegisterProductCommandWithImages;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("RegisterProduct UseCase")
 class RegisterProductUseCaseTest {
 
     @Test

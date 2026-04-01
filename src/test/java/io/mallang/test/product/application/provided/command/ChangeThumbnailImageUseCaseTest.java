@@ -1,6 +1,6 @@
 package io.mallang.test.product.application.provided.command;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.product.application.provided.command.ChangeThumbnailImageUseCase;
 import io.mallang.product.application.provided.command.model.ChangeThumbnailImageCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
@@ -9,18 +9,17 @@ import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductImage;
 import io.mallang.product.domain.exception.NotProductSellerException;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.ProductFixture.generateProductWithImages;
 import static io.mallang.fixtures.ProductFixture.generateSellerId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("ChangeThumbnailImage UseCase")
 class ChangeThumbnailImageUseCaseTest {
 
     @Test
