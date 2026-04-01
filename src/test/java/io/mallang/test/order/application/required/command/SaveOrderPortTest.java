@@ -30,4 +30,23 @@ class SaveOrderPortTest {
                 .isNotNull()
                 .satisfies(OrderAssertions.isSameAs(order));
     }
+
+    @Test
+    void 저장한_주문을_취소한_뒤_다시_저장하면_변경사항이_반영된다(
+            @Autowired SaveOrderPort saveOrderPort,
+            @Autowired LoadOrderPort loadOrderPort
+    ) {
+        // given
+        Order order = generateOrder();
+        saveOrderPort.save(order);
+        order.cancel();
+
+        // when
+        saveOrderPort.save(order);
+
+        // then
+        assertThat(loadOrderPort.getById(order.getId()))
+                .isNotNull()
+                .satisfies(OrderAssertions.isSameAs(order));
+    }
 }

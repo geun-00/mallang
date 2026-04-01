@@ -1,5 +1,6 @@
 package io.mallang.order.adapter.persistence.jpa;
 
+import io.mallang.adapter.persistence.jpa.BaseEntity;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.order.domain.OrderItem;
 import io.mallang.order.domain.OrderItemId;
@@ -12,9 +13,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "order_item")
+@Table(name = "order_items")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderItemJpaEntity {
+class OrderItemJpaEntity extends BaseEntity {
 
     @Id
     @Column(name = "order_item_id")
@@ -33,7 +34,13 @@ public class OrderItemJpaEntity {
     @JoinColumn(name = "order_id")
     private OrderJpaEntity order;
 
-    private OrderItemJpaEntity(String id, String productId, int quantity, BigDecimal price, OrderJpaEntity order) {
+    private OrderItemJpaEntity(
+            String id,
+            String productId,
+            int quantity,
+            BigDecimal price,
+            OrderJpaEntity order
+    ) {
         this.id = id;
         this.productId = productId;
         this.quantity = quantity;
@@ -41,7 +48,7 @@ public class OrderItemJpaEntity {
         this.order = order;
     }
 
-    public static OrderItemJpaEntity from(OrderItem item, OrderJpaEntity order) {
+    static OrderItemJpaEntity from(OrderItem item, OrderJpaEntity order) {
         return new OrderItemJpaEntity(
                 item.getId().value(),
                 item.getProductId().value(),
@@ -51,12 +58,22 @@ public class OrderItemJpaEntity {
         );
     }
 
-    public OrderItem toDomain() {
+    String getId() {
+        return id;
+    }
+
+    OrderItem toDomain() {
         return OrderItem.restore(new RestoreOrderItemCommand(
                 new OrderItemId(id),
                 new ProductId(productId),
                 quantity,
                 new Money(price)
         ));
+    }
+
+    void updateFrom(OrderItem item) {
+        this.productId = item.getProductId().value();
+        this.quantity = item.getQuantity();
+        this.price = item.getPrice().value();
     }
 }

@@ -7,6 +7,7 @@ import io.mallang.order.domain.OrderId;
 import io.mallang.order.domain.exception.OrderNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,8 +16,13 @@ public class OrderPersistenceAdapter implements SaveOrderPort, LoadOrderPort {
     private final OrderJpaRepository orderJpaRepository;
 
     @Override
+    @Transactional
     public void save(Order order) {
-        orderJpaRepository.save(OrderJpaEntity.from(order));
+        orderJpaRepository.findById(order.getId().value())
+                          .ifPresentOrElse(
+                                  entity -> entity.updateFrom(order),
+                                  () -> orderJpaRepository.save(OrderJpaEntity.from(order))
+                          );
     }
 
     @Override
