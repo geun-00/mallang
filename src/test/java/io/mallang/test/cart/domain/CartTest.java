@@ -1,9 +1,10 @@
 package io.mallang.test.cart.domain;
 
-import io.mallang.cart.domain.AddCartItemCommand;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
@@ -100,7 +101,7 @@ class CartTest {
         Cart cart = generateCart();
 
         assertThatThrownBy(() -> cart.changeQuantity(generateNotExistCartItemId(), 1))
-                .isInstanceOf(InvalidValueException.class);
+                .isInstanceOf(CartItemNotFoundException.class);
     }
 
     @Test
@@ -140,7 +141,7 @@ class CartTest {
         Cart cart = generateCart();
 
         assertThatThrownBy(() -> cart.removeItem(generateNotExistCartItemId()))
-                .isInstanceOf(InvalidValueException.class);
+                .isInstanceOf(CartItemNotFoundException.class);
     }
 
     @Test
@@ -156,6 +157,22 @@ class CartTest {
                 .hasSize(1)
                 .extracting(CartItem::getId)
                 .containsExactly(thirdId);
+    }
+
+    @Test
+    void 여러_CartItem_제거_중_존재하지_않는_ID가_포함되면_아무것도_제거되지_않는다() {
+        Cart cart = generateCart();
+        CartItemId firstId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
+        CartItemId secondId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
+        CartItemId thirdId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
+
+        assertThatThrownBy(() -> cart.removeItems(List.of(firstId, generateNotExistCartItemId())))
+                .isInstanceOf(CartItemNotFoundException.class);
+
+        assertThat(cart.getItems())
+                .hasSize(3)
+                .extracting(CartItem::getId)
+                .containsExactly(firstId, secondId, thirdId);
     }
 
     @Test

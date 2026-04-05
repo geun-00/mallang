@@ -6,7 +6,7 @@ import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
 import io.mallang.cart.application.provided.command.model.AddItemToCartResult;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.cart.domain.AddCartItemCommand;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.exception.CartNotFoundException;

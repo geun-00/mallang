@@ -5,12 +5,12 @@ import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
 import io.mallang.cart.application.provided.command.model.RemoveCartItemCommand;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.cart.domain.AddCartItemCommand;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
-import io.mallang.domain.common.exception.InvalidValueException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +52,7 @@ class RemoveCartItemUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> removeCartItemUseCase.removeItem(command))
-                .isInstanceOf(InvalidValueException.class);
+                .isInstanceOf(CartItemNotFoundException.class);
     }
 
     @Test

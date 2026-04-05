@@ -1,7 +1,7 @@
 package io.mallang.fixtures;
 
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
-import io.mallang.cart.domain.AddCartItemCommand;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.domain.common.IdGenerator;

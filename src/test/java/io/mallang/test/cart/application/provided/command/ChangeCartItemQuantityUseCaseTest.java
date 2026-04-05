@@ -5,10 +5,11 @@ import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCas
 import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.cart.domain.AddCartItemCommand;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
@@ -62,7 +63,7 @@ class ChangeCartItemQuantityUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> changeCartItemQuantityUseCase.changeQuantity(command))
-                .isInstanceOf(InvalidValueException.class);
+                .isInstanceOf(CartItemNotFoundException.class);
     }
 
     @Test

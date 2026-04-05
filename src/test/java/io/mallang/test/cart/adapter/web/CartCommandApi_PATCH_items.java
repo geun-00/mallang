@@ -5,7 +5,7 @@ import io.mallang.TestFixtureConfiguration;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.cart.domain.AddCartItemCommand;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
