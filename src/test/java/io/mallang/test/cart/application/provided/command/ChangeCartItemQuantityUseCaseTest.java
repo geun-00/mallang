@@ -1,14 +1,14 @@
 package io.mallang.test.cart.application.provided.command;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
 import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
 import io.mallang.domain.common.exception.InvalidValueException;
@@ -17,18 +17,17 @@ import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.CartFixture.*;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("ChangeCartItemQuantity UseCase")
 class ChangeCartItemQuantityUseCaseTest {
 
     @Test
