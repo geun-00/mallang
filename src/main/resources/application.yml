@@ -3,7 +3,7 @@ spring:
     name: mallang
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
     driver-class-name: org.postgresql.Driver
     username: root
     password: password
@@ -14,5 +14,9 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
         highlight_sql: true
+        order_updates: true
+        order_inserts: true
+        jdbc:
+          batch_size: 50
+        generate_statistics: true
