@@ -46,27 +46,35 @@ public class ProductPersistenceAdapter implements SaveProductPort, LoadProductPo
 
     @Override
     public List<Product> getAllByIds(List<ProductId> productIds) {
-        List<String> targetIds = productIds.stream()
-                                           .map(ProductId::value)
-                                           .toList();
-
-        List<Product> foundProducts = productJpaRepository.findAllById(targetIds)
+        List<Product> foundProducts = productJpaRepository.findAllById(toIdValues(productIds))
                                                           .stream()
                                                           .map(ProductJpaEntity::toDomain)
                                                           .toList();
 
-        if (foundProducts.size() != targetIds.size()) {
-            Set<ProductId> foundIds = foundProducts.stream()
-                                                   .map(Product::getId)
+        Set<String> foundProductIds = foundProducts.stream()
+                                                   .map(product -> product.getId().value())
                                                    .collect(toSet());
 
-            List<ProductId> missingProductIds = productIds.stream()
-                                                          .filter(productId -> !foundIds.contains(productId))
-                                                          .toList();
-
-            throw new ProductNotFoundException(missingProductIds);
-        }
+        validateAllProductsFound(productIds, foundProductIds);
 
         return foundProducts;
+    }
+
+    private List<String> toIdValues(List<ProductId> productIds) {
+        return productIds.stream()
+                         .map(ProductId::value)
+                         .toList();
+    }
+
+    private void validateAllProductsFound(List<ProductId> targetProductIds, Set<String> foundProductIds) {
+        if (targetProductIds.size() == foundProductIds.size()) {
+            return;
+        }
+
+        List<ProductId> missingProductIds = targetProductIds.stream()
+                                                            .filter(productId -> !foundProductIds.contains(productId.value()))
+                                                            .toList();
+
+        throw new ProductNotFoundException(missingProductIds);
     }
 }

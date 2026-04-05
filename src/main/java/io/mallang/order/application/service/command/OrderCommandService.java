@@ -44,21 +44,25 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
 
     private final IdGenerator idGenerator;
     private final ClockHolder clockHolder;
-    private final LoadMemberPort loadMemberPort;
     private final LoadOrderPort loadOrderPort;
+    private final LoadMemberPort loadMemberPort;
     private final LoadProductPort loadProductPort;
-    private final SaveProductPort saveProductPort;
     private final SaveOrderPort saveOrderPort;
+    private final SaveProductPort saveProductPort;
 
     @Override
     public CreateOrderResult place(CreateOrderCommand command) {
         Member member = getOrderableMember(command.memberIdValue());
-        // TODO : 일괄 로딩 및 일괄 저장 개선
-        Map<String, Product> orderProducts = deductStocks(command.items());
+
+        Map<String, Integer> quantitiesByProductId = aggregateQuantities(command.items());
+        Map<String, Product> orderProducts = loadProductsById(quantitiesByProductId.keySet());
+
+        deductStocks(orderProducts, quantitiesByProductId);
+
         Order order = createOrder(command, member, orderProducts);
 
-        orderProducts.values().forEach(saveProductPort::save);
-        saveOrderPort.save(order);
+        saveProducts(orderProducts.values());
+        saveOrder(order);
 
         return new CreateOrderResult(order.getId().value());
     }
@@ -73,19 +77,24 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         return member;
     }
 
-    private Map<String, Product> deductStocks(List<CreateOrderItemCommand> items) {
-        Map<String, Integer> quantitiesByProductId = items.stream()
-                                                          .collect(toMap(
-                                                                  CreateOrderItemCommand::productId,
-                                                                  CreateOrderItemCommand::quantity,
-                                                                  Integer::sum,
-                                                                  LinkedHashMap::new
-                                                          ));
+    private Map<String, Integer> aggregateQuantities(List<CreateOrderItemCommand> items) {
+        return items.stream()
+                    .collect(toMap(
+                            CreateOrderItemCommand::productId,
+                            CreateOrderItemCommand::quantity,
+                            Integer::sum,
+                            LinkedHashMap::new
+                    ));
+    }
 
-        Map<String, Product> productsById = loadProductsById(quantitiesByProductId.keySet());
-        quantitiesByProductId.forEach((productId, quantity) -> productsById.get(productId).deductStock(quantity));
-
-        return productsById;
+    private void deductStocks(
+            Map<String, Product> productsById,
+            Map<String, Integer> quantitiesByProductId
+    ) {
+        quantitiesByProductId.forEach((productId, quantity) -> {
+            Product product = productsById.get(productId);
+            product.deductStock(quantity);
+        });
     }
 
     private Order createOrder(
@@ -105,7 +114,6 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                                                               );
                                                           })
                                                           .toList();
-
         return Order.place(
                 new PlaceOrderCommand(
                         member.getId(),
@@ -118,7 +126,6 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         );
     }
 
-
     @Override
     public void cancel(CancelOrderCommand command) {
         Order order = loadOrderPort.getById(new OrderId(command.orderIdValue()));
@@ -129,26 +136,33 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
 
         order.cancel();
 
-        // TODO : 일괄 로딩 및 일괄 저장 개선
-        Map<String, Product> productsById = addStocks(order.getItems());
+        Map<String, Integer> quantitiesByProductId = aggregateOrderItemQuantities(order.getItems());
+        Map<String, Product> productsById = loadProductsById(quantitiesByProductId.keySet());
 
-        productsById.values().forEach(saveProductPort::save);
-        saveOrderPort.save(order);
+        restoreStocks(productsById, quantitiesByProductId);
+
+        saveProducts(productsById.values());
+        saveOrder(order);
     }
 
-    private Map<String, Product> addStocks(List<OrderItem> items) {
-        Map<String, Integer> quantitiesByProductId = items.stream()
-                                                          .collect(toMap(
-                                                                  item -> item.getProductId().value(),
-                                                                  OrderItem::getQuantity,
-                                                                  Integer::sum,
-                                                                  LinkedHashMap::new
-                                                          ));
+    private Map<String, Integer> aggregateOrderItemQuantities(List<OrderItem> items) {
+        return items.stream()
+                    .collect(toMap(
+                            item -> item.getProductId().value(),
+                            OrderItem::getQuantity,
+                            Integer::sum,
+                            LinkedHashMap::new
+                    ));
+    }
 
-        Map<String, Product> productsById = loadProductsById(quantitiesByProductId.keySet());
-        quantitiesByProductId.forEach((productId, quantity) -> productsById.get(productId).addStock(quantity));
-
-        return productsById;
+    private void restoreStocks(
+            Map<String, Product> productsById,
+            Map<String, Integer> quantitiesByProductId
+    ) {
+        quantitiesByProductId.forEach((productId, quantity) -> {
+            Product product = productsById.get(productId);
+            product.addStock(quantity);
+        });
     }
 
     private Map<String, Product> loadProductsById(Set<String> productIds) {
@@ -164,5 +178,13 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                                       (left, right) -> left,
                                       LinkedHashMap::new
                               ));
+    }
+
+    private void saveProducts(Iterable<Product> products) {
+        products.forEach(saveProductPort::save);
+    }
+
+    private void saveOrder(Order order) {
+        saveOrderPort.save(order);
     }
 }
