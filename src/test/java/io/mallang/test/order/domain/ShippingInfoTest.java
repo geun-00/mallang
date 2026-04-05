@@ -1,14 +1,18 @@
 package io.mallang.test.order.domain;
 
+import io.mallang.DomainTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.order.domain.ShippingInfo;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DomainTest
+@DisplayName("ShippingInfo VO")
 class ShippingInfoTest {
 
     @Test
