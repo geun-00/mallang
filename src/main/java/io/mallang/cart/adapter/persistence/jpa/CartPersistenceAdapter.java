@@ -18,7 +18,7 @@ public class CartPersistenceAdapter implements SaveCartPort, LoadCartPort {
     @Override
     @Transactional
     public void save(Cart cart) {
-        cartJpaRepository.findById(cart.getMemberId().value())
+        cartJpaRepository.findWithItemsByMemberId(cart.getMemberId().value())
                          .ifPresentOrElse(
                                  entity -> entity.updateFrom(cart),
                                  () -> cartJpaRepository.save(CartJpaEntity.from(cart))
