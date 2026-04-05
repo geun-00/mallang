@@ -1,6 +1,7 @@
 package io.mallang.cart.adapter.persistence.jpa;
 
 import io.mallang.cart.domain.Cart;
+import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.command.RestoreCartCommand;
 import io.mallang.member.domain.MemberId;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "cart")
+@Table(name = "carts")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartJpaEntity {
 
@@ -26,20 +27,41 @@ public class CartJpaEntity {
         this.memberId = memberId;
     }
 
-    public static CartJpaEntity from(Cart cart) {
+    static CartJpaEntity from(Cart cart) {
         CartJpaEntity entity = new CartJpaEntity(cart.getMemberId().value());
 
-        cart.getItems().stream()
+        cart.getItems()
+            .stream()
             .map(item -> CartItemJpaEntity.from(item, entity))
             .forEach(entity.items::add);
 
         return entity;
     }
 
-    public Cart toDomain() {
+    Cart toDomain() {
         return Cart.restore(new RestoreCartCommand(
                 new MemberId(memberId),
-                items.stream().map(CartItemJpaEntity::toDomain).toList()
+                items.stream()
+                     .map(CartItemJpaEntity::toDomain)
+                     .toList()
         ));
     }
+
+    void updateFrom(Cart cart) {
+        List<CartItem> cartItems = cart.getItems();
+
+        this.items.removeIf(entityItem -> cartItems.stream()
+                                                   .noneMatch(item -> item.getId().value().equals(entityItem.getId())));
+
+        for (CartItem item : cartItems) {
+            this.items.stream()
+                      .filter(entityItem -> entityItem.getId().equals(item.getId().value()))
+                      .findFirst()
+                      .ifPresentOrElse(
+                              entityItem -> entityItem.updateFrom(item),
+                              () -> this.items.add(CartItemJpaEntity.from(item, this))
+                      );
+        }
+    }
+
 }

@@ -9,9 +9,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "cart_item")
+@Table(name = "cart_items")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CartItemJpaEntity {
+class CartItemJpaEntity {
 
     @Id
     @Column(name = "cart_item_id")
@@ -34,7 +34,7 @@ public class CartItemJpaEntity {
         this.cart = cart;
     }
 
-    public static CartItemJpaEntity from(CartItem item, CartJpaEntity cart) {
+    static CartItemJpaEntity from(CartItem item, CartJpaEntity cart) {
         return new CartItemJpaEntity(
                 item.getId().value(),
                 item.getProductId().value(),
@@ -43,7 +43,16 @@ public class CartItemJpaEntity {
         );
     }
 
-    public CartItem toDomain() {
+    String getId() {
+        return id;
+    }
+
+    void updateFrom(CartItem item) {
+        this.productId = item.getProductId().value();
+        this.quantity = item.getQuantity();
+    }
+
+    CartItem toDomain() {
         return CartItem.restore(new RestoreCartItemCommand(
                 new CartItemId(id),
                 new ProductId(productId),
