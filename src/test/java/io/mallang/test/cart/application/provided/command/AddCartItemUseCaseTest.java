@@ -77,7 +77,7 @@ class AddCartItemUseCaseTest {
         Cart cart = generateCart();
         Product product = generateProduct(4);
 
-        cart.addItem(new AddCartItemCommand(product.getId().value(), 2), generateIdGenerator());
+        cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
@@ -137,7 +137,7 @@ class AddCartItemUseCaseTest {
         Cart cart = generateCart();
         Product product = generateProduct();
 
-        cart.addItem(new AddCartItemCommand(product.getId().value(), 2), generateIdGenerator());
+        cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
 
         saveCartPort.save(cart);
         saveProductPort.save(product);

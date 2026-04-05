@@ -48,9 +48,9 @@ class CartTest {
     void 이미_담긴_상품을_추가하면_새_CartItem이_생성되지_않고_수량이_합산된다() {
         Cart cart = generateCart();
         String productId = UUID.randomUUID().toString();
-        cart.addItem(new AddCartItemCommand(productId, 2), generateIdGenerator());
+        cart.addItem(new AddCartItemCommand(new ProductId(productId), 2), generateIdGenerator());
 
-        cart.addItem(new AddCartItemCommand(productId, 3), generateIdGenerator());
+        cart.addItem(new AddCartItemCommand(new ProductId(productId), 3), generateIdGenerator());
 
         assertThat(cart.getItems())
                 .hasSize(1)
@@ -207,8 +207,8 @@ class CartTest {
         Cart cart = generateCart();
         String productId1 = UUID.randomUUID().toString();
         String productId2 = UUID.randomUUID().toString();
-        cart.addItem(new AddCartItemCommand(productId1, 1), generateIdGenerator());
-        cart.addItem(new AddCartItemCommand(productId2, 1), generateIdGenerator());
+        cart.addItem(new AddCartItemCommand(new ProductId(productId1), 1), generateIdGenerator());
+        cart.addItem(new AddCartItemCommand(new ProductId(productId2), 1), generateIdGenerator());
 
         List<ProductId> productIds = cart.getProductIds();
 

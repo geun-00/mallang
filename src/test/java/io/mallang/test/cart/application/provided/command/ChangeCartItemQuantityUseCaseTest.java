@@ -15,6 +15,7 @@ import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.exception.ProductNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ class ChangeCartItemQuantityUseCaseTest {
     ) {
         // given
         Cart cart = generateCart();
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand("product-1", 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(new ProductId("product-1"), 2), generateIdGenerator());
         saveCartPort.save(cart);
 
         var command = new ChangeCartItemQuantityCommand(
@@ -96,7 +97,7 @@ class ChangeCartItemQuantityUseCaseTest {
         // given
         Cart cart = generateCart();
         Product product = generateProduct(4);
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId().value(), 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
@@ -122,7 +123,7 @@ class ChangeCartItemQuantityUseCaseTest {
         // given
         Cart cart = generateCart();
         Product product = generateProduct(10);
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId().value(), 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
 
         saveCartPort.save(cart);
         saveProductPort.save(product);

@@ -70,8 +70,8 @@ class CartItems {
                     .toList();
     }
 
-    ProductId getProductIdOf(CartItemId cartItemId) {
-        return findById(cartItemId).getProductId();
+    CartItem getItem(CartItemId cartItemId) {
+        return findById(cartItemId);
     }
 
     List<CartItem> toList() {

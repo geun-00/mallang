@@ -35,15 +35,15 @@ public class Cart {
     }
 
     public CartItemId addItem(AddCartItemCommand command, IdGenerator idGenerator) {
-        return items.add(new ProductId(command.productId()), command.quantity(), idGenerator);
+        return items.add(command.productId(), command.quantity(), idGenerator);
     }
 
     public void changeQuantity(CartItemId itemId, int quantity) {
         items.changeQuantity(itemId, quantity);
     }
 
-    public ProductId getProductIdOf(CartItemId itemId) {
-        return items.getProductIdOf(itemId);
+    public CartItem getItem(CartItemId itemId) {
+        return items.getItem(itemId);
     }
 
     public void removeItem(CartItemId itemId) {

@@ -14,6 +14,7 @@ import io.mallang.member.domain.Email;
 import io.mallang.member.domain.Member;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -112,7 +113,7 @@ class CartCommandApi_PATCH_items {
     }
 
     @Test
-    void 존재하지_않는_장바구니_항목이면_400_Bad_Request_상태코드를_반환한다(
+    void 존재하지_않는_장바구니_항목이면_404_Not_Found_상태코드를_반환한다(
             @Autowired TestFixture fixture
     ) {
         // given
@@ -123,7 +124,7 @@ class CartCommandApi_PATCH_items {
         ResponseEntity<Void> response = fixture.changeCartItemQuantity(generateNotExistCartItemId().value(), request);
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -140,7 +141,7 @@ class CartCommandApi_PATCH_items {
         Member member = loadMemberPort.getByEmail(new Email(memberRequest.email()));
 
         Cart cart = loadCartPort.getByMemberId(member.getId());
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand("unknown-product-id", 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(new ProductId("unknown-product-id"), 2), generateIdGenerator());
         saveCartPort.save(cart);
 
         var request = new ChangeCartItemQuantityRequest(3);

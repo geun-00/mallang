@@ -59,7 +59,7 @@ class CartCommandApi_DELETE_items {
     }
 
     @Test
-    void 존재하지_않는_장바구니_항목이면_400_Bad_Request_상태코드를_반환한다(
+    void 존재하지_않는_장바구니_항목이면_404_Not_Found_상태코드를_반환한다(
             @Autowired TestFixture fixture
     ) {
         // given
@@ -69,6 +69,6 @@ class CartCommandApi_DELETE_items {
         ResponseEntity<Void> response = fixture.removeCartItem(generateNotExistCartItemId().value());
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
     }
 }

@@ -11,6 +11,7 @@ import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
+import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,8 +64,8 @@ class RemoveCartItemUseCaseTest {
     ) {
         // given
         Cart cart = generateCart();
-        CartItemId firstItemId = cart.addItem(new AddCartItemCommand("product-1", 1), generateIdGenerator());
-        CartItemId secondItemId = cart.addItem(new AddCartItemCommand("product-2", 2), generateIdGenerator());
+        CartItemId firstItemId = cart.addItem(new AddCartItemCommand(new ProductId("product-1"), 1), generateIdGenerator());
+        CartItemId secondItemId = cart.addItem(new AddCartItemCommand(new ProductId("product-2"), 2), generateIdGenerator());
         saveCartPort.save(cart);
 
         var command = new RemoveCartItemCommand(
