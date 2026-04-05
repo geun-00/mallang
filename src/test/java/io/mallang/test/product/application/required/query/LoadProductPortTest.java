@@ -17,6 +17,7 @@ import java.util.List;
 
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.ProductFixture.generateProductWithImages;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -89,6 +90,40 @@ class LoadProductPortTest {
 
         // when & then
         assertThatThrownBy(() -> loadProductPort.getByIdWithImages(unknownId))
+                .isInstanceOf(ProductNotFoundException.class);
+    }
+
+    @Test
+    void getAllByIds는_요청한_ID들에_해당하는_Product를_조회한다(
+            @Autowired SaveProductPort saveProductPort,
+            @Autowired LoadProductPort loadProductPort
+    ) {
+        // given
+        Product firstProduct = generateProduct();
+        Product secondProduct = generateProduct();
+        saveProductPort.save(firstProduct);
+        saveProductPort.save(secondProduct);
+
+        // when
+        List<Product> loadedProducts = loadProductPort.getAllByIds(List.of(secondProduct.getId(), firstProduct.getId()));
+
+        // then
+        assertThat(loadedProducts)
+                .extracting(Product::getId)
+                .containsExactlyInAnyOrder(secondProduct.getId(), firstProduct.getId());
+    }
+
+    @Test
+    void getAllByIds는_존재하지_않는_ID가_포함되면_ProductNotFoundException이_발생한다(
+            @Autowired SaveProductPort saveProductPort,
+            @Autowired LoadProductPort loadProductPort
+    ) {
+        // given
+        Product product = generateProduct();
+        saveProductPort.save(product);
+
+        // when & then
+        assertThatThrownBy(() -> loadProductPort.getAllByIds(List.of(product.getId(), new ProductId("unknown"))))
                 .isInstanceOf(ProductNotFoundException.class);
     }
 }

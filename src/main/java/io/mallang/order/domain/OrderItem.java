@@ -4,8 +4,8 @@ import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.order.domain.command.PlaceOrderItemCommand;
-import io.mallang.product.domain.ProductId;
 import io.mallang.order.domain.command.RestoreOrderItemCommand;
+import io.mallang.product.domain.ProductId;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -34,9 +34,9 @@ public class OrderItem {
     static OrderItem create(PlaceOrderItemCommand itemCommand, IdGenerator idGenerator) {
         return new OrderItem(
                 new OrderItemId(idGenerator.nextId()),
-                new ProductId(itemCommand.productId()),
+                itemCommand.productId(),
                 itemCommand.quantity(),
-                new Money(itemCommand.price())
+                itemCommand.price()
         );
     }
 
@@ -49,13 +49,13 @@ public class OrderItem {
         );
     }
 
-    private static void validateQuantity(int quantity) {
+    private void validateQuantity(int quantity) {
         if (quantity <= 0) {
             throw new InvalidValueException("주문 수량은 1개 이상이어야 합니다.");
         }
     }
 
-    private static void validatePrice(Money price) {
+    private void validatePrice(Money price) {
         if (price.value().compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidValueException("주문 상품 가격은 0원보다 커야 합니다.");
         }

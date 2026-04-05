@@ -1,30 +1,28 @@
 package io.mallang.assertions;
 
-import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Money;
-import io.mallang.domain.common.vo.Receiver;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
-import io.mallang.product.domain.Product;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderItem;
-import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.ShippingInfo;
+import io.mallang.order.domain.command.PlaceOrderCommand;
+import io.mallang.product.domain.Product;
 import org.assertj.core.api.ThrowingConsumer;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderAssertions {
 
     public static ThrowingConsumer<ShippingInfo> isDerivedFrom(PlaceOrderCommand command) {
         return shippingInfo -> {
-            assertThat(shippingInfo.receiver()).isEqualTo(new Receiver(command.receiverName(), command.receiverPhoneNumber()));
-            assertThat(shippingInfo.address()).isEqualTo(new Address(command.zipCode(), command.mainAddress(), command.detailAddress()));
+            assertThat(shippingInfo.receiver()).isEqualTo(command.receiver());
+            assertThat(shippingInfo.address()).isEqualTo(command.address());
         };
     }
 

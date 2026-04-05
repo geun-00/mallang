@@ -1,13 +1,18 @@
 package io.mallang.test.order.domain;
 
+import io.mallang.DomainTest;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;
 import io.mallang.order.domain.ShippingInfo;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DomainTest
+@DisplayName("ShippingInfo VO")
 class ShippingInfoTest {
 
     @Test
@@ -24,7 +29,7 @@ class ShippingInfoTest {
         Address address = new Address("12345", "서울시 강남구 테헤란로 1", "101호");
 
         assertThatThrownBy(() -> new ShippingInfo(null, address))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -32,6 +37,6 @@ class ShippingInfoTest {
         Receiver receiver = new Receiver("홍길동", "01012345678");
 
         assertThatThrownBy(() -> new ShippingInfo(receiver, null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 }

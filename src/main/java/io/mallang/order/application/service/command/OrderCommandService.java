@@ -2,6 +2,8 @@ package io.mallang.order.application.service.command;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
@@ -14,7 +16,9 @@ import io.mallang.order.application.provided.command.model.CreateOrderItemComman
 import io.mallang.order.application.provided.command.model.CreateOrderResult;
 import io.mallang.order.application.required.command.SaveOrderPort;
 import io.mallang.order.application.required.query.LoadOrderPort;
-import io.mallang.order.domain.*;
+import io.mallang.order.domain.Order;
+import io.mallang.order.domain.OrderId;
+import io.mallang.order.domain.OrderItem;
 import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.PlaceOrderItemCommand;
 import io.mallang.order.domain.exception.NotOrdererException;
@@ -29,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -39,21 +44,25 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
 
     private final IdGenerator idGenerator;
     private final ClockHolder clockHolder;
-    private final LoadMemberPort loadMemberPort;
     private final LoadOrderPort loadOrderPort;
+    private final LoadMemberPort loadMemberPort;
     private final LoadProductPort loadProductPort;
-    private final SaveProductPort saveProductPort;
     private final SaveOrderPort saveOrderPort;
+    private final SaveProductPort saveProductPort;
 
     @Override
     public CreateOrderResult place(CreateOrderCommand command) {
         Member member = getOrderableMember(command.memberIdValue());
-        // TODO : 일괄 로딩 및 일괄 저장 개선
-        Map<String, Product> orderProducts = deductStocks(command.items());
+
+        Map<String, Integer> quantitiesByProductId = aggregateQuantities(command.items());
+        Map<String, Product> orderProducts = loadProductsById(quantitiesByProductId.keySet());
+
+        deductStocks(orderProducts, quantitiesByProductId);
+
         Order order = createOrder(command, member, orderProducts);
 
-        orderProducts.values().forEach(saveProductPort::save);
-        saveOrderPort.save(order);
+        saveProducts(orderProducts.values());
+        saveOrder(order);
 
         return new CreateOrderResult(order.getId().value());
     }
@@ -68,25 +77,24 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         return member;
     }
 
-    private Map<String, Product> deductStocks(List<CreateOrderItemCommand> items) {
-        Map<String, Integer> quantitiesByProductId = items.stream()
-                                                          .collect(toMap(
-                                                                  CreateOrderItemCommand::productId,
-                                                                  CreateOrderItemCommand::quantity,
-                                                                  Integer::sum,
-                                                                  LinkedHashMap::new
-                                                          ));
+    private Map<String, Integer> aggregateQuantities(List<CreateOrderItemCommand> items) {
+        return items.stream()
+                    .collect(toMap(
+                            CreateOrderItemCommand::productId,
+                            CreateOrderItemCommand::quantity,
+                            Integer::sum,
+                            LinkedHashMap::new
+                    ));
+    }
 
-        Map<String, Product> productsById = new LinkedHashMap<>();
-
+    private void deductStocks(
+            Map<String, Product> productsById,
+            Map<String, Integer> quantitiesByProductId
+    ) {
         quantitiesByProductId.forEach((productId, quantity) -> {
-            Product product = loadProductPort.getById(new ProductId(productId));
+            Product product = productsById.get(productId);
             product.deductStock(quantity);
-
-            productsById.put(productId, product);
         });
-
-        return productsById;
     }
 
     private Order createOrder(
@@ -94,35 +102,29 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
             Member member,
             Map<String, Product> orderProducts
     ) {
-        List<PlaceOrderItemCommand> itemCommands = command.items().stream()
-                                                          .map(item -> toDomainCommand(item, orderProducts))
-                                                          .toList();
+        List<PlaceOrderItemCommand> itemCommands = command.items()
+                                                          .stream()
+                                                          .map(item -> {
+                                                              Product product = orderProducts.get(item.productId());
 
+                                                              return new PlaceOrderItemCommand(
+                                                                      product.getId(),
+                                                                      item.quantity(),
+                                                                      product.getPrice()
+                                                              );
+                                                          })
+                                                          .toList();
         return Order.place(
                 new PlaceOrderCommand(
-                        member.getId().value(),
+                        member.getId(),
                         itemCommands,
-                        command.receiverName(),
-                        command.receiverPhoneNumber(),
-                        command.zipCode(),
-                        command.mainAddress(),
-                        command.detailAddress()
+                        new Receiver(command.receiverName(), command.receiverPhoneNumber()),
+                        new Address(command.zipCode(), command.mainAddress(), command.detailAddress())
                 ),
                 idGenerator,
                 clockHolder
         );
     }
-
-    private PlaceOrderItemCommand toDomainCommand(CreateOrderItemCommand item, Map<String, Product> orderProducts) {
-        Product product = orderProducts.get(item.productId());
-
-        return new PlaceOrderItemCommand(
-                product.getId().value(),
-                item.quantity(),
-                product.getPrice().value()
-        );
-    }
-
 
     @Override
     public void cancel(CancelOrderCommand command) {
@@ -134,30 +136,55 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
 
         order.cancel();
 
-        // TODO : 일괄 로딩 및 일괄 저장 개선
-        Map<String, Product> productsById = addStocks(order.getItems());
+        Map<String, Integer> quantitiesByProductId = aggregateOrderItemQuantities(order.getItems());
+        Map<String, Product> productsById = loadProductsById(quantitiesByProductId.keySet());
 
-        productsById.values().forEach(saveProductPort::save);
-        saveOrderPort.save(order);
+        restoreStocks(productsById, quantitiesByProductId);
+
+        saveProducts(productsById.values());
+        saveOrder(order);
     }
 
-    private Map<String, Product> addStocks(List<OrderItem> items) {
-        Map<String, Integer> quantitiesByProductId = items.stream()
-                                                          .collect(toMap(
-                                                                  item -> item.getProductId().value(),
-                                                                  OrderItem::getQuantity,
-                                                                  Integer::sum,
-                                                                  LinkedHashMap::new
-                                                          ));
-        Map<String, Product> productsById = new LinkedHashMap<>();
+    private Map<String, Integer> aggregateOrderItemQuantities(List<OrderItem> items) {
+        return items.stream()
+                    .collect(toMap(
+                            item -> item.getProductId().value(),
+                            OrderItem::getQuantity,
+                            Integer::sum,
+                            LinkedHashMap::new
+                    ));
+    }
 
+    private void restoreStocks(
+            Map<String, Product> productsById,
+            Map<String, Integer> quantitiesByProductId
+    ) {
         quantitiesByProductId.forEach((productId, quantity) -> {
-            Product product = loadProductPort.getById(new ProductId(productId));
+            Product product = productsById.get(productId);
             product.addStock(quantity);
-
-            productsById.put(productId, product);
         });
+    }
 
-        return productsById;
+    private Map<String, Product> loadProductsById(Set<String> productIds) {
+        List<ProductId> ids = productIds.stream()
+                                        .map(ProductId::new)
+                                        .toList();
+
+        return loadProductPort.getAllByIds(ids)
+                              .stream()
+                              .collect(toMap(
+                                      product -> product.getId().value(),
+                                      product -> product,
+                                      (left, right) -> left,
+                                      LinkedHashMap::new
+                              ));
+    }
+
+    private void saveProducts(Iterable<Product> products) {
+        products.forEach(saveProductPort::save);
+    }
+
+    private void saveOrder(Order order) {
+        saveOrderPort.save(order);
     }
 }

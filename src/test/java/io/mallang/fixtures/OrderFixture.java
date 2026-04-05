@@ -2,6 +2,9 @@ package io.mallang.fixtures;
 
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.IdGenerator;
+import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.vo.Money;
+import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
@@ -9,6 +12,7 @@ import io.mallang.order.application.provided.command.model.CreateOrderItemComman
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.PlaceOrderItemCommand;
+import io.mallang.product.domain.ProductId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -51,13 +55,10 @@ public class OrderFixture {
 
     public static PlaceOrderCommand generatePlaceOrderCommand(List<PlaceOrderItemCommand> items) {
         return new PlaceOrderCommand(
-                UUID.randomUUID().toString(),
+                new MemberId(UUID.randomUUID().toString()),
                 items,
-                "홍길동",
-                "01012345678",
-                "12345",
-                "서울시 강남구 테헤란로 1",
-                "101호"
+                new Receiver("홍길동", "01012345678"),
+                new Address("12345", "서울시 강남구 테헤란로 1", "101호")
         );
     }
 
@@ -80,9 +81,9 @@ public class OrderFixture {
     public static PlaceOrderItemCommand generateOrderItemCommand() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return new PlaceOrderItemCommand(
-                UUID.randomUUID().toString(),
+                new ProductId(UUID.randomUUID().toString()),
                 random.nextInt(1, 10),
-                BigDecimal.valueOf(random.nextInt(1000, 100000))
+                new Money(BigDecimal.valueOf(random.nextInt(1000, 100000)))
         );
     }
 

@@ -1,11 +1,9 @@
 package io.mallang.order.domain;
 
 import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.vo.Address;
+import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
-import io.mallang.domain.common.vo.Receiver;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.RestoreOrderCommand;
@@ -31,12 +29,13 @@ public class Order {
 
     private OrderStatus status;
 
-    private Order(OrderId orderId,
-                  MemberId memberId,
-                  OrderItems items,
-                  ShippingInfo shippingInfo,
-                  LocalDateTime orderedAt) {
-
+    private Order(
+            OrderId orderId,
+            MemberId memberId,
+            OrderItems items,
+            ShippingInfo shippingInfo,
+            LocalDateTime orderedAt
+    ) {
         this.id = orderId;
         this.memberId = memberId;
         this.items = items;
@@ -46,12 +45,16 @@ public class Order {
         this.orderedAt = orderedAt;
     }
 
-    public static Order place(PlaceOrderCommand command, IdGenerator idGenerator, ClockHolder clockHolder) {
+    public static Order place(
+            PlaceOrderCommand command,
+            IdGenerator idGenerator,
+            ClockHolder clockHolder
+    ) {
         return new Order(
                 new OrderId(idGenerator.nextId()),
-                new MemberId(command.memberId()),
+                command.memberId(),
                 OrderItems.from(command.items(), idGenerator),
-                createShippingInfo(command),
+                new ShippingInfo(command.receiver(), command.address()),
                 clockHolder.now()
         );
     }
@@ -66,13 +69,6 @@ public class Order {
         );
         order.status = command.status();
         return order;
-    }
-
-    private static ShippingInfo createShippingInfo(PlaceOrderCommand command) {
-        return new ShippingInfo(
-                new Receiver(command.receiverName(), command.receiverPhoneNumber()),
-                new Address(command.zipCode(), command.mainAddress(), command.detailAddress())
-        );
     }
 
     public void cancel() {

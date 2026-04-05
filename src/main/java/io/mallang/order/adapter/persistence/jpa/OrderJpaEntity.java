@@ -1,5 +1,6 @@
 package io.mallang.order.adapter.persistence.jpa;
 
+import io.mallang.adapter.persistence.jpa.BaseEntity;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderId;
@@ -13,11 +14,17 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderJpaEntity {
+public class OrderJpaEntity extends BaseEntity {
 
     @Id
     @Column(name = "order_id")
@@ -58,7 +65,7 @@ public class OrderJpaEntity {
         this.orderedAt = orderedAt;
     }
 
-    public static OrderJpaEntity from(Order order) {
+    static OrderJpaEntity from(Order order) {
         ShippingInfo shippingInfo = order.getShippingInfo();
         OrderJpaEntity entity = new OrderJpaEntity(
                 order.getId().value(),
@@ -76,14 +83,65 @@ public class OrderJpaEntity {
         return entity;
     }
 
-    public Order toDomain() {
+    Order toDomain() {
         return Order.restore(new RestoreOrderCommand(
                 new OrderId(id),
                 new MemberId(memberId),
-                items.stream().map(OrderItemJpaEntity::toDomain).toList(),
+                items.stream()
+                     .map(OrderItemJpaEntity::toDomain)
+                     .toList(),
                 new ShippingInfo(receiver.toDomain(), address.toDomain()),
                 status,
                 orderedAt
         ));
+    }
+
+    void updateFrom(Order order) {
+        ShippingInfo shippingInfo = order.getShippingInfo();
+
+        this.memberId = order.getMemberId().value();
+        this.receiver = ReceiverJpaVO.from(shippingInfo.receiver());
+        this.address = AddressJpaVO.from(shippingInfo.address());
+        this.status = order.getStatus();
+        this.orderedAt = order.getOrderedAt();
+
+        syncItems(order);
+    }
+
+    private void syncItems(Order order) {
+        Map<String, OrderItemJpaEntity> existingItemsById = indexExistingItemsById();
+        Set<String> targetItemIds = collectTargetItemIds(order);
+
+        removeItemsFrom(targetItemIds);
+        upsertItems(order, existingItemsById);
+    }
+
+    private Map<String, OrderItemJpaEntity> indexExistingItemsById() {
+        return items.stream()
+                    .collect(toMap(OrderItemJpaEntity::getId, identity()));
+    }
+
+    private Set<String> collectTargetItemIds(Order order) {
+        return order.getItems()
+                    .stream()
+                    .map(item -> item.getId().value())
+                    .collect(toSet());
+    }
+
+    private void removeItemsFrom(Set<String> targetItemIds) {
+        this.items.removeIf(item -> !targetItemIds.contains(item.getId()));
+    }
+
+    private void upsertItems(Order order, Map<String, OrderItemJpaEntity> existingItemsById) {
+        order.getItems().forEach(item -> {
+            OrderItemJpaEntity existingItem = existingItemsById.get(item.getId().value());
+
+            if (existingItem == null) {
+                this.items.add(OrderItemJpaEntity.from(item, this));
+                return;
+            }
+
+            existingItem.updateFrom(item);
+        });
     }
 }

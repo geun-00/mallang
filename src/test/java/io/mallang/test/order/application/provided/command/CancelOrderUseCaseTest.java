@@ -1,6 +1,6 @@
 package io.mallang.test.order.application.provided.command;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.Member;
@@ -20,23 +20,20 @@ import io.mallang.order.domain.exception.OrderNotFoundException;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
 import static io.mallang.fixtures.MemberFixture.generateMember;
-import static io.mallang.fixtures.OrderFixture.generateCanceledOrder;
-import static io.mallang.fixtures.OrderFixture.generateCreateOrderCommand;
-import static io.mallang.fixtures.OrderFixture.generateOrder;
+import static io.mallang.fixtures.OrderFixture.*;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("CancelOrder UseCase")
 class CancelOrderUseCaseTest {
 
     @Test

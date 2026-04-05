@@ -1,6 +1,11 @@
 package io.mallang.order.domain.command;
 
-import java.math.BigDecimal;
+import io.mallang.domain.common.vo.Money;
+import io.mallang.product.domain.ProductId;
 
-public record PlaceOrderItemCommand(String productId, int quantity, BigDecimal price) {
+public record PlaceOrderItemCommand(
+        ProductId productId,
+        int quantity,
+        Money price
+) {
 }

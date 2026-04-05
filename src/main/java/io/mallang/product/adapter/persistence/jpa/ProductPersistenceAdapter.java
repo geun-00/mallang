@@ -9,6 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
+
 @Repository
 @RequiredArgsConstructor
 public class ProductPersistenceAdapter implements SaveProductPort, LoadProductPort {
@@ -37,5 +42,39 @@ public class ProductPersistenceAdapter implements SaveProductPort, LoadProductPo
         return productJpaRepository.findWithImagesById(productId.value())
                                    .map(ProductJpaEntity::toDomainWithImages)
                                    .orElseThrow(() -> new ProductNotFoundException(productId));
+    }
+
+    @Override
+    public List<Product> getAllByIds(List<ProductId> productIds) {
+        List<Product> foundProducts = productJpaRepository.findAllById(toIdValues(productIds))
+                                                          .stream()
+                                                          .map(ProductJpaEntity::toDomain)
+                                                          .toList();
+
+        Set<String> foundProductIds = foundProducts.stream()
+                                                   .map(product -> product.getId().value())
+                                                   .collect(toSet());
+
+        validateAllProductsFound(productIds, foundProductIds);
+
+        return foundProducts;
+    }
+
+    private List<String> toIdValues(List<ProductId> productIds) {
+        return productIds.stream()
+                         .map(ProductId::value)
+                         .toList();
+    }
+
+    private void validateAllProductsFound(List<ProductId> targetProductIds, Set<String> foundProductIds) {
+        if (targetProductIds.size() == foundProductIds.size()) {
+            return;
+        }
+
+        List<ProductId> missingProductIds = targetProductIds.stream()
+                                                            .filter(productId -> !foundProductIds.contains(productId.value()))
+                                                            .toList();
+
+        throw new ProductNotFoundException(missingProductIds);
     }
 }

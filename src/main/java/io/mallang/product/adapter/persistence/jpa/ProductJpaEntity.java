@@ -98,6 +98,10 @@ public class ProductJpaEntity extends BaseEntity {
         return entity;
     }
 
+    String getId() {
+        return id;
+    }
+
     Product toDomainWithImages() {
         Map<Boolean, List<ProductImageJpaEntity>> partitioned = images.stream()
                                                                       .collect(partitioningBy(ProductImageJpaEntity::isThumbnail));
