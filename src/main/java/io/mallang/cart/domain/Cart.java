@@ -1,5 +1,6 @@
 package io.mallang.cart.domain;
 
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.command.RestoreCartCommand;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
@@ -34,15 +35,15 @@ public class Cart {
     }
 
     public CartItemId addItem(AddCartItemCommand command, IdGenerator idGenerator) {
-        return items.add(new ProductId(command.productId()), command.quantity(), idGenerator);
+        return items.add(command.productId(), command.quantity(), idGenerator);
     }
 
     public void changeQuantity(CartItemId itemId, int quantity) {
         items.changeQuantity(itemId, quantity);
     }
 
-    public ProductId getProductIdOf(CartItemId itemId) {
-        return items.getProductIdOf(itemId);
+    public CartItem getItem(CartItemId itemId) {
+        return items.getItem(itemId);
     }
 
     public void removeItem(CartItemId itemId) {

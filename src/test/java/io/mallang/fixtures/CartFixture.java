@@ -1,11 +1,12 @@
 package io.mallang.fixtures;
 
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
-import io.mallang.cart.domain.AddCartItemCommand;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
+import io.mallang.product.domain.ProductId;
 
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class CartFixture {
     }
 
     public static AddCartItemCommand generateAddCartItemCommand(int quantity) {
-        return new AddCartItemCommand(UUID.randomUUID().toString(), quantity);
+        return new AddCartItemCommand(new ProductId(UUID.randomUUID().toString()), quantity);
     }
 
     public static AddItemToCartCommand generateAddItemToCartCommand() {

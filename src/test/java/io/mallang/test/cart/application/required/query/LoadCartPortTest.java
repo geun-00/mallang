@@ -1,23 +1,22 @@
 package io.mallang.test.cart.application.required.query;
 
-import io.mallang.TestConfig;
+import io.mallang.PortTest;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.exception.CartNotFoundException;
 import io.mallang.member.domain.MemberId;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.assertions.CartAssertions.isSameAs;
 import static io.mallang.fixtures.CartFixture.generateCartWithItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@PortTest
+@DisplayName("LoadCart Port")
 class LoadCartPortTest {
 
     @Test

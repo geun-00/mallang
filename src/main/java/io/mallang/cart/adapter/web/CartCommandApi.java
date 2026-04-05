@@ -13,19 +13,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/my/cart/items")
 public class CartCommandApi {
 
-    private final AddCartItemUseCase addCartItemUseCase;
-    private final ChangeCartItemQuantityUseCase changeCartItemQuantityUseCase;
-    private final RemoveCartItemUseCase removeCartItemUseCase;
     private final ClearCartUseCase clearCartUseCase;
+    private final AddCartItemUseCase addCartItemUseCase;
+    private final RemoveCartItemUseCase removeCartItemUseCase;
+    private final ChangeCartItemQuantityUseCase changeCartItemQuantityUseCase;
 
-    @PostMapping("/my/cart/items")
+    @PostMapping
     public ResponseEntity<Void> addItem(
             @Valid @RequestBody AddCartItemRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -38,11 +40,15 @@ public class CartCommandApi {
                 )
         );
 
-        // TODO : ServletUriComponentsBuilder 사용으로 개선
-        return ResponseEntity.created(URI.create("/my/cart/items/" + result.cartItemId())).build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                                                  .path("/{id}")
+                                                  .buildAndExpand(result.cartItemId())
+                                                  .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
-    @PatchMapping("/my/cart/items/{cartItemId}")
+    @PatchMapping("/{cartItemId}")
     public ResponseEntity<Void> changeQuantity(
             @PathVariable String cartItemId,
             @Valid @RequestBody ChangeCartItemQuantityRequest request,
@@ -59,7 +65,7 @@ public class CartCommandApi {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/my/cart/items/{cartItemId}")
+    @DeleteMapping("/{cartItemId}")
     public ResponseEntity<Void> removeItem(
             @PathVariable String cartItemId,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -74,7 +80,7 @@ public class CartCommandApi {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/my/cart/items")
+    @DeleteMapping
     public ResponseEntity<Void> clear(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {

@@ -1,13 +1,13 @@
 package io.mallang.cart.domain;
 
+import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductId;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartItems {
+class CartItems {
 
     private final List<CartItem> items;
 
@@ -47,7 +47,10 @@ public class CartItems {
     }
 
     void removeAll(List<CartItemId> itemIds) {
-        itemIds.forEach(this::remove);
+        List<CartItem> itemsToRemove = itemIds.stream()
+                                              .map(this::findById)
+                                              .toList();
+        items.removeAll(itemsToRemove);
     }
 
     void clear() {
@@ -67,18 +70,18 @@ public class CartItems {
                     .toList();
     }
 
-    ProductId getProductIdOf(CartItemId cartItemId) {
-        return findById(cartItemId).getProductId();
+    CartItem getItem(CartItemId cartItemId) {
+        return findById(cartItemId);
     }
 
     List<CartItem> toList() {
         return List.copyOf(items);
     }
 
-    private CartItem findById(CartItemId itemId) {
+    private CartItem findById(CartItemId cartItemId) {
         return items.stream()
-                    .filter(item -> item.getId().equals(itemId))
+                    .filter(item -> item.getId().equals(cartItemId))
                     .findFirst()
-                    .orElseThrow(() -> new InvalidValueException("존재하지 않는 장바구니 항목입니다."));
+                    .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
     }
 }

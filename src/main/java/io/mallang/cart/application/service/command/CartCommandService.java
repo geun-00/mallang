@@ -4,16 +4,13 @@ import io.mallang.cart.application.provided.command.AddCartItemUseCase;
 import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
 import io.mallang.cart.application.provided.command.ClearCartUseCase;
 import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
-import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
-import io.mallang.cart.application.provided.command.model.AddItemToCartResult;
-import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
-import io.mallang.cart.application.provided.command.model.ClearCartCommand;
-import io.mallang.cart.application.provided.command.model.RemoveCartItemCommand;
+import io.mallang.cart.application.provided.command.model.*;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.cart.domain.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
+import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.required.query.LoadProductPort;
@@ -26,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CartCommandService implements AddCartItemUseCase, ChangeCartItemQuantityUseCase, RemoveCartItemUseCase, ClearCartUseCase {
+public class CartCommandService implements AddCartItemUseCase,
+                                           ChangeCartItemQuantityUseCase,
+                                           RemoveCartItemUseCase,
+                                           ClearCartUseCase {
 
     private final IdGenerator idGenerator;
     private final LoadCartPort loadCartPort;
@@ -43,7 +43,7 @@ public class CartCommandService implements AddCartItemUseCase, ChangeCartItemQua
 
         CartItemId cartItemId = cart.addItem(
                 new AddCartItemCommand(
-                        command.productIdValue(),
+                        product.getId(),
                         command.quantity()
                 ),
                 idGenerator
@@ -59,8 +59,9 @@ public class CartCommandService implements AddCartItemUseCase, ChangeCartItemQua
         Cart cart = loadCartPort.getByMemberId(new MemberId(command.memberIdValue()));
         CartItemId cartItemId = new CartItemId(command.cartItemIdValue());
 
-        ProductId productId = cart.getProductIdOf(cartItemId);
-        Product product = loadProductPort.getById(productId);
+        CartItem item = cart.getItem(cartItemId);
+        Product product = loadProductPort.getById(item.getProductId());
+
         product.validateEnoughStock(command.quantity());
 
         cart.changeQuantity(cartItemId, command.quantity());

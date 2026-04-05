@@ -1,32 +1,33 @@
 package io.mallang.test.cart.application.provided.command;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCase;
 import io.mallang.cart.application.provided.command.model.ChangeCartItemQuantityCommand;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.cart.domain.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.cart.domain.command.AddCartItemCommand;
+import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import static io.mallang.fixtures.CartFixture.*;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("ChangeCartItemQuantity UseCase")
 class ChangeCartItemQuantityUseCaseTest {
 
     @Test
@@ -62,7 +63,7 @@ class ChangeCartItemQuantityUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> changeCartItemQuantityUseCase.changeQuantity(command))
-                .isInstanceOf(InvalidValueException.class);
+                .isInstanceOf(CartItemNotFoundException.class);
     }
 
     @Test
@@ -72,7 +73,7 @@ class ChangeCartItemQuantityUseCaseTest {
     ) {
         // given
         Cart cart = generateCart();
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand("product-1", 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(new ProductId("product-1"), 2), generateIdGenerator());
         saveCartPort.save(cart);
 
         var command = new ChangeCartItemQuantityCommand(
@@ -95,7 +96,7 @@ class ChangeCartItemQuantityUseCaseTest {
         // given
         Cart cart = generateCart();
         Product product = generateProduct(4);
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId().value(), 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
@@ -121,7 +122,7 @@ class ChangeCartItemQuantityUseCaseTest {
         // given
         Cart cart = generateCart();
         Product product = generateProduct(10);
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId().value(), 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
