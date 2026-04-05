@@ -1,7 +1,7 @@
 package io.mallang.test.product.adapter.web;
 
 import io.mallang.TestFixture;
-import io.mallang.WebAdapterTest;
+import io.mallang.annotations.WebAdapterTest;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;

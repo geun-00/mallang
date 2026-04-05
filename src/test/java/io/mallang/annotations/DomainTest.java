@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

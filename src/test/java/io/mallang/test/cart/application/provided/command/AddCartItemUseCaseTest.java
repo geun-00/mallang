@@ -1,6 +1,6 @@
 package io.mallang.test.cart.application.provided.command;
 
-import io.mallang.UseCaseTest;
+import io.mallang.annotations.UseCaseTest;
 import io.mallang.cart.application.provided.command.AddCartItemUseCase;
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
 import io.mallang.cart.application.provided.command.model.AddItemToCartResult;

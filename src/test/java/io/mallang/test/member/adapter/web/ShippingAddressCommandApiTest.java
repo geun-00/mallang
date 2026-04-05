@@ -1,7 +1,7 @@
 package io.mallang.test.member.adapter.web;
 
 import io.mallang.TestFixture;
-import io.mallang.WebAdapterTest;
+import io.mallang.annotations.WebAdapterTest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import io.mallang.member.domain.ShippingAddressId;

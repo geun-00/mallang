@@ -1,6 +1,6 @@
 package io.mallang.test.member.domain;
 
-import io.mallang.DomainTest;
+import io.mallang.annotations.DomainTest;
 import io.mallang.domain.common.ClockHolder;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.domain.Member;

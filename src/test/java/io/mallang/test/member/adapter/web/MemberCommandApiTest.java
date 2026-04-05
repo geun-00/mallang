@@ -1,7 +1,7 @@
 package io.mallang.test.member.adapter.web;
 
 import io.mallang.TestFixture;
-import io.mallang.WebAdapterTest;
+import io.mallang.annotations.WebAdapterTest;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.MemberId;

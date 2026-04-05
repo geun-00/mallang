@@ -1,6 +1,6 @@
 package io.mallang.test.cart.application.required.query;
 
-import io.mallang.PortTest;
+import io.mallang.annotations.PortTest;
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.application.required.query.LoadCartPort;
 import io.mallang.cart.domain.Cart;

@@ -1,6 +1,6 @@
 package io.mallang.test.cart.domain;
 
-import io.mallang.DomainTest;
+import io.mallang.annotations.DomainTest;
 import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;

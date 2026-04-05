@@ -1,7 +1,7 @@
 package io.mallang.test.cart.adapter.web;
 
 import io.mallang.TestFixture;
-import io.mallang.WebAdapterTest;
+import io.mallang.annotations.WebAdapterTest;
 import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
 import io.mallang.cart.application.required.command.SaveCartPort;

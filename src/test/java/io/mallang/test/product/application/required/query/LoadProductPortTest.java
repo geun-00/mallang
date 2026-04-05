@@ -1,6 +1,6 @@
 package io.mallang.test.product.application.required.query;
 
-import io.mallang.PortTest;
+import io.mallang.annotations.PortTest;
 import io.mallang.domain.common.exception.AggregateNotLoadedException;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
