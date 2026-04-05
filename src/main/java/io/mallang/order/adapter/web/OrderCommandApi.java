@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -33,7 +34,8 @@ public class OrderCommandApi {
             @Valid @RequestBody CreateOrderRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        List<CreateOrderItemCommand> items = request.items().stream()
+        List<CreateOrderItemCommand> items = request.items()
+                                                    .stream()
                                                     .map(item -> new CreateOrderItemCommand(
                                                             item.productId(),
                                                             item.quantity()
@@ -52,7 +54,12 @@ public class OrderCommandApi {
                 )
         );
 
-        return ResponseEntity.created(URI.create("/my/orders/" + result.orderId())).build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                                                  .path("/{id}")
+                                                  .buildAndExpand(result.orderId())
+                                                  .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     @PatchMapping("/my/orders/{orderId}/cancel")
