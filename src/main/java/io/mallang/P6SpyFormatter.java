@@ -3,14 +3,14 @@ package io.mallang;
 import com.p6spy.engine.spy.appender.MessageFormattingStrategy;
 import org.hibernate.engine.jdbc.internal.BasicFormatterImpl;
 import org.hibernate.engine.jdbc.internal.Formatter;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-@Configuration
+@ComponentScan
 public class P6SpyFormatter implements MessageFormattingStrategy {
 
     private static final String BASE_PACKAGE = "io.mallang";
