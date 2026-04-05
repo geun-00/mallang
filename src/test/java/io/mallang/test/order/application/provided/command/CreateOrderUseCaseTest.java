@@ -1,6 +1,6 @@
 package io.mallang.test.order.application.provided.command;
 
-import io.mallang.TestConfig;
+import io.mallang.UseCaseTest;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
@@ -17,10 +17,9 @@ import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
@@ -29,12 +28,10 @@ import static io.mallang.fixtures.MemberFixture.generateMember;
 import static io.mallang.fixtures.MemberFixture.generateWithdrawnMember;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderCommand;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@Import(TestConfig.class)
+@UseCaseTest
+@DisplayName("CreateOrder UseCase")
 class CreateOrderUseCaseTest {
 
     @Test
@@ -53,9 +50,7 @@ class CreateOrderUseCaseTest {
 
         CreateOrderCommand command = generateCreateOrderCommand(
                 member.getId(),
-                List.of(new CreateOrderItemCommand(
-                        product.getId().value(),
-                        2))
+                List.of(new CreateOrderItemCommand(product.getId().value(), 2))
         );
 
         // when
@@ -116,7 +111,8 @@ class CreateOrderUseCaseTest {
                 member.getId(),
                 List.of(new CreateOrderItemCommand(product.getId().value(), 2))
         );
-        int expected = product.getStockQuantity().value() - command.items().stream()
+        int expected = product.getStockQuantity().value() - command.items()
+                                                                   .stream()
                                                                    .mapToInt(CreateOrderItemCommand::quantity)
                                                                    .sum();
         // when

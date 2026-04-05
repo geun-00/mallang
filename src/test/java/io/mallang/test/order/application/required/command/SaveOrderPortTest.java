@@ -1,17 +1,19 @@
 package io.mallang.test.order.application.required.command;
 
+import io.mallang.PortTest;
 import io.mallang.assertions.OrderAssertions;
 import io.mallang.order.application.required.command.SaveOrderPort;
 import io.mallang.order.application.required.query.LoadOrderPort;
 import io.mallang.order.domain.Order;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static io.mallang.fixtures.OrderFixture.generateOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@PortTest
+@DisplayName("SaveOrder Port")
 class SaveOrderPortTest {
 
     @Test
