@@ -1,7 +1,7 @@
 package io.mallang.test.product.adapter.web;
 
-import io.mallang.FixtureSession;
-import io.mallang.FixtureSessionFactory;
+import io.mallang.fixtures.api.FixtureSession;
+import io.mallang.fixtures.api.FixtureSessionFactory;
 import io.mallang.annotations.WebAdapterTest;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import io.mallang.product.application.required.query.LoadProductPort;

@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.fixtures.api;
 
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import org.jsoup.Jsoup;

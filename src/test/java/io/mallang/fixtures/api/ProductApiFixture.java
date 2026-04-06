@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.fixtures.api;
 
 import io.mallang.product.adapter.web.model.*;
 import org.springframework.http.RequestEntity;

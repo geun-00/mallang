@@ -1,7 +1,7 @@
 package io.mallang.test.order.adapter.web;
 
-import io.mallang.FixtureSession;
-import io.mallang.FixtureSessionFactory;
+import io.mallang.fixtures.api.FixtureSession;
+import io.mallang.fixtures.api.FixtureSessionFactory;
 import io.mallang.annotations.WebAdapterTest;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.required.command.SaveMemberPort;

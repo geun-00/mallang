@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.fixtures.api;
 
 import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;

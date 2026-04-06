@@ -1,6 +1,6 @@
 package io.mallang.test.cart.adapter.web;
 
-import io.mallang.FixtureSession;
+import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.annotations.WebAdapterTest;
 import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;

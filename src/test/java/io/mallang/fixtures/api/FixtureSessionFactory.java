@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.fixtures.api;
 
 import org.springframework.core.env.Environment;
 

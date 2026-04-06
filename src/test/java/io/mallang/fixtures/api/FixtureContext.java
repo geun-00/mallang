@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.fixtures.api;
 
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;

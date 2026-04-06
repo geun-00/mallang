@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.fixtures.api;
 
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
 import org.springframework.http.RequestEntity;
