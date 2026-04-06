@@ -9,6 +9,17 @@ import org.springframework.core.env.Environment;
 public class TestFixtureConfiguration {
 
     @Bean
+    public FixtureSessionFactory fixtureSessionFactory(Environment environment) {
+        return new FixtureSessionFactory(environment);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public FixtureSession fixtureSession(FixtureSessionFactory fixtureSessionFactory) {
+        return fixtureSessionFactory.create();
+    }
+
+    @Bean
     @Scope("prototype")
     public TestFixture testFixture(Environment environment) {
         return TestFixture.create(environment);
