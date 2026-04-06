@@ -149,15 +149,14 @@ flowchart TB
     end
     end
 
-    Common --> MemberRoot
-    Common --> ProductRoot
-    Common --> OrderRoot
-    
-    MemberRoot --> ProductRoot
-    MemberRoot --> CartRoot
-    MemberRoot --> OrderRoot
-    ProductRoot --> CartRoot
-    ProductRoot ---> OrderRoot
+    MemberRoot --> Common
+    ProductRoot --> Common
+    OrderRoot --> Common
+    ProductRoot --> MemberRoot
+    CartRoot --> MemberRoot
+    CartRoot --> ProductRoot
+    OrderRoot --> MemberRoot
+    OrderRoot ---> ProductRoot
 
     class MemberRoot,ProductRoot,CartRoot,OrderRoot root
     class MemberParts,ProductParts,CartParts,OrderParts inner
