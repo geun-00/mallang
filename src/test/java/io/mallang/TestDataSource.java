@@ -91,4 +91,23 @@ public class TestDataSource {
                 "상품명!@#$%^&*()"
         };
     }
+
+    public static String[] invalidPhoneNumberValues() {
+        return new String[] {
+                null,
+                "1234567890",
+                "010-1111-2222",
+                "010 1111 2222",
+                "abcdefghijk"
+        };
+    }
+
+    public static String[] invalidZipcodeValues() {
+        return new String[] {
+                "1234",     // 4자리
+                "123456",   // 6자리
+                "1234a",    // 숫자 + 문자
+                "abcde"     // 문자만
+        };
+    }
 }

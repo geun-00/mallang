@@ -1,15 +1,20 @@
 package io.mallang.test.common;
 
+import io.mallang.annotations.DomainTest;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.exception.InvalidValueException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DomainTest
+@DisplayName("Address VO")
 class AddressTest {
 
     @Test
@@ -31,12 +36,7 @@ class AddressTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-            "1234",     // 4자리
-            "123456",   // 6자리
-            "1234a",    // 숫자 + 문자
-            "abcde"     // 문자만
-    })
+    @MethodSource("io.mallang.TestDataSource#invalidZipcodeValues")
     void 우편번호는_5자리_숫자여야_한다(String invalidZipcode) {
         assertThatThrownBy(() -> new Address(invalidZipcode, "서울시 강남구 테헤란로 1", "101호"))
                 .isInstanceOf(InvalidValueException.class);

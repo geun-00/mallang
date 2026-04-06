@@ -1,7 +1,9 @@
 package io.mallang.test.common;
 
+import io.mallang.annotations.DomainTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Money;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -12,6 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DomainTest
+@DisplayName("Money VO")
 class MoneyTest {
 
     @Test
