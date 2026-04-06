@@ -1,6 +1,8 @@
-package io.mallang;
+package io.mallang.annotations;
 
+import io.mallang.TestConfig;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,5 +13,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @CustomDisplayName
 @SpringBootTest
-public @interface PortTest {
+@Import(TestConfig.class)
+public @interface UseCaseTest {
 }

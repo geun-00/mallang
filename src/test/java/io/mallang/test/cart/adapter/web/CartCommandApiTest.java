@@ -1,7 +1,7 @@
 package io.mallang.test.cart.adapter.web;
 
-import io.mallang.TestFixture;
-import io.mallang.WebAdapterTest;
+import io.mallang.fixtures.api.FixtureSession;
+import io.mallang.annotations.WebAdapterTest;
 import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
 import io.mallang.cart.application.required.command.SaveCartPort;
@@ -33,11 +33,7 @@ import static io.mallang.fixtures.CartFixture.generateNotExistCartItemId;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.FOUND;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.*;
 
 @WebAdapterTest
 @DisplayName("CartCommand API")
@@ -52,34 +48,28 @@ class CartCommandApiTest {
 
             @Test
             void 올바르게_요청하면_201_Created_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
 
-                Product product = generateProduct(5);
-                saveProductPort.save(product);
+                var request = new AddCartItemRequest(productId, 2);
 
-                var request = new AddCartItemRequest(product.getId().value(), 2);
-
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
                 assertThat(response.getStatusCode()).isEqualTo(CREATED);
             }
 
             @Test
             void 올바르게_요청하면_식별자가_포함된_Location_헤더를_반환한다(
-                    @Autowired TestFixture fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
 
-                Product product = generateProduct(5);
-                saveProductPort.save(product);
+                var request = new AddCartItemRequest(productId, 2);
 
-                var request = new AddCartItemRequest(product.getId().value(), 2);
-
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
                 URI location = response.getHeaders().getLocation();
                 assertThat(location).isNotNull();
@@ -89,29 +79,26 @@ class CartCommandApiTest {
 
             @Test
             void 올바르게_요청하면_Location_헤더의_식별자로_장바구니_항목을_확인할_수_있다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadMemberPort loadMemberPort,
-                    @Autowired LoadCartPort loadCartPort,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired LoadCartPort loadCartPort
             ) {
-                MemberCreateRequest memberRequest = generateCreateRequest();
-                fixture.registerMember(memberRequest);
-                fixture.login(memberRequest.email(), memberRequest.password());
-                Member member = loadMemberPort.getByEmail(new Email(memberRequest.email()));
+                MemberCreateRequest memberCreateRequest = fixture.auth().createMemberThenLogin();
+                Member member = loadMemberPort.getByEmail(new Email(memberCreateRequest.email()));
 
-                Product product = generateProduct(5);
-                saveProductPort.save(product);
+                String productId = fixture.product().registerProductThenGetId();
 
-                var request = new AddCartItemRequest(product.getId().value(), 2);
+                var request = new AddCartItemRequest(productId, 2);
 
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
-                String cartItemIdValue = response.getHeaders().getLocation().getPath().substring("/my/cart/items/".length());
+                String cartItemIdValue = response.getHeaders()
+                                                 .getLocation()
+                                                 .getPath()
+                                                 .substring("/my/cart/items/".length());
                 Cart loaded = loadCartPort.getByMemberId(member.getId());
 
-                assertThat(loaded.getItems())
-                        .extracting(item -> item.getId().value())
-                        .contains(cartItemIdValue);
+                assertThat(loaded.getItems()).extracting(item -> item.getId().value()).contains(cartItemIdValue);
             }
         }
 
@@ -119,14 +106,12 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired TestFixture fixture) {
+            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
                 var request = new AddCartItemRequest("product-1", 2);
 
-                ResponseEntity<Void> response = fixture.unauthenticatedClient().postForEntity(
-                        "/my/cart/items",
-                        request,
-                        Void.class
-                );
+                ResponseEntity<Void> response = fixture.cart()
+                                                       .unauthenticatedClient()
+                                                       .postForEntity("/my/cart/items", request, Void.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }
@@ -140,24 +125,24 @@ class CartCommandApiTest {
             @ValueSource(strings = {"", " "})
             void productId_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
                     String invalidProductId,
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
                 var request = new AddCartItemRequest(invalidProductId, 2);
 
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
 
             @Test
             void quantity_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
                 var request = new AddCartItemRequest("product-1", null);
 
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -166,12 +151,12 @@ class CartCommandApiTest {
             @ValueSource(ints = {0, -1})
             void quantity가_0_이하이면_400_Bad_Request_상태코드를_반환한다(
                     int invalidQuantity,
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
                 var request = new AddCartItemRequest("product-1", invalidQuantity);
 
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -182,12 +167,12 @@ class CartCommandApiTest {
 
             @Test
             void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
                 var request = new AddCartItemRequest("unknown-product-id", 2);
 
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
@@ -198,17 +183,16 @@ class CartCommandApiTest {
 
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired SaveProductPort saveProductPort
             ) {
-                fixture.createMemberThenLogin();
-
+                fixture.auth().createMemberThenLogin();
                 Product product = generateProduct(5);
                 saveProductPort.save(product);
 
                 var request = new AddCartItemRequest(product.getId().value(), 6);
 
-                ResponseEntity<Void> response = fixture.addCartItem(request);
+                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -224,18 +208,14 @@ class CartCommandApiTest {
 
             @Test
             void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
-
-                Product product = generateProduct(10);
-                saveProductPort.save(product);
-
-                String cartItemId = fixture.addCartItemThenGetId(product.getId().value(), 2);
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                String cartItemId = fixture.cart().addCartItemThenGetId(productId, 2);
                 var request = new ChangeCartItemQuantityRequest(7);
 
-                ResponseEntity<Void> response = fixture.changeCartItemQuantity(cartItemId, request);
+                ResponseEntity<Void> response = fixture.cart().changeCartItemQuantity(cartItemId, request);
 
                 assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
             }
@@ -245,13 +225,16 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired TestFixture fixture) {
+            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
                 var request = new ChangeCartItemQuantityRequest(3);
 
-                ResponseEntity<Void> response = fixture.unauthenticatedClient().exchange(
-                        RequestEntity.patch("/my/cart/items/cart-item-1").body(request),
-                        Void.class
-                );
+                ResponseEntity<Void> response = fixture.cart()
+                                                       .unauthenticatedClient()
+                                                       .exchange(
+                                                               RequestEntity.patch("/my/cart/items/cart-item-1")
+                                                                            .body(request),
+                                                               Void.class
+                                                       );
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }
@@ -262,12 +245,12 @@ class CartCommandApiTest {
 
             @Test
             void quantity_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
                 var request = new ChangeCartItemQuantityRequest(null);
 
-                ResponseEntity<Void> response = fixture.changeCartItemQuantity("CartItem-1", request);
+                ResponseEntity<Void> response = fixture.cart().changeCartItemQuantity("CartItem-1", request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -276,12 +259,12 @@ class CartCommandApiTest {
             @ValueSource(ints = {0, -1})
             void quantity가_0_이하이면_400_Bad_Request_상태코드를_반환한다(
                     int invalidQuantity,
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
                 var request = new ChangeCartItemQuantityRequest(invalidQuantity);
 
-                ResponseEntity<Void> response = fixture.changeCartItemQuantity("CartItem-1", request);
+                ResponseEntity<Void> response = fixture.cart().changeCartItemQuantity("CartItem-1", request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -292,35 +275,42 @@ class CartCommandApiTest {
 
             @Test
             void 존재하지_않는_장바구니_항목이면_404_Not_Found_상태코드를_반환한다(
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
                 var request = new ChangeCartItemQuantityRequest(3);
 
-                ResponseEntity<Void> response = fixture.changeCartItemQuantity(generateNotExistCartItemId().value(), request);
+                ResponseEntity<Void> response = fixture.cart()
+                                                       .changeCartItemQuantity(
+                                                               generateNotExistCartItemId().value(),
+                                                               request
+                                                       );
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
 
             @Test
             void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadMemberPort loadMemberPort,
                     @Autowired LoadCartPort loadCartPort,
                     @Autowired SaveCartPort saveCartPort
             ) {
                 MemberCreateRequest memberRequest = generateCreateRequest();
-                fixture.registerMember(memberRequest);
-                fixture.login(memberRequest.email(), memberRequest.password());
+                fixture.member().registerMember(memberRequest);
+                fixture.auth().login(memberRequest.email(), memberRequest.password());
                 Member member = loadMemberPort.getByEmail(new Email(memberRequest.email()));
 
                 Cart cart = loadCartPort.getByMemberId(member.getId());
-                CartItemId cartItemId = cart.addItem(new AddCartItemCommand(new ProductId("unknown-product-id"), 2), generateIdGenerator());
+                CartItemId cartItemId = cart.addItem(
+                        new AddCartItemCommand(new ProductId("unknown-product-id"), 2),
+                        generateIdGenerator()
+                );
                 saveCartPort.save(cart);
 
                 var request = new ChangeCartItemQuantityRequest(3);
 
-                ResponseEntity<Void> response = fixture.changeCartItemQuantity(cartItemId.value(), request);
+                ResponseEntity<Void> response = fixture.cart().changeCartItemQuantity(cartItemId.value(), request);
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
@@ -331,18 +321,18 @@ class CartCommandApiTest {
 
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired SaveProductPort saveProductPort
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
 
                 Product product = generateProduct(5);
                 saveProductPort.save(product);
 
-                String cartItemId = fixture.addCartItemThenGetId(product.getId().value(), 2);
+                String cartItemId = fixture.cart().addCartItemThenGetId(product.getId().value(), 2);
                 var request = new ChangeCartItemQuantityRequest(6);
 
-                ResponseEntity<Void> response = fixture.changeCartItemQuantity(cartItemId, request);
+                ResponseEntity<Void> response = fixture.cart().changeCartItemQuantity(cartItemId, request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -358,17 +348,13 @@ class CartCommandApiTest {
 
             @Test
             void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                String cartItemId = fixture.cart().addCartItemThenGetId(productId, 2);
 
-                var product = generateProduct(5);
-                saveProductPort.save(product);
-
-                String cartItemId = fixture.addCartItemThenGetId(product.getId().value(), 2);
-
-                ResponseEntity<Void> response = fixture.removeCartItem(cartItemId);
+                ResponseEntity<Void> response = fixture.cart().removeCartItem(cartItemId);
 
                 assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
             }
@@ -378,11 +364,14 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired TestFixture fixture) {
-                ResponseEntity<Void> response = fixture.unauthenticatedClient().exchange(
-                        RequestEntity.delete("/my/cart/items/cart-item-1").build(),
-                        Void.class
-                );
+            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+                ResponseEntity<Void> response = fixture.cart()
+                                                       .unauthenticatedClient()
+                                                       .exchange(
+                                                               RequestEntity.delete("/my/cart/items/cart-item-1")
+                                                                            .build(),
+                                                               Void.class
+                                                       );
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }
@@ -393,11 +382,11 @@ class CartCommandApiTest {
 
             @Test
             void 존재하지_않는_장바구니_항목이면_404_Not_Found_상태코드를_반환한다(
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
 
-                ResponseEntity<Void> response = fixture.removeCartItem(generateNotExistCartItemId().value());
+                ResponseEntity<Void> response = fixture.cart().removeCartItem(generateNotExistCartItemId().value());
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
@@ -413,16 +402,13 @@ class CartCommandApiTest {
 
             @Test
             void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.cart().addCartItem(new AddCartItemRequest(productId, 2));
 
-                var product = generateProduct(5);
-                saveProductPort.save(product);
-                fixture.addCartItem(new AddCartItemRequest(product.getId().value(), 2));
-
-                ResponseEntity<Void> response = fixture.clearCart();
+                ResponseEntity<Void> response = fixture.cart().clearCart();
 
                 assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
             }
@@ -432,11 +418,13 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired TestFixture fixture) {
-                ResponseEntity<Void> response = fixture.unauthenticatedClient().exchange(
-                        RequestEntity.delete("/my/cart/items").build(),
-                        Void.class
-                );
+            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+                ResponseEntity<Void> response = fixture.cart()
+                                                       .unauthenticatedClient()
+                                                       .exchange(
+                                                               RequestEntity.delete("/my/cart/items").build(),
+                                                               Void.class
+                                                       );
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }

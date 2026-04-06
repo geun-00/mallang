@@ -1,4 +1,4 @@
-package io.mallang;
+package io.mallang.annotations;
 
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;

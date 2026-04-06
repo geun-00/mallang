@@ -1,6 +1,6 @@
 package io.mallang.test.order.application.required.query;
 
-import io.mallang.PortTest;
+import io.mallang.annotations.PortTest;
 import io.mallang.order.application.required.command.SaveOrderPort;
 import io.mallang.order.application.required.query.LoadOrderPort;
 import io.mallang.order.domain.Order;

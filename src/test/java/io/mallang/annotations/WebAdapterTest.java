@@ -1,5 +1,6 @@
-package io.mallang;
+package io.mallang.annotations;
 
+import io.mallang.TestFixtureConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 

@@ -1,6 +1,6 @@
 package io.mallang.test.member.application.required.query;
 
-import io.mallang.PortTest;
+import io.mallang.annotations.PortTest;
 import io.mallang.domain.common.exception.AggregateNotLoadedException;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;

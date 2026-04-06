@@ -1,6 +1,6 @@
 package io.mallang.test.order.application.provided.command;
 
-import io.mallang.UseCaseTest;
+import io.mallang.annotations.UseCaseTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.Member;

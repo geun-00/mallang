@@ -29,19 +29,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    compileOnly("org.projectlombok:lombok")
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    annotationProcessor("org.projectlombok:lombok")
-    runtimeOnly("com.h2database:h2")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.apache.httpcomponents.client5:httpclient5")
-    testImplementation("org.jsoup:jsoup:1.18.3")
-    runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("org.postgresql:postgresql")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
     implementation("com.github.f4b6a3:ulid-creator:5.2.3")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
+
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+
+    runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.jsoup:jsoup:1.18.3")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<Test> {

@@ -1,6 +1,6 @@
 package io.mallang.test.member.application.service;
 
-import io.mallang.UseCaseTest;
+import io.mallang.annotations.UseCaseTest;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressCommand;
 import io.mallang.member.application.provided.command.model.RegisterShippingAddressResult;

@@ -32,10 +32,6 @@ public class CartFixture {
         return new AddCartItemCommand(new ProductId(UUID.randomUUID().toString()), quantity);
     }
 
-    public static AddItemToCartCommand generateAddItemToCartCommand() {
-        return generateAddItemToCartCommand(generateMemberId().value(), UUID.randomUUID().toString(), 1);
-    }
-
     public static AddItemToCartCommand generateAddItemToCartCommand(String memberIdValue, String productIdValue, int quantity) {
         return new AddItemToCartCommand(memberIdValue, productIdValue, quantity);
     }

@@ -1,6 +1,6 @@
 package io.mallang.test.product.application.provided.command;
 
-import io.mallang.UseCaseTest;
+import io.mallang.annotations.UseCaseTest;
 import io.mallang.product.application.provided.command.RemoveProductImageUseCase;
 import io.mallang.product.application.provided.command.model.RemoveProductImageCommand;
 import io.mallang.product.application.required.command.SaveProductPort;

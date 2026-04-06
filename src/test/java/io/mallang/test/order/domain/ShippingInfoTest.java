@@ -1,6 +1,6 @@
 package io.mallang.test.order.domain;
 
-import io.mallang.DomainTest;
+import io.mallang.annotations.DomainTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Address;
 import io.mallang.domain.common.vo.Receiver;

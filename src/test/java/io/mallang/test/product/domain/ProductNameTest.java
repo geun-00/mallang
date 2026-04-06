@@ -1,6 +1,6 @@
 package io.mallang.test.product.domain;
 
-import io.mallang.DomainTest;
+import io.mallang.annotations.DomainTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.product.domain.ProductName;
 import org.junit.jupiter.api.DisplayName;

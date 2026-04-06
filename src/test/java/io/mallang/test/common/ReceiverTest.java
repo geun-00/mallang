@@ -1,15 +1,20 @@
 package io.mallang.test.common;
 
+import io.mallang.annotations.DomainTest;
 import io.mallang.domain.common.exception.InvalidValueException;
 import io.mallang.domain.common.vo.Receiver;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DomainTest
+@DisplayName("Receiver VO")
 class ReceiverTest {
 
     @Nested
@@ -35,8 +40,7 @@ class ReceiverTest {
         }
         
         @ParameterizedTest
-        @NullSource
-        @ValueSource(strings = {"1234567890", "010-1111-2222", "010 1111 2222", "abcdefghijk"})
+        @MethodSource("io.mallang.TestDataSource#invalidPhoneNumberValues")
         void 전화번호는_010XXXXXXXX_형식이어야_한다(String invalidPhoneNumber) {
             assertThatThrownBy(() -> new Receiver("홍길동", invalidPhoneNumber)).isInstanceOf(InvalidValueException.class);
         }

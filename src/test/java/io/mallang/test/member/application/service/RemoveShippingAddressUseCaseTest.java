@@ -1,6 +1,6 @@
 package io.mallang.test.member.application.service;
 
-import io.mallang.UseCaseTest;
+import io.mallang.annotations.UseCaseTest;
 import io.mallang.member.application.provided.command.RemoveShippingAddressUseCase;
 import io.mallang.member.application.provided.command.model.RemoveShippingAddressCommand;
 import io.mallang.member.application.required.command.SaveMemberPort;

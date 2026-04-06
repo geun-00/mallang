@@ -1,6 +1,6 @@
 package io.mallang.test.cart.application.provided.command;
 
-import io.mallang.UseCaseTest;
+import io.mallang.annotations.UseCaseTest;
 import io.mallang.cart.application.provided.command.ClearCartUseCase;
 import io.mallang.cart.application.provided.command.model.ClearCartCommand;
 import io.mallang.cart.application.required.command.SaveCartPort;
