@@ -9,8 +9,8 @@ public final class FixtureSession {
     private final OrderApiFixture orderFixture;
 
     FixtureSession(FixtureContext context) {
-        this.authFixture = new AuthFixture(context);
         this.memberFixture = new MemberApiFixture(context);
+        this.authFixture = new AuthFixture(context, memberFixture);
         this.productFixture = new ProductApiFixture(context);
         this.cartFixture = new CartApiFixture(context);
         this.orderFixture = new OrderApiFixture(context);

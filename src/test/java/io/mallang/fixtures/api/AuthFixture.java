@@ -14,13 +14,16 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 public final class AuthFixture extends ApiFixture {
 
-    public AuthFixture(FixtureContext context) {
+    private final MemberApiFixture memberFixture;
+
+    public AuthFixture(FixtureContext context, MemberApiFixture memberFixture) {
         super(context);
+        this.memberFixture = memberFixture;
     }
 
     public MemberCreateRequest createMemberThenLogin() {
         MemberCreateRequest request = generateCreateRequest();
-        new MemberApiFixture(context()).registerMember(request);
+        memberFixture.registerMember(request);
         login(request.email(), request.password());
         return request;
     }
