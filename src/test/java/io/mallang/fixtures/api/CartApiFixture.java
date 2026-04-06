@@ -17,7 +17,7 @@ public final class CartApiFixture extends ApiFixture {
 
     public String addCartItemThenGetId(String productId, int quantity) {
         ResponseEntity<Void> response = addCartItem(new AddCartItemRequest(productId, quantity));
-        return response.getHeaders().getLocation().getPath().substring("/my/cart/items/".length());
+        return extractId(response);
     }
 
     public ResponseEntity<Void> changeCartItemQuantity(String cartItemId, ChangeCartItemQuantityRequest request) {
