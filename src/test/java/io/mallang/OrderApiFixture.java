@@ -14,15 +14,16 @@ public final class OrderApiFixture extends ApiFixture {
         return client().postForEntity("/my/orders", request, Void.class);
     }
 
+    public String createOrderThenGetId(CreateOrderRequest request) {
+        ResponseEntity<Void> response = createOrder(request);
+
+        return extractId(response);
+    }
+
     public ResponseEntity<Void> cancelOrder(String orderId) {
         return client().exchange(
                 RequestEntity.patch("/my/orders/" + orderId + "/cancel").build(),
                 Void.class
         );
-    }
-
-    public String createOrderThenGetId(CreateOrderRequest request) {
-        ResponseEntity<Void> response = createOrder(request);
-        return response.getHeaders().getLocation().getPath().substring("/my/orders/".length());
     }
 }

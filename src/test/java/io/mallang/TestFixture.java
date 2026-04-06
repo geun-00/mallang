@@ -6,275 +6,137 @@ import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
-import io.mallang.product.adapter.web.model.*;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.jsoup.Jsoup;
-import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
+import io.mallang.product.adapter.web.model.AddProductImagesRequest;
+import io.mallang.product.adapter.web.model.AddStockRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest;
+import io.mallang.product.adapter.web.model.DeductStockRequest;
+import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
-import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
-import static io.mallang.fixtures.MemberFixture.generateRegisterShippingAddressRequest;
-import static io.mallang.fixtures.ProductFixture.generateCreateProductRequest;
-import static org.springframework.http.HttpHeaders.COOKIE;
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
+@Deprecated(forRemoval = false)
+public final class TestFixture {
 
-public record TestFixture(TestRestTemplate client) {
+    private final AuthFixture authFixture;
+    private final CartApiFixture cartFixture;
+    private final OrderApiFixture orderFixture;
+    private final MemberApiFixture memberFixture;
+    private final ProductApiFixture productFixture;
+
+    private TestFixture(FixtureContext context) {
+        this.authFixture = new AuthFixture(context);
+        this.memberFixture = new MemberApiFixture(context);
+        this.productFixture = new ProductApiFixture(context);
+        this.cartFixture = new CartApiFixture(context);
+        this.orderFixture = new OrderApiFixture(context);
+    }
 
     public static TestFixture create(Environment environment) {
-        TestRestTemplate client = new TestRestTemplate(new RestTemplateBuilder());
-        client.setUriTemplateHandler(new LocalHostUriTemplateHandler(environment));
-        return new TestFixture(client);
+        return new TestFixture(new FixtureContext(environment));
     }
 
     public void createMemberThenLogin() {
-        MemberCreateRequest request = generateCreateRequest();
-        registerMember(request);
-        login(request.email(), request.password());
+        authFixture.createMemberThenLogin();
     }
 
     public void login(String email, String password) {
-        String initialCookie = fetchInitialCookieWithCsrfToken();
-        String sessionCookie = loginWithCsrf(email, password, initialCookie);
-        String newCsrfToken = fetchCsrfTokenFromNewSession(sessionCookie);
-        registerAuthInterceptor(sessionCookie, newCsrfToken);
+        authFixture.login(email, password);
     }
 
-    private String fetchInitialCookieWithCsrfToken() {
-        ResponseEntity<String> loginPage = client.getForEntity("/login", String.class);
-        return loginPage.getHeaders().getFirst(SET_COOKIE);
-    }
-
-    private String loginWithCsrf(String email, String password, String initialCookie) {
-        String csrfToken = fetchCsrfTokenFromCookie(initialCookie);
-
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("email", email);
-        form.add("password", password);
-        form.add("_csrf", csrfToken);
-
-        ClientHttpRequestFactory original = client.getRestTemplate().getRequestFactory();
-        client.getRestTemplate().setRequestFactory(noRedirectFactory());
-
-        ResponseEntity<Void> loginResponse = client.exchange(
-                RequestEntity.post("/login")
-                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                             .header(COOKIE, initialCookie)
-                             .body(form),
-                Void.class
-        );
-
-        client.getRestTemplate().setRequestFactory(original);
-
-        return loginResponse.getHeaders().getFirst(SET_COOKIE);
-    }
-
-    private String fetchCsrfTokenFromNewSession(String sessionCookie) {
-        ResponseEntity<String> afterLoginPage = client.exchange(
-                RequestEntity.get("/login")
-                             .header(COOKIE, sessionCookie)
-                             .build(),
-                String.class
-        );
-        return extractCsrfToken(afterLoginPage.getBody());
-    }
-
-    private void registerAuthInterceptor(String sessionCookie, String csrfToken) {
-        client.getRestTemplate().getInterceptors().add((req, body, execution) -> {
-            req.getHeaders().add(COOKIE, sessionCookie);
-            req.getHeaders().add("X-CSRF-TOKEN", csrfToken);
-            return execution.execute(req, body);
-        });
-    }
-
-    private String fetchCsrfTokenFromCookie(String initialCookie) {
-        ResponseEntity<String> loginPage = client.exchange(
-                RequestEntity.get("/login")
-                             .header(COOKIE, initialCookie)
-                             .build(),
-                String.class
-        );
-        return extractCsrfToken(loginPage.getBody());
-    }
-
-    private String extractCsrfToken(String html) {
-        return Jsoup.parse(html)
-                    .selectFirst("input[name=_csrf]")
-                    .val();
-    }
-
-    public ResponseEntity<Void> registerShippingAddress(RegisterShippingAddressRequest request) {
-        return client.postForEntity("/my/shipping-addresses", request, Void.class);
-    }
-
-    public ResponseEntity<Void> updateShippingAddress(String shippingAddressId, UpdateShippingAddressRequest request) {
-        return client.exchange(
-                RequestEntity.put("/my/shipping-addresses/" + shippingAddressId)
-                             .body(request),
-                Void.class
-        );
-    }
-
-    public ResponseEntity<Void> removeShippingAddress(String shippingAddressId) {
-        return client.exchange(
-                RequestEntity.delete("/my/shipping-addresses/" + shippingAddressId).build(),
-                Void.class
-        );
-    }
-
-    public String registerShippingAddressThenGetId() {
-        ResponseEntity<Void> response = registerShippingAddress(generateRegisterShippingAddressRequest());
-        return response.getHeaders().getLocation().getPath().substring("/my/shipping-addresses/".length());
+    public TestRestTemplate client() {
+        return memberFixture.client();
     }
 
     public TestRestTemplate unauthenticatedClient() {
-        TestRestTemplate unauthenticated = new TestRestTemplate(new RestTemplateBuilder());
-        unauthenticated.setUriTemplateHandler(client.getRestTemplate().getUriTemplateHandler());
-        unauthenticated.getRestTemplate().setRequestFactory(noRedirectFactory());
-        return unauthenticated;
-    }
-
-    private ClientHttpRequestFactory noRedirectFactory() {
-        var httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
-        return new HttpComponentsClientHttpRequestFactory(httpClient);
+        return memberFixture.unauthenticatedClient();
     }
 
     public ResponseEntity<Void> registerMember(MemberCreateRequest request) {
-        return client.postForEntity("/members", request, Void.class);
+        return memberFixture.registerMember(request);
+    }
+
+    public ResponseEntity<Void> registerShippingAddress(RegisterShippingAddressRequest request) {
+        return memberFixture.registerShippingAddress(request);
+    }
+
+    public ResponseEntity<Void> updateShippingAddress(String shippingAddressId, UpdateShippingAddressRequest request) {
+        return memberFixture.updateShippingAddress(shippingAddressId, request);
+    }
+
+    public ResponseEntity<Void> removeShippingAddress(String shippingAddressId) {
+        return memberFixture.removeShippingAddress(shippingAddressId);
+    }
+
+    public String registerShippingAddressThenGetId() {
+        return memberFixture.registerShippingAddressThenGetId();
     }
 
     public ResponseEntity<Void> addCartItem(AddCartItemRequest request) {
-        return client.postForEntity("/my/cart/items", request, Void.class);
+        return cartFixture.addCartItem(request);
     }
 
     public String addCartItemThenGetId(String productId, int quantity) {
-        ResponseEntity<Void> response = addCartItem(new AddCartItemRequest(productId, quantity));
-        return response.getHeaders().getLocation().getPath().substring("/my/cart/items/".length());
+        return cartFixture.addCartItemThenGetId(productId, quantity);
     }
 
     public ResponseEntity<Void> changeCartItemQuantity(String cartItemId, ChangeCartItemQuantityRequest request) {
-        return client.exchange(
-                RequestEntity
-                        .patch("/my/cart/items/" + cartItemId)
-                        .body(request),
-                Void.class
-        );
+        return cartFixture.changeCartItemQuantity(cartItemId, request);
     }
 
     public ResponseEntity<Void> removeCartItem(String cartItemId) {
-        return client.exchange(
-                RequestEntity
-                        .delete("/my/cart/items/" + cartItemId)
-                        .build(),
-                Void.class
-        );
+        return cartFixture.removeCartItem(cartItemId);
     }
 
     public ResponseEntity<Void> clearCart() {
-        return client.exchange(
-                RequestEntity
-                        .delete("/my/cart/items")
-                        .build(),
-                Void.class
-        );
+        return cartFixture.clearCart();
     }
 
     public ResponseEntity<Void> registerProduct(CreateProductRequest request) {
-        return client.postForEntity("/products", request, Void.class);
+        return productFixture.registerProduct(request);
     }
 
     public ResponseEntity<Void> updateProduct(String productId, UpdateProductRequest request) {
-        return client.exchange(
-                RequestEntity
-                        .put("/products/" + productId)
-                        .body(request),
-                Void.class
-        );
+        return productFixture.updateProduct(productId, request);
     }
 
     public ResponseEntity<Void> addStock(String productId, AddStockRequest request) {
-        return client.exchange(
-                RequestEntity
-                        .patch("/products/" + productId + "/stock/add")
-                        .body(request),
-                Void.class
-        );
+        return productFixture.addStock(productId, request);
     }
 
     public ResponseEntity<Void> deductStock(String productId, DeductStockRequest request) {
-        return client.exchange(
-                RequestEntity
-                        .patch("/products/" + productId + "/stock/deduct")
-                        .body(request),
-                Void.class
-        );
+        return productFixture.deductStock(productId, request);
     }
 
     public ResponseEntity<Void> discontinue(String productId) {
-        return client.exchange(
-                RequestEntity
-                        .patch("/products/" + productId + "/discontinue")
-                        .build(),
-                Void.class
-        );
+        return productFixture.discontinue(productId);
     }
 
     public ResponseEntity<Void> addImages(String productId, AddProductImagesRequest request) {
-        return client.exchange(
-                RequestEntity
-                        .post("/products/" + productId + "/images")
-                        .body(request),
-                Void.class
-        );
+        return productFixture.addImages(productId, request);
     }
 
     public ResponseEntity<Void> removeImage(String productId, String imageId) {
-        return client.exchange(
-                RequestEntity
-                        .delete("/products/" + productId + "/images/" + imageId)
-                        .build(),
-                Void.class
-        );
+        return productFixture.removeImage(productId, imageId);
     }
 
     public ResponseEntity<Void> changeThumbnailImage(String productId, String imageId) {
-        return client.exchange(
-                RequestEntity
-                        .patch("/products/" + productId + "/images/" + imageId + "/thumbnail")
-                        .build(),
-                Void.class
-        );
-    }
-
-    public ResponseEntity<Void> createOrder(CreateOrderRequest request) {
-        return client.postForEntity("/my/orders", request, Void.class);
-    }
-
-    public ResponseEntity<Void> cancelOrder(String orderId) {
-        return client.exchange(
-                RequestEntity
-                        .patch("/my/orders/" + orderId + "/cancel")
-                        .build(),
-                Void.class
-        );
-    }
-
-    public String createOrderThenGetId(CreateOrderRequest request) {
-        ResponseEntity<Void> response = createOrder(request);
-        // TODO : lastIndexOf 활용 개선
-        return response.getHeaders().getLocation().getPath().substring("/my/orders/".length());
+        return productFixture.changeThumbnailImage(productId, imageId);
     }
 
     public String registerProductThenGetId() {
-        ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
-        return response.getHeaders().getLocation().getPath().substring("/products/".length());
+        return productFixture.registerProductThenGetId();
+    }
+
+    public ResponseEntity<Void> createOrder(CreateOrderRequest request) {
+        return orderFixture.createOrder(request);
+    }
+
+    public ResponseEntity<Void> cancelOrder(String orderId) {
+        return orderFixture.cancelOrder(orderId);
+    }
+
+    public String createOrderThenGetId(CreateOrderRequest request) {
+        return orderFixture.createOrderThenGetId(request);
     }
 }

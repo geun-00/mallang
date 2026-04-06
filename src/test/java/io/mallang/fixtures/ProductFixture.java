@@ -34,10 +34,6 @@ public class ProductFixture {
         return new AddStockRequest(generateProductStockQuantity());
     }
 
-    public static DeductStockRequest generateDeductStockRequest(int quantity) {
-        return new DeductStockRequest(quantity);
-    }
-
     public static AddProductImagesRequest generateAddProductImagesRequest() {
         return new AddProductImagesRequest(List.of(
                 generateProductImageUrl(),

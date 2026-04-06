@@ -18,7 +18,8 @@ public final class ProductApiFixture extends ApiFixture {
 
     public String registerProductThenGetId() {
         ResponseEntity<Void> response = registerProduct(generateCreateProductRequest());
-        return response.getHeaders().getLocation().getPath().substring("/products/".length());
+
+        return extractId(response);
     }
 
     public ResponseEntity<Void> updateProduct(String productId, UpdateProductRequest request) {

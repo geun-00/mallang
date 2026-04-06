@@ -1,6 +1,7 @@
 package io.mallang.test.product.adapter.web;
 
-import io.mallang.TestFixture;
+import io.mallang.FixtureSession;
+import io.mallang.FixtureSessionFactory;
 import io.mallang.annotations.WebAdapterTest;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import io.mallang.product.application.required.query.LoadProductPort;
@@ -36,12 +37,12 @@ class ProductImageCommandApiTest {
         class 성공 {
 
             @Test
-            void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
+            void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
                 var request = generateAddProductImagesRequest();
 
-                ResponseEntity<Void> response = fixture.addImages(productId, request);
+                ResponseEntity<Void> response = fixture.product().addImages(productId, request);
 
                 assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
             }
@@ -51,15 +52,18 @@ class ProductImageCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
+            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
                 var request = generateAddProductImagesRequest();
 
-                ResponseEntity<Void> response = fixture.unauthenticatedClient().exchange(
-                        RequestEntity.post("/products/" + productId + "/images").body(request),
-                        Void.class
-                );
+                ResponseEntity<Void> response = fixture.product()
+                                                       .unauthenticatedClient()
+                                                       .exchange(
+                                                               RequestEntity.post("/products/" + productId + "/images")
+                                                                            .body(request),
+                                                               Void.class
+                                                       );
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }
@@ -70,13 +74,13 @@ class ProductImageCommandApiTest {
 
             @Test
             void imageUrls_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
                 var request = new AddProductImagesRequest(null);
 
-                ResponseEntity<Void> response = fixture.addImages(productId, request);
+                ResponseEntity<Void> response = fixture.product().addImages(productId, request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -86,16 +90,18 @@ class ProductImageCommandApiTest {
             @ValueSource(strings = {"", "   "})
             void imageUrls_요소가_null_또는_비어있는_문자열이면_400_Bad_Request_상태코드를_반환한다(
                     String invalidImageUrl,
-                    @Autowired TestFixture fixture
+                    @Autowired FixtureSession fixture
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+
                 List<String> imageUrls = new ArrayList<>();
                 imageUrls.add(generateProductImageUrl());
                 imageUrls.add(invalidImageUrl);
+
                 var request = new AddProductImagesRequest(imageUrls);
 
-                ResponseEntity<Void> response = fixture.addImages(productId, request);
+                ResponseEntity<Void> response = fixture.product().addImages(productId, request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -105,11 +111,11 @@ class ProductImageCommandApiTest {
         class 조회_실패 {
 
             @Test
-            void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
+            void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
                 var request = generateAddProductImagesRequest();
 
-                ResponseEntity<Void> response = fixture.addImages("non-existent-product-id", request);
+                ResponseEntity<Void> response = fixture.product().addImages("non-existent-product-id", request);
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
@@ -119,9 +125,9 @@ class ProductImageCommandApiTest {
         class 도메인_규칙 {
 
             @Test
-            void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
+            void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
 
                 List<String> tooManyUrls = new ArrayList<>();
                 for (int i = 0; i < 12; i++) {
@@ -130,7 +136,7 @@ class ProductImageCommandApiTest {
 
                 var request = new AddProductImagesRequest(tooManyUrls);
 
-                ResponseEntity<Void> response = fixture.addImages(productId, request);
+                ResponseEntity<Void> response = fixture.product().addImages(productId, request);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -141,16 +147,18 @@ class ProductImageCommandApiTest {
 
             @Test
             void 본인_상품이_아니면_403_Forbidden_상태코드를_반환한다(
-                    @Autowired TestFixture ownerFixture,
-                    @Autowired TestFixture anotherFixture
+                    @Autowired FixtureSession fixture,
+                    @Autowired FixtureSessionFactory fixtureSessionFactory
             ) {
-                ownerFixture.createMemberThenLogin();
-                String productId = ownerFixture.registerProductThenGetId();
+                FixtureSession anotherFixture = fixtureSessionFactory.create();
 
-                anotherFixture.createMemberThenLogin();
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+
+                anotherFixture.auth().createMemberThenLogin();
                 var request = generateAddProductImagesRequest();
 
-                ResponseEntity<Void> response = anotherFixture.addImages(productId, request);
+                ResponseEntity<Void> response = anotherFixture.product().addImages(productId, request);
 
                 assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
@@ -166,15 +174,15 @@ class ProductImageCommandApiTest {
 
             @Test
             void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
-                fixture.addImages(productId, generateAddProductImagesRequest());
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getThumbnailImageId(loadProductPort, productId);
 
-                ResponseEntity<Void> response = fixture.removeImage(productId, imageId);
+                ResponseEntity<Void> response = fixture.product().removeImage(productId, imageId);
 
                 assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
             }
@@ -185,18 +193,21 @@ class ProductImageCommandApiTest {
 
             @Test
             void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
-                fixture.addImages(productId, generateAddProductImagesRequest());
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getThumbnailImageId(loadProductPort, productId);
 
-                ResponseEntity<Void> response = fixture.unauthenticatedClient().exchange(
-                        RequestEntity.delete("/products/" + productId + "/images/" + imageId).build(),
-                        Void.class
-                );
+                ResponseEntity<Void> response = fixture.product()
+                                                       .unauthenticatedClient()
+                                                       .exchange(
+                                                               RequestEntity.delete("/products/" + productId + "/images/" + imageId)
+                                                                            .build(),
+                                                               Void.class
+                                                       );
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }
@@ -206,20 +217,20 @@ class ProductImageCommandApiTest {
         class 조회_실패 {
 
             @Test
-            void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
+            void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
 
-                ResponseEntity<Void> response = fixture.removeImage("non-existent-product-id", "non-existent-image-id");
+                ResponseEntity<Void> response = fixture.product().removeImage("non-existent-product-id", "non-existent-image-id");
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
 
             @Test
-            void 존재하지_않는_이미지이면_404_Not_Found_상태코드를_반환한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
+            void 존재하지_않는_이미지이면_404_Not_Found_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
 
-                ResponseEntity<Void> response = fixture.removeImage(productId, "non-existent-image-id");
+                ResponseEntity<Void> response = fixture.product().removeImage(productId, "non-existent-image-id");
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
@@ -230,16 +241,16 @@ class ProductImageCommandApiTest {
 
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
-                fixture.addImages(productId, generateAddProductImagesRequest());
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getThumbnailImageId(loadProductPort, productId);
-                fixture.discontinue(productId);
+                fixture.product().discontinue(productId);
 
-                ResponseEntity<Void> response = fixture.removeImage(productId, imageId);
+                ResponseEntity<Void> response = fixture.product().removeImage(productId, imageId);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -250,18 +261,20 @@ class ProductImageCommandApiTest {
 
             @Test
             void 본인_상품이_아니면_403_Forbidden_상태코드를_반환한다(
-                    @Autowired TestFixture ownerFixture,
-                    @Autowired TestFixture anotherFixture,
+                    @Autowired FixtureSession fixture,
+                    @Autowired FixtureSessionFactory fixtureSessionFactory,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                ownerFixture.createMemberThenLogin();
-                String productId = ownerFixture.registerProductThenGetId();
-                ownerFixture.addImages(productId, generateAddProductImagesRequest());
+                FixtureSession anotherFixture = fixtureSessionFactory.create();
+
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getThumbnailImageId(loadProductPort, productId);
 
-                anotherFixture.createMemberThenLogin();
+                anotherFixture.auth().createMemberThenLogin();
 
-                ResponseEntity<Void> response = anotherFixture.removeImage(productId, imageId);
+                ResponseEntity<Void> response = anotherFixture.product().removeImage(productId, imageId);
 
                 assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
@@ -277,15 +290,15 @@ class ProductImageCommandApiTest {
 
             @Test
             void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
-                fixture.addImages(productId, generateAddProductImagesRequest());
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getFirstNormalImageId(loadProductPort, productId);
 
-                ResponseEntity<Void> response = fixture.changeThumbnailImage(productId, imageId);
+                ResponseEntity<Void> response = fixture.product().changeThumbnailImage(productId, imageId);
 
                 assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
             }
@@ -296,15 +309,15 @@ class ProductImageCommandApiTest {
 
             @Test
             void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
-                fixture.addImages(productId, generateAddProductImagesRequest());
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getFirstNormalImageId(loadProductPort, productId);
 
-                ResponseEntity<Void> response = fixture.unauthenticatedClient().exchange(
+                ResponseEntity<Void> response = fixture.product().unauthenticatedClient().exchange(
                         RequestEntity.patch("/products/" + productId + "/images/" + imageId + "/thumbnail").build(),
                         Void.class
                 );
@@ -317,20 +330,24 @@ class ProductImageCommandApiTest {
         class 조회_실패 {
 
             @Test
-            void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
+            void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
 
-                ResponseEntity<Void> response = fixture.changeThumbnailImage("non-existent-product-id", "non-existent-image-id");
+                ResponseEntity<Void> response = fixture.product()
+                                                       .changeThumbnailImage(
+                                                               "non-existent-product-id",
+                                                               "non-existent-image-id"
+                                                       );
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
 
             @Test
-            void 존재하지_않는_이미지이면_404_Not_Found_상태코드를_반환한다(@Autowired TestFixture fixture) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
+            void 존재하지_않는_이미지이면_404_Not_Found_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
 
-                ResponseEntity<Void> response = fixture.changeThumbnailImage(productId, "non-existent-image-id");
+                ResponseEntity<Void> response = fixture.product().changeThumbnailImage(productId, "non-existent-image-id");
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }
@@ -341,16 +358,16 @@ class ProductImageCommandApiTest {
 
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired TestFixture fixture,
+                    @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                fixture.createMemberThenLogin();
-                String productId = fixture.registerProductThenGetId();
-                fixture.addImages(productId, generateAddProductImagesRequest());
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getFirstNormalImageId(loadProductPort, productId);
-                fixture.discontinue(productId);
+                fixture.product().discontinue(productId);
 
-                ResponseEntity<Void> response = fixture.changeThumbnailImage(productId, imageId);
+                ResponseEntity<Void> response = fixture.product().changeThumbnailImage(productId, imageId);
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
@@ -361,18 +378,20 @@ class ProductImageCommandApiTest {
 
             @Test
             void 본인_상품이_아니면_403_Forbidden_상태코드를_반환한다(
-                    @Autowired TestFixture ownerFixture,
-                    @Autowired TestFixture anotherFixture,
+                    @Autowired FixtureSession fixture,
+                    @Autowired FixtureSessionFactory fixtureSessionFactory,
                     @Autowired LoadProductPort loadProductPort
             ) {
-                ownerFixture.createMemberThenLogin();
-                String productId = ownerFixture.registerProductThenGetId();
-                ownerFixture.addImages(productId, generateAddProductImagesRequest());
+                FixtureSession anotherFixture = fixtureSessionFactory.create();
+
+                fixture.auth().createMemberThenLogin();
+                String productId = fixture.product().registerProductThenGetId();
+                fixture.product().addImages(productId, generateAddProductImagesRequest());
                 String imageId = getFirstNormalImageId(loadProductPort, productId);
 
-                anotherFixture.createMemberThenLogin();
+                anotherFixture.auth().createMemberThenLogin();
 
-                ResponseEntity<Void> response = anotherFixture.changeThumbnailImage(productId, imageId);
+                ResponseEntity<Void> response = anotherFixture.product().changeThumbnailImage(productId, imageId);
 
                 assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }

@@ -1,6 +1,7 @@
 package io.mallang;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
 
 public abstract class ApiFixture {
 
@@ -16,6 +17,12 @@ public abstract class ApiFixture {
 
     protected FixtureContext context() {
         return context;
+    }
+
+    protected String extractId(ResponseEntity<Void> response) {
+        String path = response.getHeaders().getLocation().getPath();
+
+        return path.substring(path.lastIndexOf('/') + 1);
     }
 
     public TestRestTemplate client() {

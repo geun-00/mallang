@@ -18,6 +18,12 @@ public final class MemberApiFixture extends ApiFixture {
         return client().postForEntity("/members", request, Void.class);
     }
 
+    public String registerMemberThenGetId(MemberCreateRequest request) {
+        ResponseEntity<Void> response = registerMember(request);
+
+        return extractId(response);
+    }
+
     public ResponseEntity<Void> registerShippingAddress(RegisterShippingAddressRequest request) {
         return client().postForEntity("/my/shipping-addresses", request, Void.class);
     }
@@ -45,6 +51,7 @@ public final class MemberApiFixture extends ApiFixture {
 
     public String registerShippingAddressThenGetId() {
         ResponseEntity<Void> response = registerShippingAddress(generateRegisterShippingAddressRequest());
-        return response.getHeaders().getLocation().getPath().substring("/my/shipping-addresses/".length());
+
+        return extractId(response);
     }
 }
