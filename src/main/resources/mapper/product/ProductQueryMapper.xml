@@ -49,17 +49,17 @@
 
     <select id="selectProductDetailRows" resultType="io.mallang.product.adapter.persistence.mybatis.model.ProductDetailRow">
         SELECT
-            p.product_id        AS productid,
-            p.seller_id         AS selleridvalue,
-            m.nickname          AS sellernickname,
+            p.product_id        AS productId,
+            p.seller_id         AS selleridValue,
+            m.nickname          AS sellerNickname,
             p.name,
             p.description,
             p.price,
-            p.stock_quantity    AS stockquantity,
+            p.stock_quantity    AS stockQuantity,
             p.status,
             p.category,
-            pi.product_image_id AS imageid,
-            pi.image_url        AS imageurl,
+            pi.product_image_id AS imageId,
+            pi.image_url        AS imageUrl,
             pi.is_thumbnail     AS thumbnail
         FROM
             products p
