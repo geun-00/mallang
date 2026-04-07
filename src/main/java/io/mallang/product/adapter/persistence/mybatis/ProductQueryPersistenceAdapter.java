@@ -2,6 +2,7 @@ package io.mallang.product.adapter.persistence.mybatis;
 
 import io.mallang.application.shared.query.SliceResult;
 import io.mallang.product.adapter.persistence.mybatis.model.ProductDetailRow;
+import io.mallang.product.adapter.persistence.mybatis.model.ProductListRow;
 import io.mallang.product.adapter.persistence.mybatis.model.SearchProductCondition;
 import io.mallang.product.application.provided.query.model.ProductDetailView;
 import io.mallang.product.application.provided.query.model.ProductListView;
@@ -37,26 +38,24 @@ public class ProductQueryPersistenceAdapter implements SearchProductsPort, LoadP
 
         List<ProductListView> loadedItems = productQueryMapper.selectProducts(condition)
                                                               .stream()
-                                                              .map(row -> new ProductListView(
-                                                                      row.productId(),
-                                                                      row.sellerIdValue(),
-                                                                      row.sellerNickname(),
-                                                                      row.name(),
-                                                                      row.price(),
-                                                                      row.stockQuantity(),
-                                                                      row.status(),
-                                                                      row.category(),
-                                                                      row.thumbnailImageUrl()
-                                                              ))
+                                                              .map(this::convertToView)
                                                               .toList();
 
-        boolean hasNext = loadedItems.size() > query.size();
-        List<ProductListView> items = hasNext
-                ? loadedItems.subList(0, query.size())
-                : loadedItems;
-        String nextCursor = hasNext ? items.getLast().productId() : null;
+        return SliceResult.of(loadedItems, query.size(), ProductListView::productId);
+    }
 
-        return new SliceResult<>(items, hasNext, nextCursor);
+    private ProductListView convertToView(ProductListRow row) {
+        return new ProductListView(
+                row.productId(),
+                row.sellerIdValue(),
+                row.sellerNickname(),
+                row.name(),
+                row.price(),
+                row.stockQuantity(),
+                row.status(),
+                row.category(),
+                row.thumbnailImageUrl()
+        );
     }
 
     @Override

@@ -72,15 +72,15 @@ public final class ProductApiFixture extends ApiFixture {
         );
     }
 
-    public ResponseEntity<SearchProductsResponse> searchProducts(SearchProductsRequest request) {
+    public ResponseEntity<SearchProductsResponse> searchProducts(SearchProductsRequest request, String lastProductId, Integer size) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/products");
         addIfPresent(builder, "sellerNickname", request.sellerNickname());
         addIfPresent(builder, "productName", request.productName());
         addIfPresent(builder, "minPrice", request.minPrice());
         addIfPresent(builder, "maxPrice", request.maxPrice());
         addIfPresent(builder, "category", request.category());
-        addIfPresent(builder, "lastProductId", request.lastProductId());
-        addIfPresent(builder, "size", request.size());
+        addIfPresent(builder, "lastProductId", lastProductId);
+        addIfPresent(builder, "size", size);
 
         return client().getForEntity(builder.toUriString(), SearchProductsResponse.class);
     }

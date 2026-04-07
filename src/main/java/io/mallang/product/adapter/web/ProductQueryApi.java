@@ -10,12 +10,10 @@ import io.mallang.product.application.provided.query.model.ProductListView;
 import io.mallang.product.application.provided.query.model.SearchProductsQuery;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,15 +24,19 @@ public class ProductQueryApi {
     private final GetProductDetailUseCase getProductDetailUseCase;
 
     @GetMapping
-    public ResponseEntity<SearchProductsResponse> search(@Valid @ModelAttribute SearchProductsRequest request) {
+    public ResponseEntity<SearchProductsResponse> search(
+            @Valid @ModelAttribute SearchProductsRequest request,
+            @RequestParam(required = false) String lastProductId,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
         SearchProductsQuery query = new SearchProductsQuery(
                 request.sellerNickname(),
                 request.productName(),
                 request.minPrice(),
                 request.maxPrice(),
                 request.category(),
-                request.lastProductId(),
-                request.sizeOrDefault()
+                lastProductId,
+                pageable.getPageSize()
         );
 
         SliceResult<ProductListView> result = searchProductsUseCase.search(query);

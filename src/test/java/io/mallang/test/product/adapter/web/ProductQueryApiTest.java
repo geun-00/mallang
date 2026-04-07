@@ -59,10 +59,10 @@ class ProductQueryApiTest {
                                                                                  null,
                                                                                  BigDecimal.valueOf(1000),
                                                                                  BigDecimal.valueOf(5000),
-                                                                                 "FOOD",
+                                                                                 "FOOD"),
                                                                                  null,
                                                                                  20
-                                                                         ));
+                                                                         );
 
                 assertThat(response.getStatusCode()).isEqualTo(OK);
                 assertThat(response.getBody()).isNotNull();
@@ -89,10 +89,10 @@ class ProductQueryApiTest {
                                                                                  null,
                                                                                  null,
                                                                                  null,
-                                                                                 null,
+                                                                                 null),
                                                                                  null,
                                                                                  1
-                                                                         ));
+                                                                         );
 
                 assertThat(response.getStatusCode()).isEqualTo(OK);
                 assertThat(response.getBody()).isNotNull();
@@ -121,22 +121,6 @@ class ProductQueryApiTest {
         class 요청_검증 {
 
             @Test
-            void size가_0이면_400_Bad_Request_상태코드를_반환한다(@Autowired FixtureSession fixture) {
-                ResponseEntity<SearchProductsResponse> response = fixture.product()
-                                                                         .searchProducts(new SearchProductsRequest(
-                                                                                 null,
-                                                                                 null,
-                                                                                 null,
-                                                                                 null,
-                                                                                 null,
-                                                                                 null,
-                                                                                 0
-                                                                         ));
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @Test
             void minPrice가_음수면_400_Bad_Request_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 ResponseEntity<SearchProductsResponse> response = fixture.product()
                                                                          .searchProducts(new SearchProductsRequest(
@@ -144,10 +128,10 @@ class ProductQueryApiTest {
                                                                                  null,
                                                                                  BigDecimal.valueOf(-1),
                                                                                  null,
-                                                                                 null,
+                                                                                 null),
                                                                                  null,
                                                                                  20
-                                                                         ));
+                                                                         );
 
                 assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
