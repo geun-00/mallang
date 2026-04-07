@@ -24,6 +24,7 @@ public class SecurityConfiguration {
                 )
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(HttpMethod.POST, "/members").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products", "/products/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
