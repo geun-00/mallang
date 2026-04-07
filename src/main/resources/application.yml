@@ -20,3 +20,6 @@ spring:
         jdbc:
           batch_size: 50
         generate_statistics: true
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml

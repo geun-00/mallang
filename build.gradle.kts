@@ -31,6 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.github.f4b6a3:ulid-creator:5.2.3")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
+    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -44,6 +45,7 @@ dependencies {
     testImplementation("org.jsoup:jsoup:1.18.3")
     testImplementation("org.apache.httpcomponents.client5:httpclient5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5")
 }
 
 tasks.withType<Test> {

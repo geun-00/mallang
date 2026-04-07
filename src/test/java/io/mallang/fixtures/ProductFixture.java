@@ -3,8 +3,11 @@ package io.mallang.fixtures;
 import io.mallang.domain.common.IdGenerator;
 import io.mallang.domain.common.vo.Money;
 import io.mallang.member.domain.MemberId;
-import io.mallang.product.adapter.web.model.*;
+import io.mallang.product.adapter.web.model.AddProductImagesRequest;
+import io.mallang.product.adapter.web.model.AddStockRequest;
+import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
+import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
 import io.mallang.product.domain.*;
@@ -20,6 +23,10 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ProductFixture {
+
+    // =====================================================================
+    // 웹 요청 모델 (Web Request Models)
+    // =====================================================================
 
     public static UpdateProductRequest generateUpdateProductRequest() {
         return new UpdateProductRequest(
@@ -66,6 +73,10 @@ public class ProductFixture {
         );
     }
 
+    // =====================================================================
+    // 애플리케이션 커맨드 (Application Commands)
+    // =====================================================================
+
     public static RegisterProductCommand generateRegisterProductCommand() {
         return generateRegisterProductCommand(List.of());
     }
@@ -88,6 +99,10 @@ public class ProductFixture {
                 images
         );
     }
+
+    // =====================================================================
+    // 도메인 커맨드 (Domain Commands)
+    // =====================================================================
 
     public static IdGenerator generateIdGenerator() {
         return () -> UUID.randomUUID().toString();
@@ -128,6 +143,10 @@ public class ProductFixture {
         );
     }
 
+    // =====================================================================
+    // 도메인 객체 (Domain Objects)
+    // =====================================================================
+
     public static MemberId generateSellerId() {
         return new MemberId(UUID.randomUUID().toString());
     }
@@ -144,6 +163,26 @@ public class ProductFixture {
         return Product.create(generateProductCreateCommand(stockQuantity), sellerId, generateIdGenerator());
     }
 
+    public static Product generateProduct(
+            MemberId sellerId,
+            String name,
+            BigDecimal price,
+            ProductCategory category
+    ) {
+        return Product.create(
+                new CreateProductCommand(
+                        new ProductName(name),
+                        new ProductDescription(generateProductDescription()),
+                        new Money(price),
+                        new StockQuantity(generateProductStockQuantity()),
+                        category,
+                        List.of()
+                ),
+                sellerId,
+                generateIdGenerator()
+        );
+    }
+
     public static Product generateDiscontinuedProduct() {
         Product product = generateProduct();
         product.discontinue();
@@ -152,7 +191,32 @@ public class ProductFixture {
     }
 
     public static Product generateProductWithImages() {
-        return Product.create(generateProductCreateCommandWithImages(), generateSellerId(), generateIdGenerator());
+        return generateProductWithSeller(generateSellerId());
+    }
+
+    public static Product generateProductWithSeller(MemberId sellerId) {
+        return Product.create(generateProductCreateCommandWithImages(), sellerId, generateIdGenerator());
+    }
+
+    public static Product generateProductWithImages(
+            MemberId sellerId,
+            String name,
+            BigDecimal price,
+            ProductCategory category,
+            int nonThumbnailCount
+    ) {
+        return Product.create(
+                new CreateProductCommand(
+                        new ProductName(name),
+                        new ProductDescription(generateProductDescription()),
+                        new Money(price),
+                        new StockQuantity(generateProductStockQuantity()),
+                        category,
+                        generateProductImageCommand(nonThumbnailCount)
+                ),
+                sellerId,
+                generateIdGenerator()
+        );
     }
 
     public static Product generateProductWithImages(int nonThumbnailCount) {
@@ -205,6 +269,10 @@ public class ProductFixture {
 
         return addImageCommands;
     }
+
+    // =====================================================================
+    // 랜덤 원시값 (Random Primitives)
+    // =====================================================================
 
     public static String generateProductName() {
         return "name" + UUID.randomUUID();

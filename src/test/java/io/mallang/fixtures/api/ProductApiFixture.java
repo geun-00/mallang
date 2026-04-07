@@ -3,6 +3,7 @@ package io.mallang.fixtures.api;
 import io.mallang.product.adapter.web.model.*;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static io.mallang.fixtures.ProductFixture.generateCreateProductRequest;
 
@@ -69,5 +70,28 @@ public final class ProductApiFixture extends ApiFixture {
                 RequestEntity.patch("/products/" + productId + "/images/" + imageId + "/thumbnail").build(),
                 Void.class
         );
+    }
+
+    public ResponseEntity<SearchProductsResponse> searchProducts(SearchProductsRequest request, String lastProductId, Integer size) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/products");
+        addIfPresent(builder, "sellerNickname", request.sellerNickname());
+        addIfPresent(builder, "productName", request.productName());
+        addIfPresent(builder, "minPrice", request.minPrice());
+        addIfPresent(builder, "maxPrice", request.maxPrice());
+        addIfPresent(builder, "category", request.category());
+        addIfPresent(builder, "lastProductId", lastProductId);
+        addIfPresent(builder, "size", size);
+
+        return client().getForEntity(builder.toUriString(), SearchProductsResponse.class);
+    }
+
+    private void addIfPresent(UriComponentsBuilder builder, String name, Object value) {
+        if (value != null) {
+            builder.queryParam(name, value);
+        }
+    }
+
+    public ResponseEntity<ProductDetailResponse> getProductDetail(String productId) {
+        return client().getForEntity("/products/" + productId, ProductDetailResponse.class);
     }
 }

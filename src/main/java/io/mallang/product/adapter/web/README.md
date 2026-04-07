@@ -1,5 +1,6 @@
 # API 목록
 
+* [상품 목록 조회](#상품-목록-조회)
 * [상품 등록](#상품-등록)
 * [상품 정보 수정](#상품-정보-수정)
 * [재고 추가](#재고-추가)
@@ -8,6 +9,67 @@
 * [이미지 추가](#이미지-추가)
 * [이미지 삭제](#이미지-삭제)
 * [대표 이미지 변경](#대표-이미지-변경)
+
+---
+
+### 상품 목록 조회
+
+#### 요청
+- `GET /products`
+- query parameter
+  - `sellerNickname` : 작성자 닉네임 부분 일치 검색
+  - `productName` : 상품명 부분 일치 검색
+  - `minPrice` : 최소 가격
+  - `maxPrice` : 최대 가격
+  - `category` : 상품 카테고리
+  - `lastProductId` : 다음 슬라이스 조회를 위한 커서
+  - `size` : 조회 개수 (기본값 `20`)
+- curl 명령 예시
+  ```bash
+  curl -i 'http://localhost:8080/products?sellerNickname=ali&productName=App&minPrice=1000&maxPrice=5000&category=FOOD&size=20'
+  ```
+
+#### 성공 응답
+- 상태코드: `200 OK`
+- 본문 예시
+  ```json
+  {
+    "items": [
+      {
+        "productId": "01H...",
+        "sellerNickname": "alice",
+        "name": "Apple",
+        "price": 3000,
+        "stockQuantity": 10,
+        "status": "ON_SALE",
+        "category": "FOOD",
+        "thumbnailImageUrl": "https://example.com/images/apple.jpg"
+      }
+    ],
+    "hasNext": false,
+    "nextCursor": null
+  }
+  ```
+
+#### 실패 응답
+- 상태코드:
+  - `400 Bad Request`
+
+#### 정책
+- 인증 없이 요청할 수 있다
+- `sellerNickname`, `productName`은 부분 일치 검색이다
+- `minPrice`, `maxPrice`는 0 이상이어야 한다
+- `minPrice`는 `maxPrice`보다 클 수 없다
+- `category`는 `FOOD`, `ELECTRONICS`, `CLOTHING`, `BOOKS`, `ETC` 중 하나를 사용한다
+- 정렬은 `productId desc` 기준 커서 페이징을 사용한다
+- 다음 페이지가 있으면 `hasNext = true`, `nextCursor`에 마지막 상품의 `productId`를 반환한다
+
+#### 테스트 시나리오
+- [x] 검색 조건으로 상품을 조회할 수 있다
+- [x] `size`를 지정하면 `hasNext`, `nextCursor`를 반환한다
+- [x] 인증되지 않은 요청이어도 상품 목록을 조회할 수 있다
+- [x] `size`가 0이면 `400 Bad Request` 상태코드를 반환한다
+- [x] `minPrice`가 음수면 `400 Bad Request` 상태코드를 반환한다
 
 ---
 

@@ -87,6 +87,19 @@ public class MemberFixture {
         return Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
     }
 
+    public static Member generateMemberWithNickname(String nickname) {
+        return Member.create(
+                new CreateMemberCommand(
+                        new Email(generateEmailValue()),
+                        DEFAULT_PASSWORD,
+                        new Nickname(nickname)
+                ),
+                generatePasswordEncoder(),
+                generateIdGenerator(),
+                generateClockHolder()
+        );
+    }
+
     public static Member generateMember(String password) {
         return Member.create(generateCreateCommand(password), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
     }
