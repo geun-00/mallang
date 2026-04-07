@@ -175,6 +175,27 @@ public class ProductFixture {
         return Product.create(generateProductCreateCommandWithImages(), generateSellerId(), generateIdGenerator());
     }
 
+    public static Product generateProductWithImages(
+            MemberId sellerId,
+            String name,
+            BigDecimal price,
+            ProductCategory category,
+            int nonThumbnailCount
+    ) {
+        return Product.create(
+                new CreateProductCommand(
+                        new ProductName(name),
+                        new ProductDescription(generateProductDescription()),
+                        new Money(price),
+                        new StockQuantity(generateProductStockQuantity()),
+                        category,
+                        generateProductImageCommand(nonThumbnailCount)
+                ),
+                sellerId,
+                generateIdGenerator()
+        );
+    }
+
     public static Product generateProductWithImages(int nonThumbnailCount) {
         List<CreateProductImageCommand> images = generateProductImageCommand(nonThumbnailCount);
 
