@@ -90,4 +90,8 @@ public final class ProductApiFixture extends ApiFixture {
             builder.queryParam(name, value);
         }
     }
+
+    public ResponseEntity<ProductDetailResponse> getProductDetail(String productId) {
+        return client().getForEntity("/products/" + productId, ProductDetailResponse.class);
+    }
 }

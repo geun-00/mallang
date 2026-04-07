@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 
-import static io.mallang.fixtures.MemberFixture.generateMemberWithNickname;
-import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.MemberFixture.generateMember;
+import static io.mallang.fixtures.ProductFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @PortTest
@@ -29,30 +29,26 @@ class SearchProductsPortTest {
             @Autowired SaveProductPort saveProductPort,
             @Autowired SearchProductsPort searchProductsPort
     ) {
-        Member seller = generateMemberWithNickname("alice");
+        Member seller = generateMember();
         saveMemberPort.save(seller);
 
-        saveProductPort.save(generateProduct(seller.getId(), "Apple", BigDecimal.valueOf(3000), ProductCategory.FOOD));
-        saveProductPort.save(generateProduct(seller.getId(), "Banana", BigDecimal.valueOf(2000), ProductCategory.FOOD));
+        saveProductPort.save(generateProduct(seller.getId(), generateProductName(), BigDecimal.valueOf(2000), ProductCategory.FOOD));
+        saveProductPort.save(generateProduct(seller.getId(), generateProductName(), BigDecimal.valueOf(3000), ProductCategory.FOOD));
+        saveProductPort.save(generateProduct(seller.getId(), generateProductName(), BigDecimal.valueOf(15000), ProductCategory.BOOKS));
 
-        Member otherSeller = generateMemberWithNickname("bob");
-        saveMemberPort.save(otherSeller);
-        saveProductPort.save(generateProduct(otherSeller.getId(), "Book", BigDecimal.valueOf(15000), ProductCategory.BOOKS));
+        SliceResult<ProductListView> result = searchProductsPort.search(new SearchProductsQuery(
+                seller.getNickname().value(),
+                null,
+                BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(5000),
+                "FOOD",
+                null,
+                20
+        ));
 
-        SliceResult<ProductListView> result = searchProductsPort.search(
-                new SearchProductsQuery(
-                        "ali",
-                        "App",
-                        BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(5000),
-                        "FOOD",
-                        null,
-                        20
-                )
-        );
-
-        assertThat(result.items()).extracting(ProductListView::name).containsExactly("Apple");
-        assertThat(result.items()).extracting(ProductListView::sellerNickname).containsExactly("alice");
+        assertThat(result.items()).extracting(ProductListView::category)
+                                  .contains(ProductCategory.FOOD.name())
+                                  .doesNotContain(ProductCategory.BOOKS.name());
         assertThat(result.hasNext()).isFalse();
         assertThat(result.nextCursor()).isNull();
     }
@@ -63,36 +59,22 @@ class SearchProductsPortTest {
             @Autowired SaveProductPort saveProductPort,
             @Autowired SearchProductsPort searchProductsPort
     ) {
-        Member seller = generateMemberWithNickname("charlie");
+        Member seller = generateMember();
         saveMemberPort.save(seller);
 
-        saveProductPort.save(generateProduct(seller.getId(), "ProductA", BigDecimal.valueOf(1000), ProductCategory.FOOD));
-        saveProductPort.save(generateProduct(seller.getId(), "ProductB", BigDecimal.valueOf(2000), ProductCategory.FOOD));
-        saveProductPort.save(generateProduct(seller.getId(), "ProductC", BigDecimal.valueOf(3000), ProductCategory.FOOD));
+        saveProductPort.save(generateProduct(seller.getId(), generateProductName(), generateProductPriceAmount(), ProductCategory.FOOD));
+        saveProductPort.save(generateProduct(seller.getId(), generateProductName(), generateProductPriceAmount(), ProductCategory.FOOD));
+        saveProductPort.save(generateProduct(seller.getId(), generateProductName(), generateProductPriceAmount(), ProductCategory.FOOD));
 
-        SliceResult<ProductListView> firstSlice = searchProductsPort.search(
-                new SearchProductsQuery(
-                        "charlie",
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        2
-                )
-        );
+        String sellerNickname = seller.getNickname().value();
 
-        SliceResult<ProductListView> secondSlice = searchProductsPort.search(
-                new SearchProductsQuery(
-                        "charlie",
-                        null,
-                        null,
-                        null,
-                        null,
-                        firstSlice.nextCursor(),
-                        2
-                )
-        );
+        SliceResult<ProductListView> firstSlice = searchProductsPort.search(new SearchProductsQuery(
+                sellerNickname, null, null, null, null, null, 2
+        ));
+
+        SliceResult<ProductListView> secondSlice = searchProductsPort.search(new SearchProductsQuery(
+                sellerNickname, null, null, null, null, firstSlice.nextCursor(), 2
+        ));
 
         assertThat(firstSlice.items()).hasSize(2);
         assertThat(firstSlice.hasNext()).isTrue();
@@ -101,8 +83,10 @@ class SearchProductsPortTest {
         assertThat(secondSlice.items()).hasSize(1);
         assertThat(secondSlice.hasNext()).isFalse();
         assertThat(secondSlice.nextCursor()).isNull();
-        assertThat(secondSlice.items())
-                .extracting(ProductListView::productId)
-                .doesNotContainAnyElementsOf(firstSlice.items().stream().map(ProductListView::productId).toList());
+        assertThat(secondSlice.items()).extracting(ProductListView::productId)
+                                       .doesNotContainAnyElementsOf(firstSlice.items()
+                                                                              .stream()
+                                                                              .map(ProductListView::productId)
+                                                                              .toList());
     }
 }

@@ -175,6 +175,10 @@ public class ProductFixture {
         return Product.create(generateProductCreateCommandWithImages(), generateSellerId(), generateIdGenerator());
     }
 
+    public static Product generateProductWithSeller(MemberId sellerId) {
+        return Product.create(generateProductCreateCommandWithImages(), sellerId, generateIdGenerator());
+    }
+
     public static Product generateProductWithImages(
             MemberId sellerId,
             String name,
