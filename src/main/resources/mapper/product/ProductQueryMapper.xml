@@ -46,4 +46,30 @@
         order by p.product_id desc
         limit #{limit}
     </select>
+
+    <select id="selectProductDetailRows" resultType="io.mallang.product.adapter.persistence.mybatis.model.ProductDetailRow">
+        SELECT
+            p.product_id        AS productid,
+            p.seller_id         AS selleridvalue,
+            m.nickname          AS sellernickname,
+            p.name,
+            p.description,
+            p.price,
+            p.stock_quantity    AS stockquantity,
+            p.status,
+            p.category,
+            pi.product_image_id AS imageid,
+            pi.image_url        AS imageurl,
+            pi.is_thumbnail     AS thumbnail
+        FROM
+            products p
+                JOIN members m ON m.member_id = p.seller_id
+                LEFT JOIN product_images pi ON pi.product_id = p.product_id
+        WHERE
+            p.product_id = #{productIdValue}
+        ORDER BY
+            pi.is_thumbnail DESC,
+            pi.product_image_id;
+
+    </select>
 </mapper>
