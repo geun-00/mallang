@@ -8,6 +8,7 @@ import io.mallang.product.application.provided.query.model.ProductListView;
 
 import static io.mallang.product.adapter.web.model.ProductDetailResponse.ProductImageResponse;
 import static io.mallang.product.adapter.web.model.SearchProductsResponse.ProductSummary;
+import static io.mallang.product.application.provided.query.model.ProductDetailView.ProductImageView;
 
 public final class ProductResponseMapper {
 
@@ -25,6 +26,19 @@ public final class ProductResponseMapper {
         );
     }
 
+    private static ProductSummary toProductSummary(ProductListView item) {
+        return new ProductSummary(
+                item.productId(),
+                item.sellerNickname(),
+                item.name(),
+                item.price(),
+                item.stockQuantity(),
+                item.status(),
+                item.category(),
+                item.thumbnailImageUrl()
+        );
+    }
+
     public static ProductDetailResponse toProductDetailResponse(ProductDetailView view) {
         return new ProductDetailResponse(
                 view.productId(),
@@ -39,25 +53,16 @@ public final class ProductResponseMapper {
                 view.thumbnailImageUrl(),
                 view.images()
                     .stream()
-                    .map(image -> new ProductImageResponse(
-                            image.imageId(),
-                            image.imageUrl(),
-                            image.thumbnail()
-                    ))
+                    .map(ProductResponseMapper::toProductImageResponse)
                     .toList()
         );
     }
 
-    private static ProductSummary toProductSummary(ProductListView item) {
-        return new ProductSummary(
-                item.productId(),
-                item.sellerNickname(),
-                item.name(),
-                item.price(),
-                item.stockQuantity(),
-                item.status(),
-                item.category(),
-                item.thumbnailImageUrl()
+    private static ProductImageResponse toProductImageResponse(ProductImageView image) {
+        return new ProductImageResponse(
+                image.imageId(),
+                image.imageUrl(),
+                image.thumbnail()
         );
     }
 }
