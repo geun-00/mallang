@@ -15,6 +15,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static io.mallang.product.adapter.web.mapper.ProductResponseMapper.toProductDetailResponse;
+import static io.mallang.product.adapter.web.mapper.ProductResponseMapper.toSearchProductsResponse;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
@@ -41,11 +44,11 @@ public class ProductQueryApi {
 
         SliceResult<ProductListView> result = searchProductsUseCase.search(query);
 
-        return ResponseEntity.ok(SearchProductsResponse.from(result));
+        return ResponseEntity.ok(toSearchProductsResponse(result));
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetailResponse> get(@PathVariable String productId) {
-        return ResponseEntity.ok(ProductDetailResponse.from(getProductDetailUseCase.get(productId)));
+        return ResponseEntity.ok(toProductDetailResponse(getProductDetailUseCase.get(productId)));
     }
 }

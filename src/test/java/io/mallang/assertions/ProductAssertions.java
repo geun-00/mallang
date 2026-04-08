@@ -1,8 +1,12 @@
 package io.mallang.assertions;
 
+import io.mallang.application.shared.query.SliceResult;
 import io.mallang.member.domain.Member;
+import io.mallang.product.adapter.web.model.ProductDetailResponse;
+import io.mallang.product.adapter.web.model.SearchProductsResponse;
 import io.mallang.product.application.provided.command.model.UpdateProductCommand;
 import io.mallang.product.application.provided.query.model.ProductDetailView;
+import io.mallang.product.application.provided.query.model.ProductListView;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductCategory;
 import io.mallang.product.domain.ProductDescription;
@@ -85,6 +89,54 @@ public class ProductAssertions {
                                                          .stream()
                                                          .map(pi -> pi.imageUrl().value())
                                                          .toList());
+        };
+    }
+
+    public static ThrowingConsumer<SearchProductsResponse> isMappedFrom(SliceResult<ProductListView> result) {
+        return response -> {
+            assertThat(response.items()).hasSize(result.items().size());
+
+            for (int i = 0; i < result.items().size(); i++) {
+                ProductListView item = result.items().get(i);
+                SearchProductsResponse.ProductSummary summary = response.items().get(i);
+
+                assertThat(summary.productId()).isEqualTo(item.productId());
+                assertThat(summary.sellerNickname()).isEqualTo(item.sellerNickname());
+                assertThat(summary.name()).isEqualTo(item.name());
+                assertThat(summary.price()).isEqualTo(item.price());
+                assertThat(summary.stockQuantity()).isEqualTo(item.stockQuantity());
+                assertThat(summary.status()).isEqualTo(item.status());
+                assertThat(summary.category()).isEqualTo(item.category());
+                assertThat(summary.thumbnailImageUrl()).isEqualTo(item.thumbnailImageUrl());
+            }
+
+            assertThat(response.hasNext()).isEqualTo(result.hasNext());
+            assertThat(response.nextCursor()).isEqualTo(result.nextCursor());
+        };
+    }
+
+    public static ThrowingConsumer<ProductDetailResponse> isMappedFrom(ProductDetailView view) {
+        return response -> {
+            assertThat(response.productId()).isEqualTo(view.productId());
+            assertThat(response.sellerIdValue()).isEqualTo(view.sellerIdValue());
+            assertThat(response.sellerNickname()).isEqualTo(view.sellerNickname());
+            assertThat(response.name()).isEqualTo(view.name());
+            assertThat(response.description()).isEqualTo(view.description());
+            assertThat(response.price()).isEqualTo(view.price());
+            assertThat(response.stockQuantity()).isEqualTo(view.stockQuantity());
+            assertThat(response.status()).isEqualTo(view.status());
+            assertThat(response.category()).isEqualTo(view.category());
+            assertThat(response.thumbnailImageUrl()).isEqualTo(view.thumbnailImageUrl());
+            assertThat(response.images()).hasSize(view.images().size());
+
+            for (int i = 0; i < view.images().size(); i++) {
+                ProductImageView expected = view.images().get(i);
+                ProductDetailResponse.ProductImageResponse actual = response.images().get(i);
+
+                assertThat(actual.imageId()).isEqualTo(expected.imageId());
+                assertThat(actual.imageUrl()).isEqualTo(expected.imageUrl());
+                assertThat(actual.thumbnail()).isEqualTo(expected.thumbnail());
+            }
         };
     }
 
