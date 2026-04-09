@@ -37,3 +37,4 @@ out/
 .vscode/
 /http/
 /db_data/
+/.prod.env
