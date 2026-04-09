@@ -1,6 +1,6 @@
-package io.mallang.common.adapter.config;
+package io.mallang.security.config;
 
-import io.mallang.common.adapter.security.CustomUserDetails;
+import io.mallang.security.adapter.CustomUserDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

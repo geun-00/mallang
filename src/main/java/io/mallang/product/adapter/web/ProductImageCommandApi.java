@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.web;
 
-import io.mallang.common.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.web.auth.CurrentMemberId;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import io.mallang.product.application.provided.command.AddProductImagesUseCase;
 import io.mallang.product.application.provided.command.ChangeThumbnailImageUseCase;
@@ -11,7 +11,6 @@ import io.mallang.product.application.provided.command.model.RemoveProductImageC
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,11 +26,11 @@ public class ProductImageCommandApi {
     public ResponseEntity<Void> addImages(
             @PathVariable String productId,
             @Valid @RequestBody AddProductImagesRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         addProductImagesUseCase.addImages(
                 new AddProductImagesCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         productId,
                         request.imageUrls()
                 )
@@ -44,11 +43,11 @@ public class ProductImageCommandApi {
     public ResponseEntity<Void> removeImage(
             @PathVariable String productId,
             @PathVariable String imageId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         removeProductImageUseCase.removeImage(
                 new RemoveProductImageCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         productId,
                         imageId
                 )
@@ -61,11 +60,11 @@ public class ProductImageCommandApi {
     public ResponseEntity<Void> changeThumbnail(
             @PathVariable String productId,
             @PathVariable String imageId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         changeThumbnailImageUseCase.changeThumbnail(
                 new ChangeThumbnailImageCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         productId,
                         imageId
                 )

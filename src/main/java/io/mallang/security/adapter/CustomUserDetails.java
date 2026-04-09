@@ -1,4 +1,4 @@
-package io.mallang.common.adapter.security;
+package io.mallang.security.adapter;
 
 import io.mallang.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;

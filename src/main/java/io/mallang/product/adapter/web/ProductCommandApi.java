@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.web;
 
-import io.mallang.common.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.web.auth.CurrentMemberId;
 import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.DeductStockRequest;
@@ -10,7 +10,6 @@ import io.mallang.product.application.provided.command.model.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,7 +30,7 @@ public class ProductCommandApi {
     @PostMapping
     public ResponseEntity<Void> register(
             @Valid @RequestBody CreateProductRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         List<RegisterProductImageCommand> imageCommands =
                 request.images() == null
@@ -43,7 +42,7 @@ public class ProductCommandApi {
 
         RegisterProductResult result = registerProductUseCase.register(
                 new RegisterProductCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         request.name(),
                         request.description(),
                         request.price(),
@@ -65,11 +64,11 @@ public class ProductCommandApi {
     public ResponseEntity<Void> update(
             @PathVariable String productId,
             @Valid @RequestBody UpdateProductRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         updateProductUseCase.update(
                 new UpdateProductCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         productId,
                         request.name(),
                         request.description(),
@@ -85,11 +84,11 @@ public class ProductCommandApi {
     public ResponseEntity<Void> addStock(
             @PathVariable String productId,
             @Valid @RequestBody AddStockRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         addStockUseCase.addStock(
                 new AddStockCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         productId,
                         request.quantity()
                 )
@@ -102,11 +101,11 @@ public class ProductCommandApi {
     public ResponseEntity<Void> deductStock(
             @PathVariable String productId,
             @Valid @RequestBody DeductStockRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         deductStockUseCase.deductStock(
                 new DeductStockCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         productId,
                         request.quantity()
                 )
@@ -118,11 +117,11 @@ public class ProductCommandApi {
     @PatchMapping("/{productId}/discontinue")
     public ResponseEntity<Void> discontinue(
             @PathVariable String productId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         discontinueProductUseCase.discontinue(
                 new DiscontinueProductCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         productId
                 )
         );

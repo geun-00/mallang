@@ -21,7 +21,7 @@ class GlobalArchitectureTest {
         layeredArchitecture()
                 .consideringAllDependencies()
 
-                .layer("Adapter").definedBy("io.mallang..adapter..")
+                .layer("Adapter").definedBy("io.mallang..adapter..", "io.mallang.security..")
                 .layer("Application").definedBy("io.mallang..application..")
                 .layer("Domain").definedBy("io.mallang..domain..")
 
