@@ -1,9 +1,9 @@
 package io.mallang.test.order.domain;
 
 import io.mallang.annotations.DomainTest;
-import io.mallang.domain.common.exception.InvalidValueException;
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
+import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.common.domain.vo.Address;
+import io.mallang.common.domain.vo.Receiver;
 import io.mallang.order.domain.ShippingInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -7,7 +7,7 @@ import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCas
 import io.mallang.cart.application.provided.command.ClearCartUseCase;
 import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
 import io.mallang.cart.application.provided.command.model.*;
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

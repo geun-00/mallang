@@ -2,7 +2,7 @@ package io.mallang.test.product.application.required.command;
 
 import io.mallang.annotations.PortTest;
 import io.mallang.assertions.ProductAssertions;
-import io.mallang.domain.common.vo.Money;
+import io.mallang.common.domain.vo.Money;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;

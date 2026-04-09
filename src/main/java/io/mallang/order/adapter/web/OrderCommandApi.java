@@ -1,6 +1,6 @@
 package io.mallang.order.adapter.web;
 
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.security.CustomUserDetails;
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
 import io.mallang.order.application.provided.command.CancelOrderUseCase;
 import io.mallang.order.application.provided.command.CreateOrderUseCase;

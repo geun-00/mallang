@@ -1,8 +1,8 @@
 package io.mallang.order.domain;
 
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.exception.InvalidValueException;
-import io.mallang.domain.common.vo.Money;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.common.domain.vo.Money;
 import io.mallang.order.domain.command.PlaceOrderItemCommand;
 import io.mallang.order.domain.command.RestoreOrderItemCommand;
 import io.mallang.product.domain.ProductId;

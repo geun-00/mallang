@@ -1,7 +1,7 @@
 package io.mallang.assertions;
 
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
+import io.mallang.common.domain.vo.Address;
+import io.mallang.common.domain.vo.Receiver;
 import io.mallang.member.application.provided.command.model.UpdateShippingAddressCommand;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberPasswordEncoder;

@@ -1,6 +1,6 @@
 package io.mallang.order.adapter.persistence.jpa;
 
-import io.mallang.adapter.persistence.jpa.BaseEntity;
+import io.mallang.common.adapter.persistence.jpa.BaseEntity;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderId;

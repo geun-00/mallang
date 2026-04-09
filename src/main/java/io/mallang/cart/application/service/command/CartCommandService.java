@@ -11,7 +11,7 @@ import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.cart.domain.command.AddCartItemCommand;
-import io.mallang.domain.common.IdGenerator;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;

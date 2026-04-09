@@ -1,6 +1,6 @@
 package io.mallang.member.adapter.persistence.jpa;
 
-import io.mallang.domain.common.vo.Address;
+import io.mallang.common.domain.vo.Address;
 import jakarta.persistence.Embeddable;
 
 @Embeddable

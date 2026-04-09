@@ -1,7 +1,7 @@
 package io.mallang.order.adapter.persistence.jpa;
 
-import io.mallang.adapter.persistence.jpa.BaseEntity;
-import io.mallang.domain.common.vo.Money;
+import io.mallang.common.adapter.persistence.jpa.BaseEntity;
+import io.mallang.common.domain.vo.Money;
 import io.mallang.order.domain.OrderItem;
 import io.mallang.order.domain.OrderItemId;
 import io.mallang.order.domain.command.RestoreOrderItemCommand;

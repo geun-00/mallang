@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.web;
 
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.security.CustomUserDetails;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import io.mallang.product.application.provided.command.AddProductImagesUseCase;
 import io.mallang.product.application.provided.command.ChangeThumbnailImageUseCase;

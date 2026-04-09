@@ -1,6 +1,6 @@
 package io.mallang.assertions;
 
-import io.mallang.domain.common.vo.Money;
+import io.mallang.common.domain.vo.Money;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderItem;

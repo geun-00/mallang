@@ -1,6 +1,6 @@
 package io.mallang.assertions;
 
-import io.mallang.application.shared.query.SliceResult;
+import io.mallang.common.applicaiton.query.SliceResult;
 import io.mallang.member.domain.Member;
 import io.mallang.product.adapter.web.model.ProductDetailResponse;
 import io.mallang.product.adapter.web.model.SearchProductsResponse;

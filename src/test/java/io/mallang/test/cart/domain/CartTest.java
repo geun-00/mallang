@@ -6,7 +6,7 @@ import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
-import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.common.domain.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.DisplayName;

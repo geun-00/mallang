@@ -1,8 +1,8 @@
 package io.mallang.member.application.service.command;
 
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.vo.Address;
+import io.mallang.common.domain.vo.Receiver;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
 import io.mallang.member.application.provided.command.RemoveShippingAddressUseCase;
 import io.mallang.member.application.provided.command.UpdateDefaultShippingAddressUseCase;

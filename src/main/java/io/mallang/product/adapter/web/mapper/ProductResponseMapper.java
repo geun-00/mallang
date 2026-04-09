@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.web.mapper;
 
-import io.mallang.application.shared.query.SliceResult;
+import io.mallang.common.applicaiton.query.SliceResult;
 import io.mallang.product.adapter.web.model.ProductDetailResponse;
 import io.mallang.product.adapter.web.model.SearchProductsResponse;
 import io.mallang.product.application.provided.query.model.ProductDetailView;

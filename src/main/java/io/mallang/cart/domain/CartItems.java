@@ -1,7 +1,7 @@
 package io.mallang.cart.domain;
 
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
-import io.mallang.domain.common.IdGenerator;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.product.domain.ProductId;
 
 import java.util.ArrayList;

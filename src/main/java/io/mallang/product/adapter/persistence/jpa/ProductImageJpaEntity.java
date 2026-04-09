@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.persistence.jpa;
 
-import io.mallang.adapter.persistence.jpa.BaseEntity;
+import io.mallang.common.adapter.persistence.jpa.BaseEntity;
 import io.mallang.product.domain.ImageUrl;
 import io.mallang.product.domain.ProductImage;
 import io.mallang.product.domain.ProductImageId;

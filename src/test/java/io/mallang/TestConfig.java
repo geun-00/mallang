@@ -1,7 +1,7 @@
 package io.mallang;
 
-import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.IdGenerator;
+import io.mallang.common.domain.port.ClockHolder;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.member.domain.MemberPasswordEncoder;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

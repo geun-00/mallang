@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.web;
 
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.security.CustomUserDetails;
 import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.DeductStockRequest;

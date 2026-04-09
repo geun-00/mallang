@@ -1,7 +1,7 @@
 package io.mallang.test.product.adapter.web.mapper;
 
 import io.mallang.annotations.MapperTest;
-import io.mallang.application.shared.query.SliceResult;
+import io.mallang.common.applicaiton.query.SliceResult;
 import io.mallang.assertions.ProductAssertions;
 import io.mallang.product.adapter.web.mapper.ProductResponseMapper;
 import io.mallang.product.adapter.web.model.ProductDetailResponse;

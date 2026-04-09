@@ -1,6 +1,6 @@
 package io.mallang.product.domain.command;
 
-import io.mallang.domain.common.vo.Money;
+import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.*;
 

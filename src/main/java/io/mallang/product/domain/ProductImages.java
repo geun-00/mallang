@@ -1,7 +1,7 @@
 package io.mallang.product.domain;
 
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.exception.InvalidValueException;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
 import io.mallang.product.domain.exception.ProductImageNotFoundException;

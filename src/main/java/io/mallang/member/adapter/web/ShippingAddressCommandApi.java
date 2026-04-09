@@ -1,6 +1,6 @@
 package io.mallang.member.adapter.web;
 
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.security.CustomUserDetails;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;

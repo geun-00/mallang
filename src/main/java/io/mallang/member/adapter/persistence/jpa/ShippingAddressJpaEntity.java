@@ -1,6 +1,6 @@
 package io.mallang.member.adapter.persistence.jpa;
 
-import io.mallang.adapter.persistence.jpa.BaseEntity;
+import io.mallang.common.adapter.persistence.jpa.BaseEntity;
 import io.mallang.member.domain.ShippingAddress;
 import io.mallang.member.domain.ShippingAddressId;
 import io.mallang.member.domain.command.RestoreShippingAddressCommand;

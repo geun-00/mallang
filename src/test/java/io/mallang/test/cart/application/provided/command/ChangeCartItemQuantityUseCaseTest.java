@@ -11,7 +11,7 @@ import io.mallang.cart.domain.CartItemId;
 import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
-import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.common.domain.exception.InvalidValueException;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;

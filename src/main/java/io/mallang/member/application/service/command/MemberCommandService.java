@@ -2,9 +2,9 @@ package io.mallang.member.application.service.command;
 
 import io.mallang.cart.application.required.command.SaveCartPort;
 import io.mallang.cart.domain.Cart;
-import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.exception.DuplicateException;
+import io.mallang.common.domain.port.ClockHolder;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.exception.DuplicateException;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;

@@ -1,6 +1,6 @@
 package io.mallang.member.domain.exception;
 
-import io.mallang.domain.common.exception.DomainException;
+import io.mallang.common.domain.exception.DomainException;
 
 public class ShippingAddressLimitException extends DomainException {
 

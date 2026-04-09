@@ -1,8 +1,8 @@
 package io.mallang.member.domain;
 
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.vo.Address;
+import io.mallang.common.domain.vo.Receiver;
 import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 import io.mallang.member.domain.command.RestoreShippingAddressCommand;

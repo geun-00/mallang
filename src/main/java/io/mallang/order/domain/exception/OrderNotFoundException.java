@@ -1,6 +1,6 @@
 package io.mallang.order.domain.exception;
 
-import io.mallang.domain.common.exception.DomainNotFoundException;
+import io.mallang.common.domain.exception.DomainNotFoundException;
 import io.mallang.order.domain.OrderId;
 
 public class OrderNotFoundException extends DomainNotFoundException {
