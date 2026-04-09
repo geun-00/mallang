@@ -1,4 +1,4 @@
-package io.mallang.common.applicaiton.query;
+package io.mallang.common.application.query;
 
 import java.util.List;
 import java.util.function.Function;

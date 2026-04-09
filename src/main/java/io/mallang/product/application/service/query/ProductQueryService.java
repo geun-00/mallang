@@ -1,6 +1,6 @@
 package io.mallang.product.application.service.query;
 
-import io.mallang.common.applicaiton.query.SliceResult;
+import io.mallang.common.application.query.SliceResult;
 import io.mallang.product.application.provided.query.GetProductDetailUseCase;
 import io.mallang.product.application.provided.query.SearchProductsUseCase;
 import io.mallang.product.application.provided.query.model.ProductDetailView;
