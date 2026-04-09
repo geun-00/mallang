@@ -1,6 +1,10 @@
 spring:
-  application:
-    name: mallang
+
+  profiles:
+    default: local
+
+  flyway:
+    baseline-on-migrate: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
@@ -20,6 +24,40 @@ spring:
         jdbc:
           batch_size: 50
         generate_statistics: true
+    open-in-view: false
 
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  flyway:
+    baseline-on-migrate: false
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        highlight_sql: false
+        generate_statistics: false
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false

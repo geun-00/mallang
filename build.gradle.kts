@@ -32,6 +32,7 @@ dependencies {
     implementation("com.github.f4b6a3:ulid-creator:5.2.3")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5")
+    implementation("org.flywaydb:flyway-core")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -40,6 +41,7 @@ dependencies {
 
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.jsoup:jsoup:1.18.3")
@@ -50,4 +52,8 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.jar {
+    enabled = false
 }
