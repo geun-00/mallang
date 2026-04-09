@@ -29,6 +29,11 @@ spring:
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml
 
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
 ---
 spring:
   config:
@@ -51,3 +56,8 @@ spring:
       hibernate:
         highlight_sql: false
         generate_statistics: false
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false

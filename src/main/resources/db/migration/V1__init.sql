@@ -38,7 +38,7 @@ CREATE TABLE order_items
     last_modified_date TIMESTAMP WITHOUT TIME ZONE,
     product_id         VARCHAR(255) NOT NULL,
     quantity           INTEGER      NOT NULL,
-    price              DECIMAL      NOT NULL,
+    price              DECIMAL(19, 0)      NOT NULL,
     order_id           VARCHAR(255),
     CONSTRAINT pk_order_items PRIMARY KEY (order_item_id)
 );
