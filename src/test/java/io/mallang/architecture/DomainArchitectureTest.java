@@ -1,9 +1,8 @@
 package io.mallang.architecture;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import io.mallang.annotations.ArchitectureTest;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -11,10 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
-@AnalyzeClasses(
-        packages = "io.mallang",
-        importOptions = ImportOption.DoNotIncludeTests.class
-)
+@ArchitectureTest
 class DomainArchitectureTest {
 
     @ArchTest

@@ -1,19 +1,15 @@
 package io.mallang.architecture;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import io.mallang.annotations.ArchitectureTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
-@AnalyzeClasses(
-        packages = "io.mallang",
-        importOptions = ImportOption.DoNotIncludeTests.class
-)
+@ArchitectureTest
 class GlobalArchitectureTest {
 
     @ArchTest

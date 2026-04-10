@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@CustomDisplayName
 @AnalyzeClasses(
         packages = "io.mallang",
         importOptions = ImportOption.DoNotIncludeTests.class

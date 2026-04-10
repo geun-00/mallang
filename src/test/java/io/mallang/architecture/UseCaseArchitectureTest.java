@@ -1,16 +1,12 @@
 package io.mallang.architecture;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import io.mallang.annotations.ArchitectureTest;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
-@AnalyzeClasses(
-        packages = "io.mallang",
-        importOptions = ImportOption.DoNotIncludeTests.class
-)
+@ArchitectureTest
 class UseCaseArchitectureTest {
 
     @ArchTest
