@@ -93,7 +93,7 @@ class ShippingAddressCommandApiTest {
                                                        .postForEntity(SHIPPING_ADDRESSES_API, request, Void.class);
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -275,7 +275,7 @@ class ShippingAddressCommandApiTest {
                                                        );
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -359,7 +359,7 @@ class ShippingAddressCommandApiTest {
                                                        );
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -545,7 +545,7 @@ class ShippingAddressCommandApiTest {
                                                        );
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 

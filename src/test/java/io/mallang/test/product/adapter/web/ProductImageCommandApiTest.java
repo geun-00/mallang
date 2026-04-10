@@ -66,7 +66,7 @@ class ProductImageCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -210,7 +210,7 @@ class ProductImageCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -323,7 +323,7 @@ class ProductImageCommandApiTest {
                         Void.class
                 );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 

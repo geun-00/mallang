@@ -107,7 +107,7 @@ class ProductCommandApiTest {
                                                        .unauthenticatedClient()
                                                        .postForEntity(PRODUCTS_API, request, Void.class);
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -299,7 +299,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -475,7 +475,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -581,7 +581,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -692,7 +692,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 

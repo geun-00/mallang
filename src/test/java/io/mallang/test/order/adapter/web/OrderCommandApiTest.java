@@ -104,14 +104,14 @@ class OrderCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_403_Forbidden_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 CreateOrderRequest request = generateCreateOrderRequest("product-id", 2);
 
                 ResponseEntity<Void> response = fixture.order()
                                                        .unauthenticatedClient()
                                                        .postForEntity(ORDERS_API, request, Void.class);
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -418,7 +418,7 @@ class OrderCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
