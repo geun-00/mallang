@@ -30,15 +30,17 @@ final class FixtureContext {
         TestRestTemplate client = new TestRestTemplate(new RestTemplateBuilder());
         client.setUriTemplateHandler(new LocalHostUriTemplateHandler(environment));
 
-        if (disableRedirect) {
-            client.getRestTemplate().setRequestFactory(noRedirectFactory());
-        }
+//        if (disableRedirect) {
+//            client.getRestTemplate().setRequestFactory(noRedirectFactory());
+//        }
 
         return client;
     }
 
     private ClientHttpRequestFactory noRedirectFactory() {
-        var httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
+        var httpClient = HttpClientBuilder.create()
+                                          .disableRedirectHandling()
+                                          .build();
         return new HttpComponentsClientHttpRequestFactory(httpClient);
     }
 }

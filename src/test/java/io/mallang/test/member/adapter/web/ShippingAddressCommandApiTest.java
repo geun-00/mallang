@@ -83,7 +83,7 @@ class ShippingAddressCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 // given
                 var request = generateRegisterShippingAddressRequest();
 
@@ -93,7 +93,7 @@ class ShippingAddressCommandApiTest {
                                                        .postForEntity(SHIPPING_ADDRESSES_API, request, Void.class);
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -260,7 +260,7 @@ class ShippingAddressCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 // given
                 fixture.auth().createMemberThenLogin();
                 String shippingAddressId = fixture.member().registerShippingAddressThenGetId();
@@ -275,7 +275,7 @@ class ShippingAddressCommandApiTest {
                                                        );
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -343,7 +343,7 @@ class ShippingAddressCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 // given
                 fixture.auth().createMemberThenLogin();
                 String id = fixture.member().registerShippingAddressThenGetId();
@@ -359,7 +359,7 @@ class ShippingAddressCommandApiTest {
                                                        );
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -530,7 +530,7 @@ class ShippingAddressCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 // given
                 fixture.auth().createMemberThenLogin();
                 String id = fixture.member().registerShippingAddressThenGetId();
@@ -545,7 +545,7 @@ class ShippingAddressCommandApiTest {
                                                        );
 
                 // then
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 

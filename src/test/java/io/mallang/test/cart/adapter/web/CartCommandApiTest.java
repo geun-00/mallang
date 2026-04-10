@@ -107,14 +107,14 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_403_Forbidden_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 var request = new AddCartItemRequest("product-1", 2);
 
                 ResponseEntity<Void> response = fixture.cart()
                                                        .unauthenticatedClient()
                                                        .postForEntity(CART_ITEMS_API, request, Void.class);
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -226,7 +226,7 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_403_Forbidden_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 var request = new ChangeCartItemQuantityRequest(3);
 
                 ResponseEntity<Void> response = fixture.cart()
@@ -237,7 +237,7 @@ class CartCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -365,7 +365,7 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_403_Forbidden_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 ResponseEntity<Void> response = fixture.cart()
                                                        .unauthenticatedClient()
                                                        .exchange(
@@ -374,7 +374,7 @@ class CartCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -419,7 +419,7 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_403_Forbidden_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 ResponseEntity<Void> response = fixture.cart()
                                                        .unauthenticatedClient()
                                                        .exchange(
@@ -427,7 +427,7 @@ class CartCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
     }

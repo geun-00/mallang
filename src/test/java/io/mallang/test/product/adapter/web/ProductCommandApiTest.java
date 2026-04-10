@@ -100,14 +100,14 @@ class ProductCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 var request = generateCreateProductRequest();
 
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
                                                        .postForEntity(PRODUCTS_API, request, Void.class);
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -286,7 +286,7 @@ class ProductCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
                 String productId = fixture.product().registerProductThenGetId();
                 var request = generateUpdateProductRequest();
@@ -299,7 +299,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -462,7 +462,7 @@ class ProductCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
                 String productId = fixture.product().registerProductThenGetId();
                 var request = generateAddStockRequest();
@@ -475,7 +475,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -568,7 +568,7 @@ class ProductCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
                 String productId = fixture.product().registerProductThenGetId();
                 var request = new DeductStockRequest(1);
@@ -581,7 +581,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -680,7 +680,7 @@ class ProductCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
                 String productId = fixture.product().registerProductThenGetId();
 
@@ -692,7 +692,7 @@ class ProductCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 

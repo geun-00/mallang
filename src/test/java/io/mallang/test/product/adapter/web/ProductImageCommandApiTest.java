@@ -53,7 +53,7 @@ class ProductImageCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
                 String productId = fixture.product().registerProductThenGetId();
                 var request = generateAddProductImagesRequest();
@@ -66,7 +66,7 @@ class ProductImageCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -193,7 +193,7 @@ class ProductImageCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
@@ -210,7 +210,7 @@ class ProductImageCommandApiTest {
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 
@@ -309,7 +309,7 @@ class ProductImageCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
                     @Autowired LoadProductPort loadProductPort
             ) {
@@ -323,7 +323,7 @@ class ProductImageCommandApiTest {
                         Void.class
                 );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
 

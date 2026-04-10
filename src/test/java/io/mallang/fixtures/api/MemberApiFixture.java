@@ -15,7 +15,7 @@ public final class MemberApiFixture extends ApiFixture {
     }
 
     public ResponseEntity<Void> registerMember(MemberCreateRequest request) {
-        return client().postForEntity(MEMBERS_API, request, Void.class);
+        return unauthenticatedClient().postForEntity(MEMBERS_API, request, Void.class);
     }
 
     public String registerMemberThenGetId(MemberCreateRequest request) {

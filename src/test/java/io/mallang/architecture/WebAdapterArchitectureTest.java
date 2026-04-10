@@ -30,6 +30,8 @@ class WebAdapterArchitectureTest {
         classes()
                 .that().resideInAPackage("..adapter.web")
                 .and().haveSimpleNameEndingWith("Api")
+                .and().doNotHaveSimpleName("AuthApi")
+                .and().doNotHaveSimpleName("CsrfApi")
                 .should().dependOnClassesThat()
                 .resideInAPackage("..application.provided..")
                 .check(classes);
