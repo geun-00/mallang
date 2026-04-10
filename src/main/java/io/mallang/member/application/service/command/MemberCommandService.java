@@ -1,10 +1,10 @@
 package io.mallang.member.application.service.command;
 
-import io.mallang.cart.application.required.command.SaveCartPort;
-import io.mallang.cart.domain.Cart;
-import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.exception.DuplicateException;
+import io.mallang.common.application.event.EventPublisher;
+import io.mallang.common.domain.exception.DuplicateException;
+import io.mallang.common.domain.port.ClockHolder;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.member.application.event.MemberRegisteredEvent;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
@@ -26,7 +26,7 @@ public class MemberCommandService implements RegisterMemberUseCase {
 
     private final IdGenerator idGenerator;
     private final ClockHolder clockHolder;
-    private final SaveCartPort saveCartPort;
+    private final EventPublisher eventPublisher;
     private final SaveMemberPort saveMemberPort;
     private final LoadMemberPort loadMemberPort;
     private final MemberPasswordEncoder passwordEncoder;
@@ -42,7 +42,8 @@ public class MemberCommandService implements RegisterMemberUseCase {
         CreateMemberCommand createCommand = new CreateMemberCommand(email, command.password(), nickname);
         Member member = Member.create(createCommand, passwordEncoder, idGenerator, clockHolder);
         saveMemberPort.save(member);
-        saveCartPort.save(Cart.create(member.getId()));
+
+        eventPublisher.publish(new MemberRegisteredEvent(member.getId()));
 
         return new RegisterMemberResult(member.getId().value());
     }

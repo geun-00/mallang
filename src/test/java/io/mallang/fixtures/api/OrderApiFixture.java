@@ -11,7 +11,7 @@ public final class OrderApiFixture extends ApiFixture {
     }
 
     public ResponseEntity<Void> createOrder(CreateOrderRequest request) {
-        return client().postForEntity("/my/orders", request, Void.class);
+        return client().postForEntity(ORDERS_API, request, Void.class);
     }
 
     public String createOrderThenGetId(CreateOrderRequest request) {
@@ -22,7 +22,7 @@ public final class OrderApiFixture extends ApiFixture {
 
     public ResponseEntity<Void> cancelOrder(String orderId) {
         return client().exchange(
-                RequestEntity.patch("/my/orders/" + orderId + "/cancel").build(),
+                RequestEntity.patch(ORDERS_API + "/" + orderId + "/cancel").build(),
                 Void.class
         );
     }

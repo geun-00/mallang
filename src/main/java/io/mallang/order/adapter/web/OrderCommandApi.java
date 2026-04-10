@@ -1,6 +1,6 @@
 package io.mallang.order.adapter.web;
 
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.web.auth.CurrentMemberId;
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
 import io.mallang.order.application.provided.command.CancelOrderUseCase;
 import io.mallang.order.application.provided.command.CreateOrderUseCase;
@@ -11,7 +11,6 @@ import io.mallang.order.application.provided.command.model.CreateOrderResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/my/orders")
+@RequestMapping("/api/v1/my/orders")
 public class OrderCommandApi {
 
     private final CreateOrderUseCase createOrderUseCase;
@@ -29,7 +28,7 @@ public class OrderCommandApi {
     @PostMapping
     public ResponseEntity<Void> create(
             @Valid @RequestBody CreateOrderRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         List<CreateOrderItemCommand> items = request.items()
                                                     .stream()
@@ -41,7 +40,7 @@ public class OrderCommandApi {
 
         CreateOrderResult result = createOrderUseCase.place(
                 new CreateOrderCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         items,
                         request.receiverName(),
                         request.receiverPhoneNumber(),
@@ -62,11 +61,11 @@ public class OrderCommandApi {
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancel(
             @PathVariable String orderId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         cancelOrderUseCase.cancel(new CancelOrderCommand(
                 orderId,
-                userDetails.getMemberIdValue()
+                memberId
         ));
 
         return ResponseEntity.noContent().build();

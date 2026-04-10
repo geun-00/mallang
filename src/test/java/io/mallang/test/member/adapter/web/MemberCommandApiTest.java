@@ -1,7 +1,7 @@
 package io.mallang.test.member.adapter.web;
 
-import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.annotations.WebAdapterTest;
+import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.MemberId;
@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import java.net.URI;
 
 import static io.mallang.fixtures.MemberFixture.*;
+import static io.mallang.fixtures.api.ApiFixture.MEMBERS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.springframework.http.HttpStatus.*;
@@ -55,8 +56,8 @@ class MemberCommandApiTest {
                 // then
                 URI location = response.getHeaders().getLocation();
                 assertThat(location).isNotNull();
-                assertThat(location.getPath()).startsWith("/members");
-                assertThat(location.getPath().replace("/members/", "")).isNotBlank();
+                assertThat(location.getPath()).startsWith(MEMBERS_API);
+                assertThat(location.getPath().replace(MEMBERS_API + "/", "")).isNotBlank();
             }
 
             @Test

@@ -1,6 +1,6 @@
 package io.mallang.member.domain.exception;
 
-import io.mallang.domain.common.exception.DomainNotFoundException;
+import io.mallang.common.domain.exception.DomainNotFoundException;
 import io.mallang.member.domain.ShippingAddressId;
 
 public class ShippingAddressNotFoundException extends DomainNotFoundException {

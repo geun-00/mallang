@@ -1,7 +1,7 @@
 package io.mallang.cart.domain.exception;
 
 import io.mallang.cart.domain.CartItemId;
-import io.mallang.domain.common.exception.DomainNotFoundException;
+import io.mallang.common.domain.exception.DomainNotFoundException;
 
 public class CartItemNotFoundException extends DomainNotFoundException {
 

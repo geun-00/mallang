@@ -1,9 +1,9 @@
 package io.mallang.test.order.domain;
 
 import io.mallang.annotations.DomainTest;
-import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.exception.InvalidValueException;
-import io.mallang.domain.common.vo.Money;
+import io.mallang.common.domain.port.ClockHolder;
+import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderStatus;

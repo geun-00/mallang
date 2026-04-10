@@ -48,6 +48,7 @@ dependencies {
     testImplementation("org.apache.httpcomponents.client5:httpclient5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5")
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.4.1")
 }
 
 tasks.withType<Test> {

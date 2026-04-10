@@ -17,7 +17,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members")
+@RequestMapping("/api/v1/members")
 public class MemberCommandApi {
 
     private final RegisterMemberUseCase registerMemberUseCase;

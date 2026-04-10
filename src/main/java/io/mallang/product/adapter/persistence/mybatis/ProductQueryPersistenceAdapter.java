@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.persistence.mybatis;
 
-import io.mallang.application.shared.query.SliceResult;
+import io.mallang.common.application.query.SliceResult;
 import io.mallang.product.adapter.persistence.mybatis.model.ProductDetailRow;
 import io.mallang.product.adapter.persistence.mybatis.model.ProductListRow;
 import io.mallang.product.adapter.persistence.mybatis.model.SearchProductCondition;

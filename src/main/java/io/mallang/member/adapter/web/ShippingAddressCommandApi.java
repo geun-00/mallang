@@ -1,6 +1,6 @@
 package io.mallang.member.adapter.web;
 
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.web.auth.CurrentMemberId;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import io.mallang.member.application.provided.command.RegisterShippingAddressUseCase;
@@ -11,7 +11,6 @@ import io.mallang.member.application.provided.command.model.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,7 +18,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/my/shipping-addresses")
+@RequestMapping("/api/v1/my/shipping-addresses")
 public class ShippingAddressCommandApi {
 
     private final UpdateShippingAddressUseCase updateShippingAddressUseCase;
@@ -30,11 +29,11 @@ public class ShippingAddressCommandApi {
     @PostMapping
     public ResponseEntity<Void> registerShippingAddress(
             @Valid @RequestBody RegisterShippingAddressRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         RegisterShippingAddressResult result = registerShippingAddressUseCase.register(
                 new RegisterShippingAddressCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         request.receiverName(),
                         request.receiverPhoneNumber(),
                         request.zipCode(),
@@ -54,11 +53,11 @@ public class ShippingAddressCommandApi {
     @PatchMapping("/{shippingAddressId}/default")
     public ResponseEntity<Void> updateDefault(
             @PathVariable String shippingAddressId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         updateDefaultShippingAddressUseCase.update(
                 new UpdateDefaultShippingAddressCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         shippingAddressId
                 ));
 
@@ -69,11 +68,11 @@ public class ShippingAddressCommandApi {
     public ResponseEntity<Void> updateShippingAddress(
             @PathVariable String shippingAddressId,
             @Valid @RequestBody UpdateShippingAddressRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         updateShippingAddressUseCase.update(
                 new UpdateShippingAddressCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         shippingAddressId,
                         request.receiverName(),
                         request.receiverPhoneNumber(),
@@ -89,10 +88,10 @@ public class ShippingAddressCommandApi {
     @DeleteMapping("/{shippingAddressId}")
     public ResponseEntity<Void> removeShippingAddress(
             @PathVariable String shippingAddressId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         removeShippingAddressUseCase.remove(new RemoveShippingAddressCommand(
-                userDetails.getMemberIdValue(),
+                memberId,
                 shippingAddressId
         ));
 

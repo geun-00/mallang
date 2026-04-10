@@ -1,7 +1,7 @@
 package io.mallang.test.product.application.required.query;
 
 import io.mallang.annotations.PortTest;
-import io.mallang.application.shared.query.SliceResult;
+import io.mallang.common.application.query.SliceResult;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.product.application.provided.query.model.ProductListView;

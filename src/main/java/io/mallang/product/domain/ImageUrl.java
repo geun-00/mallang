@@ -1,6 +1,6 @@
 package io.mallang.product.domain;
 
-import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.common.domain.exception.InvalidValueException;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -1,6 +1,5 @@
 package io.mallang.test.cart.adapter.web;
 
-import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.annotations.WebAdapterTest;
 import io.mallang.cart.adapter.web.model.AddCartItemRequest;
 import io.mallang.cart.adapter.web.model.ChangeCartItemQuantityRequest;
@@ -9,6 +8,7 @@ import io.mallang.cart.application.required.query.LoadCartPort;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.cart.domain.command.AddCartItemCommand;
+import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Email;
@@ -32,6 +32,7 @@ import static io.mallang.fixtures.CartFixture.generateIdGenerator;
 import static io.mallang.fixtures.CartFixture.generateNotExistCartItemId;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.api.ApiFixture.CART_ITEMS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
 
@@ -73,8 +74,8 @@ class CartCommandApiTest {
 
                 URI location = response.getHeaders().getLocation();
                 assertThat(location).isNotNull();
-                assertThat(location.getPath()).startsWith("/my/cart/items/");
-                assertThat(location.getPath().replace("/my/cart/items/", "")).isNotBlank();
+                assertThat(location.getPath()).startsWith(CART_ITEMS_API + "/");
+                assertThat(location.getPath().replace(CART_ITEMS_API + "/", "")).isNotBlank();
             }
 
             @Test
@@ -95,7 +96,7 @@ class CartCommandApiTest {
                 String cartItemIdValue = response.getHeaders()
                                                  .getLocation()
                                                  .getPath()
-                                                 .substring("/my/cart/items/".length());
+                                                 .substring((CART_ITEMS_API + "/").length());
                 Cart loaded = loadCartPort.getByMemberId(member.getId());
 
                 assertThat(loaded.getItems()).extracting(item -> item.getId().value()).contains(cartItemIdValue);
@@ -106,14 +107,14 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 var request = new AddCartItemRequest("product-1", 2);
 
                 ResponseEntity<Void> response = fixture.cart()
                                                        .unauthenticatedClient()
-                                                       .postForEntity("/my/cart/items", request, Void.class);
+                                                       .postForEntity(CART_ITEMS_API, request, Void.class);
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -225,18 +226,18 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 var request = new ChangeCartItemQuantityRequest(3);
 
                 ResponseEntity<Void> response = fixture.cart()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.patch("/my/cart/items/cart-item-1")
+                                                               RequestEntity.patch(CART_ITEMS_API + "/cart-item-1")
                                                                             .body(request),
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -364,16 +365,16 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 ResponseEntity<Void> response = fixture.cart()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.delete("/my/cart/items/cart-item-1")
+                                                               RequestEntity.delete(CART_ITEMS_API + "/cart-item-1")
                                                                             .build(),
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
 
@@ -418,15 +419,15 @@ class CartCommandApiTest {
         class 인증 {
 
             @Test
-            void 인증되지_않은_요청이면_로그인_페이지로_리다이렉트한다(@Autowired FixtureSession fixture) {
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 ResponseEntity<Void> response = fixture.cart()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.delete("/my/cart/items").build(),
+                                                               RequestEntity.delete(CART_ITEMS_API).build(),
                                                                Void.class
                                                        );
 
-                assertThat(response.getStatusCode()).isEqualTo(FOUND);
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
             }
         }
     }

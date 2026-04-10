@@ -1,9 +1,9 @@
 package io.mallang.order.application.service.command;
 
-import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
+import io.mallang.common.domain.port.ClockHolder;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.vo.Address;
+import io.mallang.common.domain.vo.Receiver;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;

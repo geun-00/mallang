@@ -1,6 +1,6 @@
 package io.mallang.product.adapter.web;
 
-import io.mallang.application.shared.query.SliceResult;
+import io.mallang.common.application.query.SliceResult;
 import io.mallang.product.adapter.web.model.ProductDetailResponse;
 import io.mallang.product.adapter.web.model.SearchProductsRequest;
 import io.mallang.product.adapter.web.model.SearchProductsResponse;
@@ -20,7 +20,7 @@ import static io.mallang.product.adapter.web.mapper.ProductResponseMapper.toSear
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/products")
+@RequestMapping("/api/v1/products")
 public class ProductQueryApi {
 
     private final SearchProductsUseCase searchProductsUseCase;

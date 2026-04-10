@@ -2,7 +2,7 @@ package io.mallang.cart.domain;
 
 import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.command.RestoreCartCommand;
-import io.mallang.domain.common.IdGenerator;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
 import lombok.Getter;

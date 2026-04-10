@@ -1,6 +1,6 @@
 package io.mallang.cart.domain;
 
-import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.common.domain.exception.InvalidValueException;
 
 public record CartItemId(String value) {
 

@@ -1,6 +1,6 @@
 package io.mallang.product.domain.exception;
 
-import io.mallang.domain.common.exception.DomainNotFoundException;
+import io.mallang.common.domain.exception.DomainNotFoundException;
 import io.mallang.product.domain.ProductId;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package io.mallang.product.application.service.command;
 
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.vo.Money;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.*;
 import io.mallang.product.application.provided.command.model.*;

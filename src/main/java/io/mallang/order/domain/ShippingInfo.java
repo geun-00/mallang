@@ -1,8 +1,8 @@
 package io.mallang.order.domain;
 
-import io.mallang.domain.common.exception.InvalidValueException;
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
+import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.common.domain.vo.Address;
+import io.mallang.common.domain.vo.Receiver;
 
 public record ShippingInfo(Receiver receiver, Address address) {
 

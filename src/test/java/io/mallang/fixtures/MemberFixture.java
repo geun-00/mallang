@@ -1,9 +1,9 @@
 package io.mallang.fixtures;
 
-import io.mallang.domain.common.ClockHolder;
-import io.mallang.domain.common.IdGenerator;
-import io.mallang.domain.common.vo.Address;
-import io.mallang.domain.common.vo.Receiver;
+import io.mallang.common.domain.port.ClockHolder;
+import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.common.domain.vo.Address;
+import io.mallang.common.domain.vo.Receiver;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;

@@ -1,8 +1,8 @@
 package io.mallang.cart.domain;
 
-import io.mallang.domain.common.IdGenerator;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.cart.domain.command.RestoreCartItemCommand;
-import io.mallang.domain.common.exception.InvalidValueException;
+import io.mallang.common.domain.exception.InvalidValueException;
 import io.mallang.product.domain.ProductId;
 import lombok.Getter;
 

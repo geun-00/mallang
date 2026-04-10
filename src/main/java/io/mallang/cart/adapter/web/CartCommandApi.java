@@ -7,11 +7,10 @@ import io.mallang.cart.application.provided.command.ChangeCartItemQuantityUseCas
 import io.mallang.cart.application.provided.command.ClearCartUseCase;
 import io.mallang.cart.application.provided.command.RemoveCartItemUseCase;
 import io.mallang.cart.application.provided.command.model.*;
-import io.mallang.member.adapter.security.CustomUserDetails;
+import io.mallang.common.adapter.web.auth.CurrentMemberId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,7 +18,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/my/cart/items")
+@RequestMapping("/api/v1/my/cart/items")
 public class CartCommandApi {
 
     private final ClearCartUseCase clearCartUseCase;
@@ -30,11 +29,11 @@ public class CartCommandApi {
     @PostMapping
     public ResponseEntity<Void> addItem(
             @Valid @RequestBody AddCartItemRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         AddItemToCartResult result = addCartItemUseCase.addItem(
                 new AddItemToCartCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         request.productId(),
                         request.quantity()
                 )
@@ -52,11 +51,11 @@ public class CartCommandApi {
     public ResponseEntity<Void> changeQuantity(
             @PathVariable String cartItemId,
             @Valid @RequestBody ChangeCartItemQuantityRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         changeCartItemQuantityUseCase.changeQuantity(
                 new ChangeCartItemQuantityCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         cartItemId,
                         request.quantity()
                 )
@@ -68,11 +67,11 @@ public class CartCommandApi {
     @DeleteMapping("/{cartItemId}")
     public ResponseEntity<Void> removeItem(
             @PathVariable String cartItemId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         removeCartItemUseCase.removeItem(
                 new RemoveCartItemCommand(
-                        userDetails.getMemberIdValue(),
+                        memberId,
                         cartItemId
                 )
         );
@@ -82,10 +81,10 @@ public class CartCommandApi {
 
     @DeleteMapping
     public ResponseEntity<Void> clear(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @CurrentMemberId String memberId
     ) {
         clearCartUseCase.clear(
-                new ClearCartCommand(userDetails.getMemberIdValue())
+                new ClearCartCommand(memberId)
         );
 
         return ResponseEntity.noContent().build();

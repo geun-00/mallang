@@ -2,7 +2,7 @@ package io.mallang.test.member.application.service;
 
 import io.mallang.annotations.UseCaseTest;
 import io.mallang.cart.application.required.query.LoadCartPort;
-import io.mallang.domain.common.exception.DuplicateException;
+import io.mallang.common.domain.exception.DuplicateException;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
