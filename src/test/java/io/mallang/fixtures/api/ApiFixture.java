@@ -5,6 +5,14 @@ import org.springframework.http.ResponseEntity;
 
 public abstract class ApiFixture {
 
+    private static final String API_PREFIX = "/api/v1";
+
+    public static final String MEMBERS_API = API_PREFIX + "/members";
+    public static final String SHIPPING_ADDRESSES_API = API_PREFIX + "/my/shipping-addresses";
+    public static final String CART_ITEMS_API = API_PREFIX + "/my/cart/items";
+    public static final String ORDERS_API = API_PREFIX + "/my/orders";
+    public static final String PRODUCTS_API = API_PREFIX + "/products";
+
     private final FixtureContext context;
 
     protected ApiFixture(FixtureContext context) {

@@ -18,7 +18,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/my/shipping-addresses")
+@RequestMapping("/api/v1/my/shipping-addresses")
 public class ShippingAddressCommandApi {
 
     private final UpdateShippingAddressUseCase updateShippingAddressUseCase;

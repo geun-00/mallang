@@ -12,7 +12,7 @@ public final class CartApiFixture extends ApiFixture {
     }
 
     public ResponseEntity<Void> addCartItem(AddCartItemRequest request) {
-        return client().postForEntity("/my/cart/items", request, Void.class);
+        return client().postForEntity(CART_ITEMS_API, request, Void.class);
     }
 
     public String addCartItemThenGetId(String productId, int quantity) {
@@ -22,21 +22,21 @@ public final class CartApiFixture extends ApiFixture {
 
     public ResponseEntity<Void> changeCartItemQuantity(String cartItemId, ChangeCartItemQuantityRequest request) {
         return client().exchange(
-                RequestEntity.patch("/my/cart/items/" + cartItemId).body(request),
+                RequestEntity.patch(CART_ITEMS_API + "/" + cartItemId).body(request),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> removeCartItem(String cartItemId) {
         return client().exchange(
-                RequestEntity.delete("/my/cart/items/" + cartItemId).build(),
+                RequestEntity.delete(CART_ITEMS_API + "/" + cartItemId).build(),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> clearCart() {
         return client().exchange(
-                RequestEntity.delete("/my/cart/items").build(),
+                RequestEntity.delete(CART_ITEMS_API).build(),
                 Void.class
         );
     }

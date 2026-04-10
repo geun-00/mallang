@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/my/orders")
+@RequestMapping("/api/v1/my/orders")
 public class OrderCommandApi {
 
     private final CreateOrderUseCase createOrderUseCase;

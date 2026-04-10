@@ -1,8 +1,8 @@
 package io.mallang.test.order.adapter.web;
 
+import io.mallang.annotations.WebAdapterTest;
 import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.fixtures.api.FixtureSessionFactory;
-import io.mallang.annotations.WebAdapterTest;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
@@ -33,6 +33,7 @@ import static io.mallang.fixtures.MemberFixture.generateClockHolder;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.api.ApiFixture.ORDERS_API;
 import static io.mallang.order.adapter.web.model.CreateOrderRequest.CreateOrderItemRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -78,8 +79,8 @@ class OrderCommandApiTest {
 
                 URI location = response.getHeaders().getLocation();
                 assertThat(location).isNotNull();
-                assertThat(location.getPath()).startsWith("/my/orders/");
-                assertThat(location.getPath().replace("/my/orders/", "")).isNotBlank();
+                assertThat(location.getPath()).startsWith(ORDERS_API + "/");
+                assertThat(location.getPath().replace(ORDERS_API + "/", "")).isNotBlank();
             }
 
             @Test
@@ -108,7 +109,7 @@ class OrderCommandApiTest {
 
                 ResponseEntity<Void> response = fixture.order()
                                                        .unauthenticatedClient()
-                                                       .postForEntity("/my/orders", request, Void.class);
+                                                       .postForEntity(ORDERS_API, request, Void.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }
@@ -412,7 +413,7 @@ class OrderCommandApiTest {
                 ResponseEntity<Void> response = fixture.order()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.patch("/my/orders/" + orderId + "/cancel")
+                                                               RequestEntity.patch(ORDERS_API + "/" + orderId + "/cancel")
                                                                             .build(),
                                                                Void.class
                                                        );

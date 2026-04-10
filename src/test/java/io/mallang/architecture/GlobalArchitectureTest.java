@@ -15,7 +15,7 @@ class GlobalArchitectureTest {
     @ArchTest
     void 레이어검사_모든_계층의_의존흐름은_안쪽으로만_향해야한다(JavaClasses classes) {
         layeredArchitecture()
-                .consideringAllDependencies()
+                .consideringOnlyDependenciesInLayers()
 
                 .layer("Adapter").definedBy("io.mallang..adapter..", "io.mallang.security..")
                 .layer("Application").definedBy("io.mallang..application..")

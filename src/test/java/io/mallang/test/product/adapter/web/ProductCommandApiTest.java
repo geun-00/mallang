@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.mallang.fixtures.ProductFixture.*;
+import static io.mallang.fixtures.api.ApiFixture.PRODUCTS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.springframework.http.HttpStatus.*;
@@ -58,8 +59,8 @@ class ProductCommandApiTest {
 
                 URI location = response.getHeaders().getLocation();
                 assertThat(location).isNotNull();
-                assertThat(location.getPath()).startsWith("/products/");
-                assertThat(location.getPath().replace("/products/", "")).isNotBlank();
+                assertThat(location.getPath()).startsWith(PRODUCTS_API + "/");
+                assertThat(location.getPath().replace(PRODUCTS_API + "/", "")).isNotBlank();
             }
 
             @Test
@@ -104,7 +105,7 @@ class ProductCommandApiTest {
 
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
-                                                       .postForEntity("/products", request, Void.class);
+                                                       .postForEntity(PRODUCTS_API, request, Void.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
             }
@@ -293,7 +294,7 @@ class ProductCommandApiTest {
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.put("/products/" + productId)
+                                                               RequestEntity.put(PRODUCTS_API + "/" + productId)
                                                                             .body(request),
                                                                Void.class
                                                        );
@@ -469,7 +470,7 @@ class ProductCommandApiTest {
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.patch("/products/" + productId + "/stock/add")
+                                                               RequestEntity.patch(PRODUCTS_API + "/" + productId + "/stock/add")
                                                                             .body(request),
                                                                Void.class
                                                        );
@@ -575,7 +576,7 @@ class ProductCommandApiTest {
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.patch("/products/" + productId + "/stock/deduct")
+                                                               RequestEntity.patch(PRODUCTS_API + "/" + productId + "/stock/deduct")
                                                                             .body(request),
                                                                Void.class
                                                        );
@@ -686,7 +687,7 @@ class ProductCommandApiTest {
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.patch("/products/" + productId + "/discontinue")
+                                                               RequestEntity.patch(PRODUCTS_API + "/" + productId + "/discontinue")
                                                                             .build(),
                                                                Void.class
                                                        );

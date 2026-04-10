@@ -14,7 +14,7 @@ public final class ProductApiFixture extends ApiFixture {
     }
 
     public ResponseEntity<Void> registerProduct(CreateProductRequest request) {
-        return client().postForEntity("/products", request, Void.class);
+        return client().postForEntity(PRODUCTS_API, request, Void.class);
     }
 
     public String registerProductThenGetId() {
@@ -25,55 +25,55 @@ public final class ProductApiFixture extends ApiFixture {
 
     public ResponseEntity<Void> updateProduct(String productId, UpdateProductRequest request) {
         return client().exchange(
-                RequestEntity.put("/products/" + productId).body(request),
+                RequestEntity.put(PRODUCTS_API + "/" + productId).body(request),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> addStock(String productId, AddStockRequest request) {
         return client().exchange(
-                RequestEntity.patch("/products/" + productId + "/stock/add").body(request),
+                RequestEntity.patch(PRODUCTS_API + "/" + productId + "/stock/add").body(request),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> deductStock(String productId, DeductStockRequest request) {
         return client().exchange(
-                RequestEntity.patch("/products/" + productId + "/stock/deduct").body(request),
+                RequestEntity.patch(PRODUCTS_API + "/" + productId + "/stock/deduct").body(request),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> discontinue(String productId) {
         return client().exchange(
-                RequestEntity.patch("/products/" + productId + "/discontinue").build(),
+                RequestEntity.patch(PRODUCTS_API + "/" + productId + "/discontinue").build(),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> addImages(String productId, AddProductImagesRequest request) {
         return client().exchange(
-                RequestEntity.post("/products/" + productId + "/images").body(request),
+                RequestEntity.post(PRODUCTS_API + "/" + productId + "/images").body(request),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> removeImage(String productId, String imageId) {
         return client().exchange(
-                RequestEntity.delete("/products/" + productId + "/images/" + imageId).build(),
+                RequestEntity.delete(PRODUCTS_API + "/" + productId + "/images/" + imageId).build(),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> changeThumbnailImage(String productId, String imageId) {
         return client().exchange(
-                RequestEntity.patch("/products/" + productId + "/images/" + imageId + "/thumbnail").build(),
+                RequestEntity.patch(PRODUCTS_API + "/" + productId + "/images/" + imageId + "/thumbnail").build(),
                 Void.class
         );
     }
 
     public ResponseEntity<SearchProductsResponse> searchProducts(SearchProductsRequest request, String lastProductId, Integer size) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/products");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(PRODUCTS_API);
         addIfPresent(builder, "sellerNickname", request.sellerNickname());
         addIfPresent(builder, "productName", request.productName());
         addIfPresent(builder, "minPrice", request.minPrice());
@@ -92,6 +92,6 @@ public final class ProductApiFixture extends ApiFixture {
     }
 
     public ResponseEntity<ProductDetailResponse> getProductDetail(String productId) {
-        return client().getForEntity("/products/" + productId, ProductDetailResponse.class);
+        return client().getForEntity(PRODUCTS_API + "/" + productId, ProductDetailResponse.class);
     }
 }

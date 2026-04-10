@@ -20,7 +20,7 @@ import static io.mallang.product.adapter.web.mapper.ProductResponseMapper.toSear
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/products")
+@RequestMapping("/api/v1/products")
 public class ProductQueryApi {
 
     private final SearchProductsUseCase searchProductsUseCase;

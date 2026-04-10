@@ -22,6 +22,7 @@ import java.util.List;
 
 import static io.mallang.fixtures.ProductFixture.generateAddProductImagesRequest;
 import static io.mallang.fixtures.ProductFixture.generateProductImageUrl;
+import static io.mallang.fixtures.api.ApiFixture.PRODUCTS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
 
@@ -60,7 +61,7 @@ class ProductImageCommandApiTest {
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.post("/products/" + productId + "/images")
+                                                               RequestEntity.post(PRODUCTS_API + "/" + productId + "/images")
                                                                             .body(request),
                                                                Void.class
                                                        );
@@ -204,7 +205,7 @@ class ProductImageCommandApiTest {
                 ResponseEntity<Void> response = fixture.product()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.delete("/products/" + productId + "/images/" + imageId)
+                                                               RequestEntity.delete(PRODUCTS_API + "/" + productId + "/images/" + imageId)
                                                                             .build(),
                                                                Void.class
                                                        );
@@ -318,7 +319,7 @@ class ProductImageCommandApiTest {
                 String imageId = getFirstNormalImageId(loadProductPort, productId);
 
                 ResponseEntity<Void> response = fixture.product().unauthenticatedClient().exchange(
-                        RequestEntity.patch("/products/" + productId + "/images/" + imageId + "/thumbnail").build(),
+                        RequestEntity.patch(PRODUCTS_API + "/" + productId + "/images/" + imageId + "/thumbnail").build(),
                         Void.class
                 );
 

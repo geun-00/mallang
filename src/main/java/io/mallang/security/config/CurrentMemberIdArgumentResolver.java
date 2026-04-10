@@ -4,8 +4,10 @@ import io.mallang.common.adapter.web.auth.CurrentMemberId;
 import io.mallang.security.adapter.CustomUserDetails;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -29,7 +31,7 @@ public class CurrentMemberIdArgumentResolver implements HandlerMethodArgumentRes
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            throw new IllegalStateException("인증된 사용자 정보가 없습니다.");
+            throw new AuthenticationCredentialsNotFoundException("인증된 사용자 정보가 없습니다.");
         }
 
         Object principal = authentication.getPrincipal();
@@ -37,6 +39,6 @@ public class CurrentMemberIdArgumentResolver implements HandlerMethodArgumentRes
             return userDetails.getMemberIdValue();
         }
 
-        throw new IllegalStateException("회원 식별자를 추출할 수 없습니다.");
+        throw new AccessDeniedException("회원 식별자를 추출할 수 없습니다.");
     }
 }

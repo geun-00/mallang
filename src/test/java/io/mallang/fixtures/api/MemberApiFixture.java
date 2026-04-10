@@ -15,7 +15,7 @@ public final class MemberApiFixture extends ApiFixture {
     }
 
     public ResponseEntity<Void> registerMember(MemberCreateRequest request) {
-        return client().postForEntity("/members", request, Void.class);
+        return client().postForEntity(MEMBERS_API, request, Void.class);
     }
 
     public String registerMemberThenGetId(MemberCreateRequest request) {
@@ -25,26 +25,26 @@ public final class MemberApiFixture extends ApiFixture {
     }
 
     public ResponseEntity<Void> registerShippingAddress(RegisterShippingAddressRequest request) {
-        return client().postForEntity("/my/shipping-addresses", request, Void.class);
+        return client().postForEntity(SHIPPING_ADDRESSES_API, request, Void.class);
     }
 
     public ResponseEntity<Void> makeDefaultShippingAddress(String shippingAddressId) {
         return client().exchange(
-                RequestEntity.patch("/my/shipping-addresses/" + shippingAddressId + "/default").build(),
+                RequestEntity.patch(SHIPPING_ADDRESSES_API + "/" + shippingAddressId + "/default").build(),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> updateShippingAddress(String shippingAddressId, UpdateShippingAddressRequest request) {
         return client().exchange(
-                RequestEntity.put("/my/shipping-addresses/" + shippingAddressId).body(request),
+                RequestEntity.put(SHIPPING_ADDRESSES_API + "/" + shippingAddressId).body(request),
                 Void.class
         );
     }
 
     public ResponseEntity<Void> removeShippingAddress(String shippingAddressId) {
         return client().exchange(
-                RequestEntity.delete("/my/shipping-addresses/" + shippingAddressId).build(),
+                RequestEntity.delete(SHIPPING_ADDRESSES_API + "/" + shippingAddressId).build(),
                 Void.class
         );
     }

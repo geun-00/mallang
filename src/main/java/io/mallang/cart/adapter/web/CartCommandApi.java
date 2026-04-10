@@ -18,7 +18,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/my/cart/items")
+@RequestMapping("/api/v1/my/cart/items")
 public class CartCommandApi {
 
     private final ClearCartUseCase clearCartUseCase;

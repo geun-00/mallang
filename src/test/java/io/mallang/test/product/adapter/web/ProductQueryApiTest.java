@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import static io.mallang.fixtures.MemberFixture.generateMember;
 import static io.mallang.fixtures.ProductFixture.*;
+import static io.mallang.fixtures.api.ApiFixture.PRODUCTS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
 
@@ -111,7 +112,7 @@ class ProductQueryApiTest {
             ) {
                 ResponseEntity<String> response = fixture.product()
                                                          .unauthenticatedClient()
-                                                         .getForEntity("/products", String.class);
+                                                         .getForEntity(PRODUCTS_API, String.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(OK);
             }
@@ -184,7 +185,7 @@ class ProductQueryApiTest {
                 ResponseEntity<String> response = fixture.product()
                                                          .unauthenticatedClient()
                                                          .getForEntity(
-                                                                 "/products/" + product.getId().value(),
+                                                                 PRODUCTS_API + "/" + product.getId().value(),
                                                                  String.class
                                                          );
 
@@ -201,7 +202,7 @@ class ProductQueryApiTest {
             ) {
                 ResponseEntity<String> response = fixture.product()
                                                          .unauthenticatedClient()
-                                                         .getForEntity("/products/unknown-product-id", String.class);
+                                                         .getForEntity(PRODUCTS_API + "/unknown-product-id", String.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }

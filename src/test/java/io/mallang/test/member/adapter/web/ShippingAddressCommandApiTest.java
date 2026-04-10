@@ -1,7 +1,7 @@
 package io.mallang.test.member.adapter.web;
 
-import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.annotations.WebAdapterTest;
+import io.mallang.fixtures.api.FixtureSession;
 import io.mallang.member.adapter.web.model.RegisterShippingAddressRequest;
 import io.mallang.member.adapter.web.model.UpdateShippingAddressRequest;
 import io.mallang.member.domain.ShippingAddressId;
@@ -19,6 +19,7 @@ import java.net.URI;
 
 import static io.mallang.fixtures.MemberFixture.generateRegisterShippingAddressRequest;
 import static io.mallang.fixtures.MemberFixture.generateUpdateShippingAddressRequest;
+import static io.mallang.fixtures.api.ApiFixture.SHIPPING_ADDRESSES_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.springframework.http.HttpStatus.*;
@@ -60,7 +61,7 @@ class ShippingAddressCommandApiTest {
                 URI location = response.getHeaders().getLocation();
                 assertThat(location).isNotNull();
 
-                String id = location.getPath().substring("/my/shipping-addresses/".length());
+                String id = location.getPath().substring((SHIPPING_ADDRESSES_API + "/").length());
                 assertThatCode(() -> new ShippingAddressId(id)).doesNotThrowAnyException();
             }
 
@@ -89,7 +90,7 @@ class ShippingAddressCommandApiTest {
                 // when
                 ResponseEntity<Void> response = fixture.member()
                                                        .unauthenticatedClient()
-                                                       .postForEntity("/my/shipping-addresses", request, Void.class);
+                                                       .postForEntity(SHIPPING_ADDRESSES_API, request, Void.class);
 
                 // then
                 assertThat(response.getStatusCode()).isEqualTo(FOUND);
@@ -268,7 +269,7 @@ class ShippingAddressCommandApiTest {
                 ResponseEntity<Void> response = fixture.member()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.patch("/my/shipping-addresses/" + shippingAddressId + "/default")
+                                                               RequestEntity.patch(SHIPPING_ADDRESSES_API + "/" + shippingAddressId + "/default")
                                                                             .build(),
                                                                Void.class
                                                        );
@@ -352,7 +353,7 @@ class ShippingAddressCommandApiTest {
                 ResponseEntity<Void> response = fixture.member()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.put("/my/shipping-addresses/" + id)
+                                                               RequestEntity.put(SHIPPING_ADDRESSES_API + "/" + id)
                                                                             .body(request),
                                                                Void.class
                                                        );
@@ -538,7 +539,7 @@ class ShippingAddressCommandApiTest {
                 ResponseEntity<Void> response = fixture.member()
                                                        .unauthenticatedClient()
                                                        .exchange(
-                                                               RequestEntity.delete("/my/shipping-addresses/" + id)
+                                                               RequestEntity.delete(SHIPPING_ADDRESSES_API + "/" + id)
                                                                             .build(),
                                                                Void.class
                                                        );
