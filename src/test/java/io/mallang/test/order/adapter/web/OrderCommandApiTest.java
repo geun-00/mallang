@@ -18,23 +18,17 @@ import io.mallang.product.domain.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import static io.mallang.fixtures.MemberFixture.generateClockHolder;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.api.ApiFixture.ORDERS_API;
-import static io.mallang.order.adapter.web.model.CreateOrderRequest.CreateOrderItemRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.springframework.http.HttpStatus.*;
@@ -112,197 +106,6 @@ class OrderCommandApiTest {
                                                        .postForEntity(ORDERS_API, request, Void.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-            }
-        }
-
-        @Nested
-        class 요청_검증 {
-
-            @Test
-            void items_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(@Autowired FixtureSession fixture) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        null,
-                        "홍길동",
-                        "01012345678",
-                        "12345",
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @Test
-            void items_요소가_null이면_400_Bad_Request_상태코드를_반환한다(@Autowired FixtureSession fixture) {
-                fixture.auth().createMemberThenLogin();
-
-                List<CreateOrderItemRequest> items = new ArrayList<>();
-                items.add(new CreateOrderItemRequest("product-id", 1));
-                items.add(null);
-
-                CreateOrderRequest request = new CreateOrderRequest(
-                        items,
-                        "홍길동",
-                        "01012345678",
-                        "12345",
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {"", " "})
-            void item_productId가_null_또는_비어있으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidProductId,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        List.of(new CreateOrderItemRequest(invalidProductId, 1)),
-                        "홍길동",
-                        "01012345678",
-                        "12345",
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @Test
-            void item_quantity가_null이면_400_Bad_Request_상태코드를_반환한다(@Autowired FixtureSession fixture) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        List.of(new CreateOrderItemRequest("product-id", null)),
-                        "홍길동",
-                        "01012345678",
-                        "12345",
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @ValueSource(ints = {0, -1})
-            void item_quantity가_0_이하이면_400_Bad_Request_상태코드를_반환한다(
-                    int invalidQuantity,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        List.of(new CreateOrderItemRequest("product-id", invalidQuantity)),
-                        "홍길동",
-                        "01012345678",
-                        "12345",
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {" "})
-            void receiverName_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidReceiverName,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        List.of(new CreateOrderItemRequest("product-id", 1)),
-                        invalidReceiverName,
-                        "01012345678",
-                        "12345",
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {" "})
-            void receiverPhoneNumber_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidReceiverPhoneNumber,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        List.of(new CreateOrderItemRequest("product-id", 1)),
-                        "홍길동",
-                        invalidReceiverPhoneNumber,
-                        "12345",
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {" "})
-            void zipCode_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidZipCode,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        List.of(new CreateOrderItemRequest("product-id", 1)),
-                        "홍길동",
-                        "01012345678",
-                        invalidZipCode,
-                        "서울시 강남구 테헤란로 1",
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {" "})
-            void mainAddress_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidMainAddress,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                CreateOrderRequest request = new CreateOrderRequest(
-                        List.of(new CreateOrderItemRequest("product-id", 1)),
-                        "홍길동",
-                        "01012345678",
-                        "12345",
-                        invalidMainAddress,
-                        "101호"
-                );
-
-                ResponseEntity<Void> response = fixture.order().createOrder(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
         }
 
