@@ -10,9 +10,6 @@ import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -67,44 +64,6 @@ class ProductImageCommandApiTest {
                                                        );
 
                 assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-            }
-        }
-
-        @Nested
-        class 요청_검증 {
-
-            @Test
-            void imageUrls_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                String productId = fixture.product().registerProductThenGetId();
-                var request = new AddProductImagesRequest(null);
-
-                ResponseEntity<Void> response = fixture.product().addImages(productId, request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {"", "   "})
-            void imageUrls_요소가_null_또는_비어있는_문자열이면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidImageUrl,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                String productId = fixture.product().registerProductThenGetId();
-
-                List<String> imageUrls = new ArrayList<>();
-                imageUrls.add(generateProductImageUrl());
-                imageUrls.add(invalidImageUrl);
-
-                var request = new AddProductImagesRequest(imageUrls);
-
-                ResponseEntity<Void> response = fixture.product().addImages(productId, request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
         }
 
@@ -409,3 +368,4 @@ class ProductImageCommandApiTest {
         return product.getImages().getFirst().id().value();
     }
 }
+

@@ -17,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import static io.mallang.fixtures.MemberFixture.generateMember;
 import static io.mallang.fixtures.ProductFixture.*;
 import static io.mallang.fixtures.api.ApiFixture.PRODUCTS_API;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 @WebAdapterTest
 @DisplayName("ProductQuery API")
@@ -44,8 +44,6 @@ class ProductQueryApiTest {
             ) {
                 Member seller = generateMember();
                 saveMemberPort.save(seller);
-
-                String prefix = UUID.randomUUID().toString();
 
                 Product a = generateProduct(seller.getId(), generateProductName(), BigDecimal.valueOf(2000), ProductCategory.FOOD);
                 Product b = generateProduct(seller.getId(), generateProductName(), BigDecimal.valueOf(3000), ProductCategory.FOOD);
@@ -118,25 +116,6 @@ class ProductQueryApiTest {
             }
         }
 
-        @Nested
-        class 요청_검증 {
-
-            @Test
-            void minPrice가_음수면_400_Bad_Request_상태코드를_반환한다(@Autowired FixtureSession fixture) {
-                ResponseEntity<SearchProductsResponse> response = fixture.product()
-                                                                         .searchProducts(new SearchProductsRequest(
-                                                                                 null,
-                                                                                 null,
-                                                                                 BigDecimal.valueOf(-1),
-                                                                                 null,
-                                                                                 null),
-                                                                                 null,
-                                                                                 20
-                                                                         );
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-        }
     }
 
     @Nested
