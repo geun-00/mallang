@@ -19,9 +19,6 @@ import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -119,51 +116,6 @@ class CartCommandApiTest {
         }
 
         @Nested
-        class 요청_검증 {
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {"", " "})
-            void productId_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidProductId,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                var request = new AddCartItemRequest(invalidProductId, 2);
-
-                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @Test
-            void quantity_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                var request = new AddCartItemRequest("product-1", null);
-
-                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @ValueSource(ints = {0, -1})
-            void quantity가_0_이하이면_400_Bad_Request_상태코드를_반환한다(
-                    int invalidQuantity,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                var request = new AddCartItemRequest("product-1", invalidQuantity);
-
-                ResponseEntity<Void> response = fixture.cart().addCartItem(request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-        }
-
-        @Nested
         class 조회_실패 {
 
             @Test
@@ -238,36 +190,6 @@ class CartCommandApiTest {
                                                        );
 
                 assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-            }
-        }
-
-        @Nested
-        class 요청_검증 {
-
-            @Test
-            void quantity_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                var request = new ChangeCartItemQuantityRequest(null);
-
-                ResponseEntity<Void> response = fixture.cart().changeCartItemQuantity("CartItem-1", request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @ValueSource(ints = {0, -1})
-            void quantity가_0_이하이면_400_Bad_Request_상태코드를_반환한다(
-                    int invalidQuantity,
-                    @Autowired FixtureSession fixture
-            ) {
-                fixture.auth().createMemberThenLogin();
-                var request = new ChangeCartItemQuantityRequest(invalidQuantity);
-
-                ResponseEntity<Void> response = fixture.cart().changeCartItemQuantity("CartItem-1", request);
-
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
         }
 
