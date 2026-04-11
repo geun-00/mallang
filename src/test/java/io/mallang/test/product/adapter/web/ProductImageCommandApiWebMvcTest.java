@@ -72,6 +72,3 @@ class ProductImageCommandApiWebMvcTest extends WebMvcRequestTestSupport {
         }
     }
 }
-
-
-

@@ -230,8 +230,7 @@ class ProductCommandApiWebMvcTest extends WebMvcRequestTestSupport {
         @ParameterizedTest
         @NullSource
         @ValueSource(strings = {" "})
-        void category_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                String invalidCategory) throws JsonProcessingException {
+        void category_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(String invalidCategory) throws JsonProcessingException {
             // given
             var request = new UpdateProductRequest(generateProductName(), generateProductDescription(), generateProductPriceAmount(), invalidCategory);
 
