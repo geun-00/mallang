@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcAdapterTest(MemberCommandApi.class)
-public class MemberCommandApiWebMvcTest extends WebMvcRequestTestSupport {
+class MemberCommandApiWebMvcTest extends WebMvcRequestTestSupport {
 
     @MockitoBean
     RegisterMemberUseCase registerMemberUseCase;

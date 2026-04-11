@@ -109,7 +109,7 @@ class ShippingAddressCommandApiWebMvcTest extends WebMvcRequestTestSupport {
             // when
             MvcTestResult result = postJson(SHIPPING_ADDRESSES_API, request);
 
-            // 소두
+            // then
             assertThat(result).apply(print()).hasStatus(BAD_REQUEST);
         }
     }
