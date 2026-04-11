@@ -4,20 +4,21 @@ import io.mallang.annotations.WebMvcAdapterTest;
 import io.mallang.product.adapter.web.ProductQueryApi;
 import io.mallang.product.application.provided.query.GetProductDetailUseCase;
 import io.mallang.product.application.provided.query.SearchProductsUseCase;
+import io.mallang.test.support.web.WebMvcRequestTestSupport;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static io.mallang.fixtures.api.ApiFixture.PRODUCTS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @WebMvcAdapterTest(ProductQueryApi.class)
-class ProductQueryApiWebMvcTest {
+class ProductQueryApiWebMvcTest extends WebMvcRequestTestSupport {
 
     @MockitoBean
     SearchProductsUseCase searchProductsUseCase;
@@ -30,9 +31,13 @@ class ProductQueryApiWebMvcTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"minPrice", "maxPrice"})
-        void 가격_조건이_음수면_400_Bad_Request_상태코드를_반환한다(String priceParameter, @Autowired MockMvcTester client) {
+        void 가격_조건이_음수면_400_Bad_Request_상태코드를_반환한다(String priceParameter) {
+            // given
+            MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+            queryParams.add(priceParameter, "-1");
+
             // when
-            MvcTestResult result = client.get().uri(PRODUCTS_API).param(priceParameter, "-1").exchange();
+            MvcTestResult result = getWithParams(PRODUCTS_API, queryParams);
 
             // then
             assertThat(result).hasStatus(BAD_REQUEST);
