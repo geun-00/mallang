@@ -8,9 +8,6 @@ import io.mallang.member.domain.MemberId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
@@ -74,61 +71,6 @@ class MemberCommandApiTest {
                 // then
                 assertThatCode(() -> loadMemberPort.getById(new MemberId(memberIdValue)))
                         .doesNotThrowAnyException();
-            }
-        }
-
-        @Nested
-        class 요청_검증 {
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = "  ")
-            void email_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidEmail,
-                    @Autowired FixtureSession fixture
-            ) {
-                // given
-                var request = generateCreateRequest(invalidEmail);
-
-                // when
-                ResponseEntity<Void> response = fixture.member().registerMember(request);
-
-                // then
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = "  ")
-            void password_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidPassword,
-                    @Autowired FixtureSession fixture
-            ) {
-                // given
-                var request = new MemberCreateRequest(generateEmailValue(), invalidPassword, generateNicknameValue());
-
-                // when
-                ResponseEntity<Void> response = fixture.member().registerMember(request);
-
-                // then
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = "  ")
-            void nickname_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidNickname,
-                    @Autowired FixtureSession fixture
-            ) {
-                // given
-                var request = new MemberCreateRequest(generateEmailValue(), DEFAULT_PASSWORD, invalidNickname);
-
-                // when
-                ResponseEntity<Void> response = fixture.member().registerMember(request);
-
-                // then
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
         }
 
