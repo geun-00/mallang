@@ -2,12 +2,12 @@ package io.mallang.test.product.adapter.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mallang.annotations.WebMvcAdapterTest;
 import io.mallang.product.adapter.web.ProductImageCommandApi;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
 import io.mallang.product.application.provided.command.AddProductImagesUseCase;
 import io.mallang.product.application.provided.command.ChangeThumbnailImageUseCase;
 import io.mallang.product.application.provided.command.RemoveProductImageUseCase;
-import io.mallang.security.config.WebMvcConfig;
 import io.mallang.test.support.security.WithMockMember;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -30,9 +27,7 @@ import static io.mallang.fixtures.api.ApiFixture.PRODUCTS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(ProductImageCommandApi.class)
-@Import(WebMvcConfig.class)
+@WebMvcAdapterTest(ProductImageCommandApi.class)
 class ProductImageCommandApiWebMvcTest {
 
     @MockitoBean

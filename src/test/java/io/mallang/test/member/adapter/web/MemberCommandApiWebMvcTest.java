@@ -2,6 +2,7 @@ package io.mallang.test.member.adapter.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mallang.annotations.WebMvcAdapterTest;
 import io.mallang.member.adapter.web.MemberCommandApi;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
 import io.mallang.member.application.provided.command.RegisterMemberUseCase;
@@ -10,8 +11,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -22,8 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(MemberCommandApi.class)
+@WebMvcAdapterTest(MemberCommandApi.class)
 public class MemberCommandApiWebMvcTest {
 
     @MockitoBean
@@ -71,9 +69,7 @@ public class MemberCommandApiWebMvcTest {
             assertThat(client.post()
                              .uri("/api/v1/members")
                              .contentType(MediaType.APPLICATION_JSON)
-                             .content(objectMapper.writeValueAsString(request))
-            ).apply(print())
-             .hasStatus(BAD_REQUEST);
+                             .content(objectMapper.writeValueAsString(request))).apply(print()).hasStatus(BAD_REQUEST);
         }
 
         @ParameterizedTest
@@ -92,9 +88,7 @@ public class MemberCommandApiWebMvcTest {
             assertThat(client.post()
                              .uri("/api/v1/members")
                              .contentType(MediaType.APPLICATION_JSON)
-                             .content(objectMapper.writeValueAsString(request))
-            ).apply(print())
-             .hasStatus(BAD_REQUEST);
+                             .content(objectMapper.writeValueAsString(request))).apply(print()).hasStatus(BAD_REQUEST);
         }
     }
 }

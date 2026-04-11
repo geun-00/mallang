@@ -2,11 +2,11 @@ package io.mallang.test.order.adapter.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mallang.annotations.WebMvcAdapterTest;
 import io.mallang.order.adapter.web.OrderCommandApi;
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
 import io.mallang.order.application.provided.command.CancelOrderUseCase;
 import io.mallang.order.application.provided.command.CreateOrderUseCase;
-import io.mallang.security.config.WebMvcConfig;
 import io.mallang.test.support.security.WithMockMember;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -30,9 +27,7 @@ import static io.mallang.order.adapter.web.model.CreateOrderRequest.CreateOrderI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(OrderCommandApi.class)
-@Import(WebMvcConfig.class)
+@WebMvcAdapterTest(OrderCommandApi.class)
 class OrderCommandApiWebMvcTest {
 
     @MockitoBean

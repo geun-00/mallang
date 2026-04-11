@@ -2,13 +2,13 @@ package io.mallang.test.product.adapter.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mallang.annotations.WebMvcAdapterTest;
 import io.mallang.product.adapter.web.ProductCommandApi;
 import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.DeductStockRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.*;
-import io.mallang.security.config.WebMvcConfig;
 import io.mallang.test.support.security.WithMockMember;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,9 +16,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -33,9 +30,7 @@ import static io.mallang.product.adapter.web.model.CreateProductRequest.ProductI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(ProductCommandApi.class)
-@Import(WebMvcConfig.class)
+@WebMvcAdapterTest(ProductCommandApi.class)
 class ProductCommandApiWebMvcTest {
 
     @MockitoBean
@@ -250,9 +245,9 @@ class ProductCommandApiWebMvcTest {
             // given
             var request = new UpdateProductRequest(
                     invalidName,
-                    generateProductDescription(),
-                    generateProductPriceAmount(),
-                    "BOOKS"
+                                                   generateProductDescription(),
+                                                   generateProductPriceAmount(),
+                                                   "BOOKS"
             );
 
             // when
@@ -273,12 +268,7 @@ class ProductCommandApiWebMvcTest {
                 @Autowired ObjectMapper objectMapper
         ) throws JsonProcessingException {
             // given
-            var request = new UpdateProductRequest(
-                    generateProductName(),
-                    null,
-                    generateProductPriceAmount(),
-                    "BOOKS"
-            );
+            var request = new UpdateProductRequest(generateProductName(), null, generateProductPriceAmount(), "BOOKS");
 
             // when
             MvcTestResult result = client.put()
@@ -298,12 +288,7 @@ class ProductCommandApiWebMvcTest {
                 @Autowired ObjectMapper objectMapper
         ) throws JsonProcessingException {
             // given
-            var request = new UpdateProductRequest(
-                    generateProductName(),
-                    generateProductDescription(),
-                    null,
-                    "BOOKS"
-            );
+            var request = new UpdateProductRequest(generateProductName(), generateProductDescription(), null, "BOOKS");
 
             // when
             MvcTestResult result = client.put()
@@ -328,9 +313,9 @@ class ProductCommandApiWebMvcTest {
             // given
             var request = new UpdateProductRequest(
                     generateProductName(),
-                    generateProductDescription(),
-                    generateProductPriceAmount(),
-                    invalidCategory
+                                                   generateProductDescription(),
+                                                   generateProductPriceAmount(),
+                                                   invalidCategory
             );
 
             // when
