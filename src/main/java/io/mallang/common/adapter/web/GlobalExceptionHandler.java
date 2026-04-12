@@ -27,7 +27,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DuplicateException.class)
     public ProblemDetail handle(DuplicateException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        log.info("Duplicate resource: {}", ex.getMessage());
+
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getClientMessage());
     }
 
     @ExceptionHandler(InvalidValueException.class)
