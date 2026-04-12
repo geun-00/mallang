@@ -47,7 +47,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handle(AuthenticationException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        log.info("Authentication failed. type={}, message={}",
+                 ex.getClass().getSimpleName(),
+                 ex.getMessage());
+
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
