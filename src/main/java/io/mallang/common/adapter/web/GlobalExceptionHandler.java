@@ -1,5 +1,6 @@
 package io.mallang.common.adapter.web;
 
+import io.mallang.common.domain.exception.AggregateNotLoadedException;
 import io.mallang.common.domain.exception.DomainException;
 import io.mallang.common.domain.exception.DomainNotFoundException;
 import io.mallang.common.domain.exception.DuplicateException;
@@ -51,6 +52,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.info("Forbidden domain access: {}", ex.getMessage());
 
         return problemDetail(FORBIDDEN, ex.getClientMessage());
+    }
+
+    @ExceptionHandler(AggregateNotLoadedException.class)
+    public ProblemDetail handle(AggregateNotLoadedException ex) {
+        log.error("Aggregate not loaded: {}", ex.getMessage());
+
+        return problemDetail(INTERNAL_SERVER_ERROR, ex.getClientMessage());
     }
 
     @ExceptionHandler(DomainException.class)
