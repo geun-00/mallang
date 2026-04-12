@@ -158,7 +158,7 @@ public class Member {
 
     private void validateActive(String message) {
         if (!status.isActive()) {
-            throw new InvalidMemberStateException(message);
+            throw new InvalidMemberStateException(message, id, status);
         }
     }
 

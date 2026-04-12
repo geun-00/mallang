@@ -6,7 +6,7 @@ import io.mallang.common.domain.exception.DomainNotFoundException;
 public class CartItemNotFoundException extends DomainNotFoundException {
 
     public CartItemNotFoundException(CartItemId cartItemId) {
-        super("장바구니 상품을 찾을 수 없습니다. cartItemId=" + cartItemId.value());
+        super("장바구니 상품을 찾을 수 없습니다.", "장바구니 상품을 찾을 수 없습니다 => cartItemId: " + cartItemId.value());
     }
 }
 

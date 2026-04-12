@@ -67,9 +67,10 @@ public class ProductImageCommandService implements AddProductImagesUseCase,
 
     private Product loadProductWithImagesAndValidateSeller(String productIdValue, String memberIdValue) {
         Product product = loadProductPort.getByIdWithImages(new ProductId(productIdValue));
+        MemberId requesterId = new MemberId(memberIdValue);
 
-        if (!product.isSeller(new MemberId(memberIdValue))) {
-            throw new NotProductSellerException();
+        if (!product.isSeller(requesterId)) {
+            throw new NotProductSellerException(product.getId(), requesterId, product.getSellerId());
         }
 
         return product;

@@ -50,13 +50,13 @@ public class MemberCommandService implements RegisterMemberUseCase {
 
     private void validateDuplicateEmail(Email email) {
         if (loadMemberPort.existsByEmail(email)) {
-            throw new DuplicateException("이미 사용 중인 이메일입니다: " + email.address());
+            throw new DuplicateException("이미 사용 중인 이메일입니다.", "이미 사용 중인 이메일입니다 => " + email.address());
         }
     }
 
     private void validateDuplicateNickname(Nickname nickname) {
         if (loadMemberPort.existsByNickname(nickname)) {
-            throw new DuplicateException("이미 사용 중인 닉네임입니다: " + nickname.value());
+            throw new DuplicateException("이미 사용 중인 닉네임입니다.", "이미 사용 중인 닉네임입니다 => " + nickname.value());
         }
     }
 }

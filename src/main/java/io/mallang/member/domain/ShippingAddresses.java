@@ -20,7 +20,7 @@ public class ShippingAddresses {
 
     ShippingAddress add(AddShippingAddressCommand command, IdGenerator idGenerator) {
         if (addresses.size() >= MAX_SHIPPING_ADDRESSES) {
-            throw new ShippingAddressLimitException();
+            throw new ShippingAddressLimitException(addresses.size(), MAX_SHIPPING_ADDRESSES);
         }
 
         boolean isDefault = addresses.isEmpty();

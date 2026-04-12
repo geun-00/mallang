@@ -129,9 +129,10 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     @Override
     public void cancel(CancelOrderCommand command) {
         Order order = loadOrderPort.getById(new OrderId(command.orderIdValue()));
+        MemberId requesterId = new MemberId(command.memberIdValue());
 
-        if (!order.isOrderer(new MemberId(command.memberIdValue()))) {
-            throw new NotOrdererException();
+        if (!order.isOrderer(requesterId)) {
+            throw new NotOrdererException(order.getId(), requesterId, order.getMemberId());
         }
 
         order.cancel();
