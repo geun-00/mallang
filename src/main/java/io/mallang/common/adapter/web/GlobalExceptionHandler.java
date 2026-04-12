@@ -34,17 +34,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidValueException.class)
     public ProblemDetail handle(InvalidValueException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
+        log.info("Invalid value: {}", ex.getMessage());
 
-    @ExceptionHandler(DomainException.class)
-    public ProblemDetail handle(DomainException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "요청 값이 올바르지 않습니다."
+        );
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ProblemDetail handle(ForbiddenException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        log.info("Forbidden domain access: {}", ex.getMessage());
+
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getClientMessage());
+    }
+
+    @ExceptionHandler(DomainException.class)
+    public ProblemDetail handle(DomainException ex) {
+        log.info("Domain exception. type={}, message={}",
+                 ex.getClass().getSimpleName(),
+                 ex.getMessage());
+
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "요청을 처리할 수 없습니다."
+        );
     }
 
     @ExceptionHandler(AuthenticationException.class)
