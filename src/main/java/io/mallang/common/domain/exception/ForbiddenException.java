@@ -2,19 +2,11 @@ package io.mallang.common.domain.exception;
 
 public abstract class ForbiddenException extends DomainException {
 
-    private final String clientMessage;
-
-    public ForbiddenException(String message) {
+    protected ForbiddenException(String message) {
         super(message);
-        this.clientMessage = message;
     }
 
-    public ForbiddenException(String clientMessage, String logMessage) {
-        super(logMessage);
-        this.clientMessage = clientMessage;
-    }
-
-    public String getClientMessage() {
-        return clientMessage;
+    protected ForbiddenException(String clientMessage, String logMessage) {
+        super(clientMessage, logMessage);
     }
 }

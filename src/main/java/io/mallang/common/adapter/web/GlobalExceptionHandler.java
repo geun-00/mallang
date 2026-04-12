@@ -1,6 +1,10 @@
 package io.mallang.common.adapter.web;
 
-import io.mallang.common.domain.exception.*;
+import io.mallang.common.domain.exception.DomainException;
+import io.mallang.common.domain.exception.DomainNotFoundException;
+import io.mallang.common.domain.exception.DuplicateException;
+import io.mallang.common.domain.exception.ForbiddenException;
+import io.mallang.common.domain.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -10,7 +14,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Slf4j
 @RestControllerAdvice
@@ -34,7 +43,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail handle(InvalidValueException ex) {
         log.info("Invalid value: {}", ex.getMessage());
 
-        return problemDetail(BAD_REQUEST, "요청 값이 올바르지 않습니다.");
+        return problemDetail(BAD_REQUEST, ex.getClientMessage());
     }
 
     @ExceptionHandler(ForbiddenException.class)
@@ -48,7 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail handle(DomainException ex) {
         log.info("Domain exception. type={}, message={}", ex.getClass().getSimpleName(), ex.getMessage());
 
-        return problemDetail(BAD_REQUEST, "요청을 처리할 수 없습니다.");
+        return problemDetail(BAD_REQUEST, ex.getClientMessage());
     }
 
     @ExceptionHandler(AuthenticationException.class)
