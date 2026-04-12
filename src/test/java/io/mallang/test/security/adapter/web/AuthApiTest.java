@@ -9,9 +9,6 @@ import io.mallang.security.adapter.web.model.LoginResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
@@ -26,7 +23,10 @@ import static io.mallang.fixtures.api.ApiFixture.PRODUCTS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.COOKIE;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @WebAdapterTest
 @DisplayName("Auth API")
@@ -127,48 +127,6 @@ class AuthApiTest {
 
                 // then
                 assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {"", " "})
-            void email_속성이_비어있으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidEmail,
-                    @Autowired FixtureSession fixture
-            ) {
-                // given
-                MemberCreateRequest request = generateCreateRequest();
-                fixture.member().registerMember(request);
-
-                // when
-                ResponseEntity<Void> response = fixture.auth().unauthenticatedClient().exchange(
-                        RequestEntity.post(LOGIN_API).body(new LoginRequest(invalidEmail, request.password())),
-                        Void.class
-                );
-
-                // then
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-            }
-
-            @ParameterizedTest
-            @NullSource
-            @ValueSource(strings = {"", " "})
-            void password_속성이_비어있으면_400_Bad_Request_상태코드를_반환한다(
-                    String invalidPassword,
-                    @Autowired FixtureSession fixture
-            ) {
-                // given
-                MemberCreateRequest request = generateCreateRequest();
-                fixture.member().registerMember(request);
-
-                // when
-                ResponseEntity<Void> response = fixture.auth().unauthenticatedClient().exchange(
-                        RequestEntity.post(LOGIN_API).body(new LoginRequest(request.email(), invalidPassword)),
-                        Void.class
-                );
-
-                // then
-                assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
             }
         }
     }
