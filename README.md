@@ -4,20 +4,21 @@
 
 ## 🧰 기술 스택
 
-| 분류              | 기술                                                        |
-|-----------------|-----------------------------------------------------------|
-| **언어**          | Java 21                                                   |
-| **프레임워크**       | Spring Boot 3.5.11                                        |
-| **Web**         | Spring Web, Bean Validation                               |
-| **보안**          | Spring Security                                           |
-| **영속성**         | Spring Data JPA, MyBatis                                  |
-| **데이터베이스**      | PostgreSQL, H2                                            |
-| **마이그레이션**      | Flyway                                                    |
-| **빌드**          | Gradle Kotlin DSL                                         |
-| **테스트**         | JUnit 5, Spring Boot Test, Spring Security Test, ArchUnit |
-| **로깅 / SQL 추적** | P6Spy                                                     |
-| **로컬 인프라**      | Docker, Docker Compose                                    |
-| **CI/CD**       | GitHub Actions, AWS ECR, S3, CodeDeploy, EC2              |
+| 분류              | 기술                                                                        |
+|-----------------|---------------------------------------------------------------------------|
+| **언어**          | Java 21                                                                   |
+| **프레임워크**       | Spring Boot 3.5.11                                                        |
+| **Web**         | Spring Web, Bean Validation                                               |
+| **보안**          | Spring Security                                                           |
+| **영속성**         | Spring Data JPA, MyBatis                                                  |
+| **데이터베이스**      | PostgreSQL, H2                                                            |
+| **마이그레이션**      | Flyway                                                                    |
+| **빌드**          | Gradle Kotlin DSL                                                         |
+| **테스트**         | JUnit 5, Spring Boot Test, Spring Security Test, ArchUnit, Testcontainers |
+| **로깅 / SQL 추적** | P6Spy                                                                     |
+| **로컬 인프라**      | Docker, Docker Compose                                                    |
+| **CI/CD**       | GitHub Actions, AWS ECR, S3, CodeDeploy, EC2                              |
+| **AI**          | Gemini, Claude, Codex                                                     |
 
 ## 🚀 설치 및 실행 방법
 
