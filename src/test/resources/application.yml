@@ -1,12 +1,20 @@
 spring:
+
   jpa:
-    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
     properties:
       hibernate:
-        highlight_sql: true
+        order_updates: true
+        order_inserts: true
+        jdbc:
+          batch_size: 50
 
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml
-logging:
-  level:
-    io.mallang.product.adapter.persistence.mybatis: trace
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
