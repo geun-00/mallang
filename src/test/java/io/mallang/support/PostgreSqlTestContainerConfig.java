@@ -11,7 +11,8 @@ public class PostgreSqlTestContainerConfig {
 
     @Bean
     @ServiceConnection
-    PostgreSQLContainer<?> postgreSQLContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:17-alpine"));
+    public PostgreSQLContainer<?> postgreSQLContainer() {
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:17-alpine"))
+                .withUrlParam("reWriteBatchedInserts", "true");
     }
 }
