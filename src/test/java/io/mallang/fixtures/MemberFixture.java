@@ -19,7 +19,15 @@ import java.util.UUID;
 
 public class MemberFixture {
 
+    // =====================================================================
+    // 테스트 상수 (Test Constants)
+    // =====================================================================
+
     public static final String DEFAULT_PASSWORD = "password12@";
+
+    // =====================================================================
+    // 테스트 도구 (Test Utilities)
+    // =====================================================================
 
     public static MemberPasswordEncoder generatePasswordEncoder() {
         return new MemberPasswordEncoder() {
@@ -43,6 +51,10 @@ public class MemberFixture {
         return () -> LocalDateTime.of(2024, 1, 1, 0, 0, 0);
     }
 
+    // =====================================================================
+    // 도메인 커맨드 (Domain Commands)
+    // =====================================================================
+
     public static CreateMemberCommand generateCreateCommand() {
         return generateCreateCommand(DEFAULT_PASSWORD);
     }
@@ -54,6 +66,10 @@ public class MemberFixture {
                 new Nickname(generateNicknameValue())
         );
     }
+
+    // =====================================================================
+    // 애플리케이션 커맨드 (Application Commands)
+    // =====================================================================
 
     public static RegisterMemberCommand generateRegisterCommand() {
         return generateRegisterCommand(DEFAULT_PASSWORD);
@@ -67,6 +83,10 @@ public class MemberFixture {
         );
     }
 
+    // =====================================================================
+    // 랜덤 원시값 (Random Primitives)
+    // =====================================================================
+
     public static String generateEmailValue() {
         return UUID.randomUUID() + "@test.com";
     }
@@ -75,6 +95,14 @@ public class MemberFixture {
         return UUID.randomUUID().toString().substring(0, 20);
     }
 
+    public static MemberId generateMemberId() {
+        return new MemberId(UUID.randomUUID().toString());
+    }
+
+    // =====================================================================
+    // 웹 요청 모델 (Web Request Models)
+    // =====================================================================
+
     public static MemberCreateRequest generateCreateRequest() {
         return new MemberCreateRequest(generateEmailValue(), DEFAULT_PASSWORD, generateNicknameValue());
     }
@@ -82,6 +110,30 @@ public class MemberFixture {
     public static MemberCreateRequest generateCreateRequest(String email) {
         return new MemberCreateRequest(email, DEFAULT_PASSWORD, generateNicknameValue());
     }
+
+    public static RegisterShippingAddressRequest generateRegisterShippingAddressRequest() {
+        return new RegisterShippingAddressRequest(
+                "홍길동",
+                "01011112222",
+                "12345",
+                "서울시 강남구 테헤란로 1",
+                "101호"
+        );
+    }
+
+    public static UpdateShippingAddressRequest generateUpdateShippingAddressRequest() {
+        return new UpdateShippingAddressRequest(
+                "이순신",
+                "01022223333",
+                "13579",
+                "경기도 부천시 원미구",
+                "2층"
+        );
+    }
+
+    // =====================================================================
+    // 도메인 객체 (Domain Objects)
+    // =====================================================================
 
     public static Member generateMember() {
         return Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
@@ -103,6 +155,10 @@ public class MemberFixture {
     public static Member generateMember(String password) {
         return Member.create(generateCreateCommand(password), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
     }
+
+    // =====================================================================
+    // 배송지 도메인 커맨드 (Shipping Address Domain Commands)
+    // =====================================================================
 
     public static AddShippingAddressCommand generateAddShippingAddressCommand() {
         return new AddShippingAddressCommand(
@@ -142,6 +198,10 @@ public class MemberFixture {
         return member;
     }
 
+    // =====================================================================
+    // 저장된 도메인 식별자 (Saved Domain Identifiers)
+    // =====================================================================
+
     public static MemberId savedMemberId(SaveMemberPort saveMemberPort) {
         Member member = generateMember();
         saveMemberPort.save(member);
@@ -158,25 +218,5 @@ public class MemberFixture {
         saveMemberPort.save(member);
 
         return member.getId();
-    }
-
-    public static RegisterShippingAddressRequest generateRegisterShippingAddressRequest() {
-        return new RegisterShippingAddressRequest(
-                "홍길동",
-                "01011112222",
-                "12345",
-                "서울시 강남구 테헤란로 1",
-                "101호"
-        );
-    }
-
-    public static UpdateShippingAddressRequest generateUpdateShippingAddressRequest() {
-        return new UpdateShippingAddressRequest(
-                "이순신",
-                "01022223333",
-                "13579",
-                "경기도 부천시 원미구",
-                "2층"
-        );
     }
 }
