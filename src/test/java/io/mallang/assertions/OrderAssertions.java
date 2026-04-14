@@ -1,6 +1,8 @@
 package io.mallang.assertions;
 
+import io.mallang.common.application.query.SliceResult;
 import io.mallang.common.domain.vo.Money;
+import io.mallang.order.adapter.web.model.SearchMyOrdersResponse;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.application.provided.query.model.OrderListView;
 import io.mallang.order.domain.Order;
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import static io.mallang.order.adapter.web.model.SearchMyOrdersResponse.OrderSummary;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -116,6 +119,29 @@ public class OrderAssertions {
             assertThat(item.mainProductId()).isEqualTo(mainProduct.getId().value());
             assertThat(item.mainProductName()).isEqualTo(mainProduct.getName().value());
             assertThat(item.mainProductThumbnailImageUrl()).isEqualTo(mainProduct.getThumbnailImage().imageUrl().value());
+        };
+    }
+
+    public static ThrowingConsumer<SearchMyOrdersResponse> isMappedFrom(SliceResult<OrderListView> result) {
+        return response -> {
+            assertThat(response.items()).hasSize(result.items().size());
+
+            for (int i = 0; i < result.items().size(); i++) {
+                OrderListView item = result.items().get(i);
+                OrderSummary summary = response.items().get(i);
+
+                assertThat(summary.orderId()).isEqualTo(item.orderId());
+                assertThat(summary.status()).isEqualTo(item.status());
+                assertThat(summary.orderedAt()).isEqualTo(item.orderedAt());
+                assertThat(summary.totalPrice()).isEqualTo(item.totalPrice());
+                assertThat(summary.itemCount()).isEqualTo(item.itemCount());
+                assertThat(summary.mainProductId()).isEqualTo(item.mainProductId());
+                assertThat(summary.mainProductName()).isEqualTo(item.mainProductName());
+                assertThat(summary.mainProductThumbnailImageUrl()).isEqualTo(item.mainProductThumbnailImageUrl());
+            }
+
+            assertThat(response.hasNext()).isEqualTo(result.hasNext());
+            assertThat(response.nextCursor()).isEqualTo(result.nextCursor());
         };
     }
 }
