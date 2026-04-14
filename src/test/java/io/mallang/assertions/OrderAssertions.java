@@ -2,6 +2,7 @@ package io.mallang.assertions;
 
 import io.mallang.common.domain.vo.Money;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
+import io.mallang.order.application.provided.query.model.OrderListView;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderItem;
 import io.mallang.order.domain.ShippingInfo;
@@ -102,6 +103,19 @@ public class OrderAssertions {
         return orderItem -> {
             assertThat(orderItem).satisfies(isDerivedFrom(productId, quantity));
             assertThat(orderItem.getPrice().value()).isEqualByComparingTo(price);
+        };
+    }
+
+    public static ThrowingConsumer<OrderListView> isSummaryOf(Order order, Product mainProduct, int quantity) {
+        return item -> {
+            assertThat(item.orderId()).isEqualTo(order.getId().value());
+            assertThat(item.status()).isEqualTo(order.getStatus().name());
+            assertThat(item.orderedAt()).isEqualTo(order.getOrderedAt());
+            assertThat(item.totalPrice()).isEqualByComparingTo(mainProduct.getPrice().multiply(quantity).value());
+            assertThat(item.itemCount()).isEqualTo(order.getItems().size());
+            assertThat(item.mainProductId()).isEqualTo(mainProduct.getId().value());
+            assertThat(item.mainProductName()).isEqualTo(mainProduct.getName().value());
+            assertThat(item.mainProductThumbnailImageUrl()).isEqualTo(mainProduct.getThumbnailImage().imageUrl().value());
         };
     }
 }
