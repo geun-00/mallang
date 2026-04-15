@@ -7,8 +7,6 @@ import io.mallang.order.application.provided.query.SearchMyOrdersUseCase;
 import io.mallang.order.application.provided.query.model.OrderListView;
 import io.mallang.order.application.provided.query.model.SearchMyOrdersQuery;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,14 +26,14 @@ public class OrderQueryApi {
     public ResponseEntity<SearchMyOrdersResponse> search(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String lastOrderId,
-            @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(defaultValue = "20") int size,
             @CurrentMemberId String memberId
     ) {
         SliceResult<OrderListView> result = searchMyOrdersUseCase.search(new SearchMyOrdersQuery(
                 memberId,
                 status,
                 lastOrderId,
-                pageable.getPageSize()
+                size
         ));
 
         return ResponseEntity.ok(toSearchMyOrdersResponse(result));
