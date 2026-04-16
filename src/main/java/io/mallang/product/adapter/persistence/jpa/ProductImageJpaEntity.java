@@ -36,19 +36,17 @@ class ProductImageJpaEntity extends BaseEntity {
 
     static ProductImageJpaEntity fromThumbnail(ProductImage image, ProductJpaEntity product) {
         return new ProductImageJpaEntity(
-                image.id().value(),
-                image.imageUrl().value(),
-                true,
-                product
+                image.id()
+                     .value(), image.imageUrl()
+                                    .value(), true, product
         );
     }
 
     static ProductImageJpaEntity fromImage(ProductImage image, ProductJpaEntity product) {
         return new ProductImageJpaEntity(
-                image.id().value(),
-                image.imageUrl().value(),
-                false,
-                product
+                image.id()
+                     .value(), image.imageUrl()
+                                    .value(), false, product
         );
     }
 
@@ -61,14 +59,12 @@ class ProductImageJpaEntity extends BaseEntity {
     }
 
     ProductImage toDomain() {
-        return new ProductImage(
-                new ProductImageId(id),
-                new ImageUrl(imageUrl)
-        );
+        return new ProductImage(new ProductImageId(id), new ImageUrl(imageUrl));
     }
 
     void updateFrom(ProductImage image, boolean thumbnail) {
-        this.imageUrl = image.imageUrl().value();
+        this.imageUrl = image.imageUrl()
+                             .value();
         this.isThumbnail = thumbnail;
     }
 }

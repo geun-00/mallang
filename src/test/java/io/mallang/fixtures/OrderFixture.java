@@ -96,14 +96,10 @@ public class OrderFixture {
         return generatePlaceOrderCommand(generateOrderItemCommands(1));
     }
 
-    public static PlaceOrderCommand generatePlaceOrderCommand(MemberId memberId, Product product, int quantity) {
+    public static PlaceOrderCommand generatePlaceOrderCommand(MemberId memberId, List<PlaceOrderItemCommand> items) {
         return new PlaceOrderCommand(
                 memberId,
-                List.of(new PlaceOrderItemCommand(
-                        product.getId(),
-                        quantity,
-                        product.getPrice()
-                )),
+                items,
                 generateReceiver(),
                 generateAddress()
         );
@@ -139,8 +135,14 @@ public class OrderFixture {
     public static Order generateOrder() {
         return Order.place(generatePlaceOrderCommand(), generateIdGenerator(), generateClockHolder());
     }
+
     public static Order generateOrder(MemberId memberId, Product product, int quantity) {
-        return Order.place(generatePlaceOrderCommand(memberId, product, quantity), generateIdGenerator(), generateClockHolder());
+        List<PlaceOrderItemCommand> items = List.of(new PlaceOrderItemCommand(product.getId(), quantity, product.getPrice()));
+        return generateOrderWithItems(memberId, items);
+    }
+
+    public static Order generateOrderWithItems(MemberId memberId, List<PlaceOrderItemCommand> items) {
+        return Order.place(generatePlaceOrderCommand(memberId, items), generateIdGenerator(), generateClockHolder());
     }
 
     public static Order generateCanceledOrder() {

@@ -2,6 +2,8 @@ package io.mallang.test.order.adapter.web;
 
 import io.mallang.annotations.WebAdapterTest;
 import io.mallang.fixtures.api.FixtureSession;
+import io.mallang.member.adapter.web.model.MemberCreateRequest;
+import io.mallang.order.adapter.web.model.OrderDetailResponse;
 import io.mallang.order.adapter.web.model.SearchMyOrdersResponse;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
@@ -15,6 +17,8 @@ import static io.mallang.fixtures.OrderFixture.generateCreateOrderRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.api.ApiFixture.ORDERS_API;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -112,6 +116,86 @@ class OrderQueryApiTest {
                                                          .getForEntity(ORDERS_API, String.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /my/orders/{orderId}")
+    class 내_주문_상세_조회 {
+
+        @Nested
+        class 성공 {
+
+            @Test
+            void 내_주문_상세를_조회할_수_있다(
+                    @Autowired FixtureSession fixture,
+                    @Autowired SaveProductPort saveProductPort
+            ) {
+                fixture.auth().createMemberThenLogin();
+
+                Product product = generateProduct(5);
+                saveProductPort.save(product);
+
+                String orderId = fixture.order().createOrderThenGetId(generateCreateOrderRequest(product.getId().value(), 2));
+
+                ResponseEntity<OrderDetailResponse> response = fixture.order().getOrderDetail(orderId);
+
+                assertThat(response.getStatusCode()).isEqualTo(OK);
+                assertThat(response.getBody()).isNotNull();
+                assertThat(response.getBody().orderId()).isEqualTo(orderId);
+                assertThat(response.getBody().items()).hasSize(1);
+                assertThat(response.getBody().items().getFirst().productId()).isEqualTo(product.getId().value());
+            }
+        }
+
+        @Nested
+        class 인증 {
+
+            @Test
+            void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                ResponseEntity<String> response = fixture.order()
+                                                         .unauthenticatedClient()
+                                                         .getForEntity(ORDERS_API + "/order-id", String.class);
+
+                assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+            }
+        }
+
+        @Nested
+        class 예외 {
+
+            @Test
+            void 존재하지_않는_주문이면_404_Not_Found_상태코드를_반환한다(@Autowired FixtureSession fixture) {
+                fixture.auth().createMemberThenLogin();
+
+                ResponseEntity<String> response = fixture.order()
+                                                         .client()
+                                                         .getForEntity(ORDERS_API + "/unknown-order-id", String.class);
+
+                assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
+            }
+
+            @Test
+            void 내_주문이_아니면_403_Forbidden_상태코드를_반환한다(
+                    @Autowired FixtureSession fixture,
+                    @Autowired SaveProductPort saveProductPort
+            ) {
+                MemberCreateRequest orderer = fixture.auth().createMemberThenLogin();
+
+                Product product = generateProduct(5);
+                saveProductPort.save(product);
+
+                String orderId = fixture.order().createOrderThenGetId(generateCreateOrderRequest(product.getId().value(), 1));
+
+                MemberCreateRequest requester = fixture.auth().createMemberThenLogin();
+
+                ResponseEntity<String> response = fixture.order()
+                                                         .client()
+                                                         .getForEntity(ORDERS_API + "/" + orderId, String.class);
+
+                assertThat(orderer.email()).isNotEqualTo(requester.email());
+                assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
             }
         }
     }
