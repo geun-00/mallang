@@ -1,6 +1,7 @@
 package io.mallang.fixtures.api;
 
 import io.mallang.order.adapter.web.model.CreateOrderRequest;
+import io.mallang.order.adapter.web.model.OrderDetailResponse;
 import io.mallang.order.adapter.web.model.SearchMyOrdersResponse;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,10 @@ public final class OrderApiFixture extends ApiFixture {
         addIfPresent(builder, "size", size);
 
         return client().getForEntity(builder.toUriString(), SearchMyOrdersResponse.class);
+    }
+
+    public ResponseEntity<OrderDetailResponse> getOrderDetail(String orderId) {
+        return client().getForEntity(ORDERS_API + "/" + orderId, OrderDetailResponse.class);
     }
 
     private void addIfPresent(UriComponentsBuilder builder, String name, Object value) {
