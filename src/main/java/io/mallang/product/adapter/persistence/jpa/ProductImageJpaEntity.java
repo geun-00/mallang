@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "product_images", indexes = {@Index(name = "ux_product_images_thumbnail", columnList = "product_id, is_thumbnail")})
+@Table(name = "product_images")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 class ProductImageJpaEntity extends BaseEntity {
 
