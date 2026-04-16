@@ -65,4 +65,31 @@
         ORDER BY o.ordered_at DESC, o.order_id DESC
         LIMIT #{limit}
     </select>
+
+    <select id="selectOrderDetailRows" resultType="io.mallang.order.adapter.persistence.mybatis.model.OrderDetailRow">
+        SELECT
+            o.order_id AS orderId,
+            o.member_id AS memberId,
+            o.status,
+            o.ordered_at AS orderedAt,
+            o.name AS receiverName,
+            o.phone_number AS receiverPhoneNumber,
+            o.zip_code AS zipCode,
+            o.main_address AS mainAddress,
+            o.detail_address AS detailAddress,
+            oi.order_item_id AS orderItemId,
+            p.product_id AS productId,
+            p.name AS productName,
+            pi.image_url AS productThumbnailImageUrl,
+            oi.price,
+            oi.quantity,
+            oi.price * oi.quantity AS itemTotalPrice
+        FROM orders o
+        JOIN order_items oi ON oi.order_id = o.order_id
+        JOIN products p ON p.product_id = oi.product_id
+        LEFT JOIN product_images pi ON pi.product_id = p.product_id
+                                  AND pi.is_thumbnail = true
+        WHERE o.order_id = #{orderIdValue}
+        ORDER BY oi.order_item_id
+    </select>
 </mapper>
