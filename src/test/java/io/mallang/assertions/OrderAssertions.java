@@ -2,6 +2,7 @@ package io.mallang.assertions;
 
 import io.mallang.common.application.query.SliceResult;
 import io.mallang.common.domain.vo.Money;
+import io.mallang.order.adapter.web.model.OrderDetailResponse;
 import io.mallang.order.adapter.web.model.SearchMyOrdersResponse;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.application.provided.query.model.OrderDetailView;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.mallang.order.adapter.web.model.SearchMyOrdersResponse.OrderSummary;
+import static io.mallang.order.adapter.web.model.OrderDetailResponse.OrderItemResponse;
 import static io.mallang.order.application.provided.query.model.OrderDetailView.OrderItemView;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -170,6 +172,35 @@ public class OrderAssertions {
 
             assertThat(response.hasNext()).isEqualTo(result.hasNext());
             assertThat(response.nextCursor()).isEqualTo(result.nextCursor());
+        };
+    }
+
+    public static ThrowingConsumer<OrderDetailResponse> isMappedFrom(OrderDetailView view) {
+        return response -> {
+            assertThat(response.orderId()).isEqualTo(view.orderId());
+            assertThat(response.memberId()).isEqualTo(view.memberId());
+            assertThat(response.status()).isEqualTo(view.status());
+            assertThat(response.orderedAt()).isEqualTo(view.orderedAt());
+            assertThat(response.totalPrice()).isEqualTo(view.totalPrice());
+            assertThat(response.receiverName()).isEqualTo(view.receiverName());
+            assertThat(response.receiverPhoneNumber()).isEqualTo(view.receiverPhoneNumber());
+            assertThat(response.zipCode()).isEqualTo(view.zipCode());
+            assertThat(response.mainAddress()).isEqualTo(view.mainAddress());
+            assertThat(response.detailAddress()).isEqualTo(view.detailAddress());
+            assertThat(response.items()).hasSize(view.items().size());
+
+            for (int i = 0; i < view.items().size(); i++) {
+                OrderItemView item = view.items().get(i);
+                OrderItemResponse itemResponse = response.items().get(i);
+
+                assertThat(itemResponse.orderItemId()).isEqualTo(item.orderItemId());
+                assertThat(itemResponse.productId()).isEqualTo(item.productId());
+                assertThat(itemResponse.productName()).isEqualTo(item.productName());
+                assertThat(itemResponse.productThumbnailImageUrl()).isEqualTo(item.productThumbnailImageUrl());
+                assertThat(itemResponse.price()).isEqualTo(item.price());
+                assertThat(itemResponse.quantity()).isEqualTo(item.quantity());
+                assertThat(itemResponse.totalPrice()).isEqualTo(item.totalPrice());
+            }
         };
     }
 }
