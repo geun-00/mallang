@@ -12,7 +12,6 @@ public record RestoreProductCommand(
         ProductName name,
         ProductDescription description,
         Money price,
-        StockQuantity stockQuantity,
         ProductStatus status,
         ProductCategory category,
         ProductImage thumbnailImage,

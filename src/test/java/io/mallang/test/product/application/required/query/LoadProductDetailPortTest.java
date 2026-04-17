@@ -8,6 +8,8 @@ import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductDetailPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import io.mallang.stock.application.required.command.SaveStockPort;
+import io.mallang.stock.domain.Stock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static io.mallang.assertions.ProductAssertions.isDerivedFrom;
 import static io.mallang.fixtures.MemberFixture.generateMember;
 import static io.mallang.fixtures.ProductFixture.generateProductWithSeller;
+import static io.mallang.fixtures.StockFixture.generateStock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -26,17 +29,20 @@ class LoadProductDetailPortTest {
     void 상품_상세를_조회할_수_있다(
             @Autowired SaveMemberPort saveMemberPort,
             @Autowired SaveProductPort saveProductPort,
+            @Autowired SaveStockPort saveStockPort,
             @Autowired LoadProductDetailPort loadProductDetailPort
     ) {
         Member seller = generateMember();
         saveMemberPort.save(seller);
 
         Product product = generateProductWithSeller(seller.getId());
+        Stock stock = generateStock(product, 10);
         saveProductPort.save(product);
+        saveStockPort.save(stock);
 
         ProductDetailView result = loadProductDetailPort.load(product.getId().value());
 
-        assertThat(result).isNotNull().satisfies(isDerivedFrom(product, seller));
+        assertThat(result).isNotNull().satisfies(isDerivedFrom(product, seller, stock));
     }
 
     @Test

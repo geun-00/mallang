@@ -4,7 +4,6 @@ import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
-import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
@@ -35,10 +34,6 @@ public class ProductFixture {
                 generateProductPriceAmount(),
                 "BOOKS"
         );
-    }
-
-    public static AddStockRequest generateAddStockRequest() {
-        return new AddStockRequest(generateProductStockQuantity());
     }
 
     public static AddProductImagesRequest generateAddProductImagesRequest() {
@@ -109,15 +104,10 @@ public class ProductFixture {
     }
 
     public static CreateProductCommand generateProductCreateCommand() {
-        return generateProductCreateCommand(generateProductStockQuantity());
-    }
-
-    public static CreateProductCommand generateProductCreateCommand(int stockQuantity) {
         return new CreateProductCommand(
                 new ProductName(generateProductName()),
                 new ProductDescription(generateProductDescription()),
                 new Money(generateProductPriceAmount()),
-                new StockQuantity(stockQuantity),
                 ProductCategory.FOOD,
                 List.of()
         );
@@ -128,7 +118,6 @@ public class ProductFixture {
                 new ProductName(generateProductName()),
                 new ProductDescription(generateProductDescription()),
                 new Money(generateProductPriceAmount()),
-                new StockQuantity(generateProductStockQuantity()),
                 ProductCategory.FOOD,
                 images
         );
@@ -152,15 +141,19 @@ public class ProductFixture {
     }
 
     public static Product generateProduct() {
-        return generateProduct(generateProductStockQuantity());
+        return generateProduct(generateSellerId());
     }
 
-    public static Product generateProduct(int stockQuantity) {
-        return generateProduct(generateSellerId(), stockQuantity);
+    public static Product generateProduct(MemberId sellerId) {
+        return Product.create(generateProductCreateCommand(), sellerId, generateIdGenerator());
     }
 
-    public static Product generateProduct(MemberId sellerId, int stockQuantity) {
-        return Product.create(generateProductCreateCommand(stockQuantity), sellerId, generateIdGenerator());
+    public static Product generateProduct(
+            MemberId sellerId,
+            BigDecimal price,
+            ProductCategory category
+    ) {
+        return generateProduct(sellerId, generateProductName(), price, category);
     }
 
     public static Product generateProduct(
@@ -174,7 +167,6 @@ public class ProductFixture {
                         new ProductName(name),
                         new ProductDescription(generateProductDescription()),
                         new Money(price),
-                        new StockQuantity(generateProductStockQuantity()),
                         category,
                         List.of()
                 ),
@@ -210,7 +202,6 @@ public class ProductFixture {
                         new ProductName(name),
                         new ProductDescription(generateProductDescription()),
                         new Money(price),
-                        new StockQuantity(generateProductStockQuantity()),
                         category,
                         generateProductImageCommand(nonThumbnailCount)
                 ),
@@ -240,7 +231,6 @@ public class ProductFixture {
                 new ProductName(generateProductName()),
                 new ProductDescription(generateProductDescription()),
                 new Money(generateProductPriceAmount()),
-                new StockQuantity(generateProductStockQuantity()),
                 ProductCategory.FOOD,
                 generateProductImageCommand(nonThumbnailCount)
         );
@@ -251,7 +241,6 @@ public class ProductFixture {
                 new ProductName(generateProductName()),
                 new ProductDescription(generateProductDescription()),
                 new Money(generateProductPriceAmount()),
-                new StockQuantity(generateProductStockQuantity()),
                 ProductCategory.FOOD,
                 List.of(
                         new CreateProductImageCommand(new ImageUrl(generateProductImageUrl()), true),

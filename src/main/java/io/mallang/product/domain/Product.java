@@ -1,14 +1,15 @@
 package io.mallang.product.domain;
 
-import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.exception.AggregateNotLoadedException;
 import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.ModifyProductCommand;
 import io.mallang.product.domain.command.RestoreProductCommand;
+import io.mallang.product.domain.exception.NotProductSellerException;
 import lombok.Getter;
 
 import java.util.List;
@@ -28,8 +29,6 @@ public class Product {
 
     private Money price;
 
-    private StockQuantity stockQuantity;
-
     private ProductStatus status;
 
     private ProductCategory category;
@@ -42,7 +41,6 @@ public class Product {
             ProductName name,
             ProductDescription description,
             Money price,
-            StockQuantity stockQuantity,
             ProductStatus status,
             ProductCategory category,
             ProductImages productImages,
@@ -53,7 +51,6 @@ public class Product {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.stockQuantity = stockQuantity;
         this.status = status;
         this.category = category;
         this.productImages = productImages;
@@ -67,7 +64,6 @@ public class Product {
                 command.name(),
                 command.description(),
                 command.price(),
-                command.stockQuantity(),
                 command.status(),
                 command.category(),
                 ProductImages.restore(command.thumbnailImage(), command.images()),
@@ -76,34 +72,17 @@ public class Product {
     }
 
     public static Product create(CreateProductCommand command, MemberId sellerId, IdGenerator idGenerator) {
-        StockQuantity stockQuantity = command.stockQuantity();
-
         return new Product(
                 new ProductId(idGenerator.nextId()),
                 sellerId,
                 command.name(),
                 command.description(),
                 command.price(),
-                stockQuantity,
-                ProductStatus.of(stockQuantity),
+                ProductStatus.ON_SALE,
                 command.category(),
                 ProductImages.from(command.images(), idGenerator),
                 true
         );
-    }
-
-    public void addStock(int additionalStock) {
-        validateNotDiscontinued("재고를 추가할 수 없는 상품입니다.");
-
-        this.stockQuantity = this.stockQuantity.add(additionalStock);
-        this.status = ProductStatus.of(stockQuantity);
-    }
-
-    public void deductStock(int deductedStock) {
-        validateNotDiscontinued("재고를 차감할 수 없는 상품입니다.");
-
-        this.stockQuantity = this.stockQuantity.deduct(deductedStock);
-        this.status = ProductStatus.of(stockQuantity);
     }
 
     public void modify(ModifyProductCommand command) {
@@ -115,10 +94,8 @@ public class Product {
         this.category = command.category();
     }
 
-    public void validateEnoughStock(int quantity) {
-        validateNotDiscontinued("재고를 확인할 수 없는 상품입니다.");
-
-        this.stockQuantity.checkAvailable(quantity);
+    public void validateOrderable() {
+        validateNotDiscontinued("주문할 수 없는 상품입니다.");
     }
 
     public void discontinue() {
@@ -127,8 +104,12 @@ public class Product {
         this.status = ProductStatus.DISCONTINUED;
     }
 
-    public boolean isSeller(MemberId memberId) {
-        return this.sellerId.equals(memberId);
+    public void validateSeller(MemberId requesterId) {
+        if (this.sellerId.equals(requesterId)) {
+            return;
+        }
+
+        throw new NotProductSellerException(id, requesterId, sellerId);
     }
 
     public ProductImage getThumbnailImage() {

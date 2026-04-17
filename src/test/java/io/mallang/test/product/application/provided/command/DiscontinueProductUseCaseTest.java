@@ -1,7 +1,6 @@
 package io.mallang.test.product.application.provided.command;
 
 import io.mallang.annotations.UseCaseTest;
-import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.DiscontinueProductUseCase;
 import io.mallang.product.application.provided.command.model.DiscontinueProductCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
@@ -30,21 +29,20 @@ class DiscontinueProductUseCaseTest {
             @Autowired LoadProductPort loadProductPort
     ) {
         // given
-        MemberId sellerId = generateSellerId();
-        Product before = generateProduct(sellerId, 5);
-        saveProductPort.save(before);
+        Product product = generateProduct();
+        saveProductPort.save(product);
 
         DiscontinueProductCommand command = new DiscontinueProductCommand(
-                sellerId.value(),
-                before.getId().value()
+                product.getSellerId().value(),
+                product.getId().value()
         );
 
         // when
         discontinueProductUseCase.discontinue(command);
 
         // then
-        Product after = loadProductPort.getById(before.getId());
-        assertThat(after.getStatus()).isEqualTo(ProductStatus.DISCONTINUED);
+        Product loaded = loadProductPort.getById(product.getId());
+        assertThat(loaded.getStatus()).isEqualTo(ProductStatus.DISCONTINUED);
     }
 
     @Test
@@ -53,7 +51,7 @@ class DiscontinueProductUseCaseTest {
             @Autowired SaveProductPort saveProductPort
     ) {
         // given
-        Product product = generateProduct(5);
+        Product product = generateProduct();
         saveProductPort.save(product);
 
         DiscontinueProductCommand command = new DiscontinueProductCommand(

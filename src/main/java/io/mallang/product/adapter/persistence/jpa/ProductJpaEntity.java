@@ -39,9 +39,6 @@ public class ProductJpaEntity extends BaseEntity {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    private Integer stockQuantity;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductStatus status;
@@ -59,7 +56,6 @@ public class ProductJpaEntity extends BaseEntity {
             String name,
             String description,
             BigDecimal price,
-            int stockQuantity,
             ProductStatus status,
             ProductCategory category
     ) {
@@ -68,7 +64,6 @@ public class ProductJpaEntity extends BaseEntity {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.stockQuantity = stockQuantity;
         this.status = status;
         this.category = category;
     }
@@ -80,7 +75,6 @@ public class ProductJpaEntity extends BaseEntity {
                 product.getName().value(),
                 product.getDescription().value(),
                 product.getPrice().value(),
-                product.getStockQuantity().value(),
                 product.getStatus(),
                 product.getCategory()
         );
@@ -121,7 +115,6 @@ public class ProductJpaEntity extends BaseEntity {
                         new ProductName(name),
                         new ProductDescription(description),
                         new Money(price),
-                        new StockQuantity(stockQuantity),
                         status,
                         category,
                         thumbnailImage,
@@ -139,7 +132,6 @@ public class ProductJpaEntity extends BaseEntity {
                         new ProductName(name),
                         new ProductDescription(description),
                         new Money(price),
-                        new StockQuantity(stockQuantity),
                         status,
                         category,
                         null,
@@ -154,7 +146,6 @@ public class ProductJpaEntity extends BaseEntity {
         this.name = product.getName().value();
         this.description = product.getDescription().value();
         this.price = product.getPrice().value();
-        this.stockQuantity = product.getStockQuantity().value();
         this.status = product.getStatus();
         this.category = product.getCategory();
 

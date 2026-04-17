@@ -13,6 +13,7 @@ import io.mallang.product.domain.ProductDescription;
 import io.mallang.product.domain.ProductName;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.ModifyProductCommand;
+import io.mallang.stock.domain.Stock;
 import org.assertj.core.api.ThrowingConsumer;
 
 import java.math.BigDecimal;
@@ -28,7 +29,6 @@ public class ProductAssertions {
             assertThat(product.getName()).isEqualTo(command.name());
             assertThat(product.getDescription()).isEqualTo(command.description());
             assertThat(product.getPrice().value()).matches(priceEquals(command.price().value()));
-            assertThat(product.getStockQuantity()).isEqualTo(command.stockQuantity());
             assertThat(product.getCategory()).isEqualTo(command.category());
         };
     }
@@ -58,7 +58,6 @@ public class ProductAssertions {
             assertThat(actual.getName()).isEqualTo(expected.getName());
             assertThat(actual.getDescription()).isEqualTo(expected.getDescription());
             assertThat(actual.getPrice().value()).matches(priceEquals(expected.getPrice().value()));
-            assertThat(actual.getStockQuantity()).isEqualTo(expected.getStockQuantity());
             assertThat(actual.getStatus()).isEqualTo(expected.getStatus());
             assertThat(actual.getCategory()).isEqualTo(expected.getCategory());
         };
@@ -72,7 +71,7 @@ public class ProductAssertions {
         };
     }
 
-    public static ThrowingConsumer<ProductDetailView> isDerivedFrom(Product product, Member seller) {
+    public static ThrowingConsumer<ProductDetailView> isDerivedFrom(Product product, Member seller, Stock stock) {
         return view -> {
             assertThat(view.productId()).isEqualTo(product.getId().value());
             assertThat(view.sellerIdValue()).isEqualTo(seller.getId().value());
@@ -80,7 +79,7 @@ public class ProductAssertions {
             assertThat(view.name()).isEqualTo(product.getName().value());
             assertThat(view.description()).isEqualTo(product.getDescription().value());
             assertThat(view.price()).matches(priceEquals(product.getPrice().value()));
-            assertThat(view.stockQuantity()).isEqualTo(product.getStockQuantity().value());
+            assertThat(view.stockQuantity()).isEqualTo(stock.getQuantity().value());
             assertThat(view.status()).isEqualTo(product.getStatus().name());
             assertThat(view.category()).isEqualTo(product.getCategory().name());
             assertThat(view.thumbnailImageUrl()).isEqualTo(product.getThumbnailImage().imageUrl().value());

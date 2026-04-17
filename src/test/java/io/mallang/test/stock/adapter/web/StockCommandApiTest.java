@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
-import static io.mallang.fixtures.ProductFixture.generateAddStockRequest;
 import static io.mallang.fixtures.api.ApiFixture.STOCKS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -36,7 +35,7 @@ class StockCommandApiTest {
             void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
                 String productId = fixture.product().registerProductThenGetId();
-                var request = generateAddStockRequest();
+                var request = new AddStockRequest(5);
 
                 ResponseEntity<Void> response = fixture.stock().addStock(productId, request);
 
@@ -51,7 +50,7 @@ class StockCommandApiTest {
             void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
                 String productId = fixture.product().registerProductThenGetId();
-                var request = generateAddStockRequest();
+                var request = new AddStockRequest(5);
 
                 ResponseEntity<Void> response = fixture.stock()
                                                        .unauthenticatedClient()
@@ -71,7 +70,7 @@ class StockCommandApiTest {
             @Test
             void 존재하지_않는_상품이면_404_Not_Found_상태코드를_반환한다(@Autowired FixtureSession fixture) {
                 fixture.auth().createMemberThenLogin();
-                var request = generateAddStockRequest();
+                var request = new AddStockRequest(5);
 
                 ResponseEntity<Void> response = fixture.stock().addStock("non-existent-product-id", request);
 
@@ -93,7 +92,7 @@ class StockCommandApiTest {
                 String productId = fixture.product().registerProductThenGetId();
 
                 anotherFixture.auth().createMemberThenLogin();
-                var request = generateAddStockRequest();
+                var request = new AddStockRequest(5);
 
                 ResponseEntity<Void> response = anotherFixture.stock().addStock(productId, request);
 

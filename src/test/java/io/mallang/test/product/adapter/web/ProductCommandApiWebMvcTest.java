@@ -3,9 +3,7 @@ package io.mallang.test.product.adapter.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.mallang.annotations.WebMvcAdapterTest;
 import io.mallang.product.adapter.web.ProductCommandApi;
-import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
-import io.mallang.product.adapter.web.model.DeductStockRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.*;
 import io.mallang.test.support.security.WithMockMember;
@@ -29,12 +27,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @WebMvcAdapterTest(ProductCommandApi.class)
 class ProductCommandApiWebMvcTest extends WebMvcRequestTestSupport {
-
-    @MockitoBean
-    AddStockUseCase addStockUseCase;
-
-    @MockitoBean
-    DeductStockUseCase deductStockUseCase;
 
     @MockitoBean
     UpdateProductUseCase updateProductUseCase;
@@ -242,50 +234,4 @@ class ProductCommandApiWebMvcTest extends WebMvcRequestTestSupport {
         }
     }
 
-    @Nested
-    class 재고_추가_요청_검증 {
-
-        @WithMockMember
-        @Test
-        void quantity_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다() throws JsonProcessingException {
-            // given
-            var request = new AddStockRequest(null);
-
-            // when
-            MvcTestResult result = patchJson(PRODUCTS_API + "/" + "product-id" + "/stock/add", request);
-
-            // then
-            assertThat(result).hasStatus(BAD_REQUEST);
-        }
-
-        @WithMockMember
-        @Test
-        void quantity가_양수가_아니면_400_Bad_Request_상태코드를_반환한다() throws JsonProcessingException {
-            // given
-            var request = new AddStockRequest(-1);
-
-            // when
-            MvcTestResult result = patchJson(PRODUCTS_API + "/" + "product-id" + "/stock/add", request);
-
-            // then
-            assertThat(result).hasStatus(BAD_REQUEST);
-        }
-    }
-
-    @Nested
-    class 재고_차감_요청_검증 {
-
-        @WithMockMember
-        @Test
-        void quantity_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다() throws JsonProcessingException {
-            // given
-            var request = new DeductStockRequest(null);
-
-            // when
-            MvcTestResult result = patchJson(PRODUCTS_API + "/" + "product-id" + "/stock/deduct", request);
-
-            // then
-            assertThat(result).hasStatus(BAD_REQUEST);
-        }
-    }
 }
