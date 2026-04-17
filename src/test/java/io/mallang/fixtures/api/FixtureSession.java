@@ -5,6 +5,7 @@ public final class FixtureSession {
     private final AuthFixture authFixture;
     private final MemberApiFixture memberFixture;
     private final ProductApiFixture productFixture;
+    private final StockApiFixture stockFixture;
     private final CartApiFixture cartFixture;
     private final OrderApiFixture orderFixture;
 
@@ -12,6 +13,7 @@ public final class FixtureSession {
         this.memberFixture = new MemberApiFixture(context);
         this.authFixture = new AuthFixture(context, memberFixture);
         this.productFixture = new ProductApiFixture(context);
+        this.stockFixture = new StockApiFixture(context);
         this.cartFixture = new CartApiFixture(context);
         this.orderFixture = new OrderApiFixture(context);
     }
@@ -26,6 +28,10 @@ public final class FixtureSession {
 
     public ProductApiFixture product() {
         return productFixture;
+    }
+
+    public StockApiFixture stock() {
+        return stockFixture;
     }
 
     public CartApiFixture cart() {

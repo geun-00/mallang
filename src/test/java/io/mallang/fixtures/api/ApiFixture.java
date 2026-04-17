@@ -14,6 +14,7 @@ public abstract class ApiFixture {
     public static final String CART_ITEMS_API = API_PREFIX + "/my/cart/items";
     public static final String ORDERS_API = API_PREFIX + "/my/orders";
     public static final String PRODUCTS_API = API_PREFIX + "/products";
+    public static final String STOCKS_API = API_PREFIX + "/stocks";
 
     private final FixtureContext context;
 
