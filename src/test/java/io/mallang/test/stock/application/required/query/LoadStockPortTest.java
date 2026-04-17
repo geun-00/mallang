@@ -79,6 +79,26 @@ class LoadStockPortTest {
     }
 
     @Test
+    void getAllByProductIds는_중복된_상품_ID가_포함되어도_Stock을_조회한다(
+            @Autowired SaveStockPort saveStockPort,
+            @Autowired LoadStockPort loadStockPort
+    ) {
+        // given
+        Stock stock = generateStock(5);
+        saveStockPort.save(stock);
+
+        List<ProductId> productIds = List.of(stock.getProductId(), stock.getProductId());
+
+        // when
+        List<Stock> loadedStocks = loadStockPort.getAllByProductIds(productIds);
+
+        // then
+        assertThat(loadedStocks)
+                .singleElement()
+                .satisfies(isSameAs(stock));
+    }
+
+    @Test
     void getAllByProductIds는_존재하지_않는_상품_ID가_포함되면_StockNotFoundException이_발생한다(
             @Autowired SaveStockPort saveStockPort,
             @Autowired LoadStockPort loadStockPort

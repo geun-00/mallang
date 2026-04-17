@@ -60,13 +60,14 @@ public class StockPersistenceAdapter implements SaveStockPort, LoadStockPort {
     }
 
     private void validateAllStocksFound(List<ProductId> targetProductIds, Set<String> foundProductIds) {
-        if (targetProductIds.size() == foundProductIds.size()) {
-            return;
-        }
-
         List<ProductId> missingProductIds = targetProductIds.stream()
+                                                            .distinct()
                                                             .filter(productId -> !foundProductIds.contains(productId.value()))
                                                             .toList();
+
+        if (missingProductIds.isEmpty()) {
+            return;
+        }
 
         throw new StockNotFoundException(missingProductIds);
     }
