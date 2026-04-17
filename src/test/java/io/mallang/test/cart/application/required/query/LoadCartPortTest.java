@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.mallang.assertions.CartAssertions.isSameAs;
 import static io.mallang.fixtures.CartFixture.generateCartWithItem;
+import static io.mallang.fixtures.MemberFixture.generateMemberId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -40,7 +41,7 @@ class LoadCartPortTest {
             @Autowired LoadCartPort loadCartPort
     ) {
         // given
-        MemberId memberId = new MemberId("unknown-member-id");
+        MemberId memberId = generateMemberId();
 
         // when & then
         assertThatThrownBy(() -> loadCartPort.getByMemberId(memberId))

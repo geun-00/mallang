@@ -2,6 +2,7 @@ package io.mallang.test.member.application.service.command;
 
 import io.mallang.common.application.event.EventPublisher;
 import io.mallang.common.domain.exception.DuplicateException;
+import io.mallang.fixtures.CommonFixture;
 import io.mallang.member.application.event.MemberRegisteredEvent;
 import io.mallang.member.application.provided.command.model.RegisterMemberCommand;
 import io.mallang.member.application.provided.command.model.RegisterMemberResult;
@@ -34,8 +35,8 @@ class MemberCommandServiceTest {
     ) {
         // given
         MemberCommandService memberCommandService = new MemberCommandService(
-                generateIdGenerator(),
-                generateClockHolder(),
+                CommonFixture.generateIdGenerator(),
+                CommonFixture.generateClockHolder(),
                 eventPublisher,
                 saveMemberPort,
                 loadMemberPort,
@@ -62,8 +63,8 @@ class MemberCommandServiceTest {
     ) {
         // given
         MemberCommandService memberCommandService = new MemberCommandService(
-                generateIdGenerator(),
-                generateClockHolder(),
+                CommonFixture.generateIdGenerator(),
+                CommonFixture.generateClockHolder(),
                 eventPublisher,
                 saveMemberPort,
                 loadMemberPort,

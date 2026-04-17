@@ -1,6 +1,5 @@
 package io.mallang.fixtures;
 
-import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.adapter.web.model.AddProductImagesRequest;
@@ -9,7 +8,12 @@ import io.mallang.product.adapter.web.model.CreateProductRequest.ProductImageReq
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.model.RegisterProductCommand;
 import io.mallang.product.application.provided.command.model.RegisterProductImageCommand;
-import io.mallang.product.domain.*;
+import io.mallang.product.domain.ImageUrl;
+import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductCategory;
+import io.mallang.product.domain.ProductDescription;
+import io.mallang.product.domain.ProductId;
+import io.mallang.product.domain.ProductName;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
@@ -20,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
 
 public class ProductFixture {
 
@@ -99,10 +105,6 @@ public class ProductFixture {
     // 도메인 커맨드 (Domain Commands)
     // =====================================================================
 
-    public static IdGenerator generateIdGenerator() {
-        return () -> UUID.randomUUID().toString();
-    }
-
     public static CreateProductCommand generateProductCreateCommand() {
         return new CreateProductCommand(
                 new ProductName(generateProductName()),
@@ -138,6 +140,10 @@ public class ProductFixture {
 
     public static MemberId generateSellerId() {
         return new MemberId(UUID.randomUUID().toString());
+    }
+
+    public static ProductId generateProductId() {
+        return new ProductId("product-" + UUID.randomUUID());
     }
 
     public static Product generateProduct() {

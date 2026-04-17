@@ -1,27 +1,19 @@
 package io.mallang.fixtures;
 
 import io.mallang.cart.application.provided.command.model.AddItemToCartCommand;
-import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
-import io.mallang.cart.domain.CartItemId;
-import io.mallang.common.domain.port.IdGenerator;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
 
 import java.util.UUID;
 
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
+
 public class CartFixture {
 
-    public static IdGenerator generateIdGenerator() {
-        return () -> UUID.randomUUID().toString();
-    }
-
-    public static MemberId generateMemberId() {
-        return new MemberId(UUID.randomUUID().toString());
-    }
-
     public static Cart generateCart() {
-        return Cart.create(generateMemberId());
+        return Cart.create(new MemberId(UUID.randomUUID().toString()));
     }
 
     public static AddCartItemCommand generateAddCartItemCommand() {
@@ -32,7 +24,11 @@ public class CartFixture {
         return new AddCartItemCommand(new ProductId(UUID.randomUUID().toString()), quantity);
     }
 
-    public static AddItemToCartCommand generateAddItemToCartCommand(String memberIdValue, String productIdValue, int quantity) {
+    public static AddItemToCartCommand generateAddItemToCartCommand(
+            String memberIdValue,
+            String productIdValue,
+            int quantity
+    ) {
         return new AddItemToCartCommand(memberIdValue, productIdValue, quantity);
     }
 
@@ -42,9 +38,5 @@ public class CartFixture {
             cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
         }
         return cart;
-    }
-
-    public static CartItemId generateNotExistCartItemId() {
-        return new CartItemId(UUID.randomUUID().toString());
     }
 }

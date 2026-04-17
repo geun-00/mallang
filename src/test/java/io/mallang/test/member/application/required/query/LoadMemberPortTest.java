@@ -2,6 +2,7 @@ package io.mallang.test.member.application.required.query;
 
 import io.mallang.annotations.PortTest;
 import io.mallang.common.domain.exception.AggregateNotLoadedException;
+import io.mallang.fixtures.CommonFixture;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Email;
@@ -50,7 +51,7 @@ class LoadMemberPortTest {
             Member loaded = loadMemberPort.getById(member.getId());
 
             // when & then
-            assertThatThrownBy(() -> loaded.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator()))
+            assertThatThrownBy(() -> loaded.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator()))
                     .isInstanceOf(AggregateNotLoadedException.class);
         }
 

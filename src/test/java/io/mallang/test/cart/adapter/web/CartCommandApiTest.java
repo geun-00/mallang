@@ -25,9 +25,9 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
+import java.util.UUID;
 
-import static io.mallang.fixtures.CartFixture.generateIdGenerator;
-import static io.mallang.fixtures.CartFixture.generateNotExistCartItemId;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.StockFixture.generateStock;
@@ -98,7 +98,8 @@ class CartCommandApiTest {
                                                  .substring((CART_ITEMS_API + "/").length());
                 Cart loaded = loadCartPort.getByMemberId(member.getId());
 
-                assertThat(loaded.getItems()).extracting(item -> item.getId().value()).contains(cartItemIdValue);
+                assertThat(loaded.getItems()).extracting(item -> item.getId().value())
+                                             .contains(cartItemIdValue);
             }
         }
 
@@ -209,7 +210,7 @@ class CartCommandApiTest {
 
                 ResponseEntity<Void> response = fixture.cart()
                                                        .changeCartItemQuantity(
-                                                               generateNotExistCartItemId().value(),
+                                                               new CartItemId(UUID.randomUUID().toString()).value(),
                                                                request
                                                        );
 
@@ -315,7 +316,7 @@ class CartCommandApiTest {
             ) {
                 fixture.auth().createMemberThenLogin();
 
-                ResponseEntity<Void> response = fixture.cart().removeCartItem(generateNotExistCartItemId().value());
+                ResponseEntity<Void> response = fixture.cart().removeCartItem(new CartItemId(UUID.randomUUID().toString()).value());
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }

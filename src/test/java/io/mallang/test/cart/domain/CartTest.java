@@ -1,22 +1,29 @@
 package io.mallang.test.cart.domain;
 
 import io.mallang.annotations.DomainTest;
-import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItem;
 import io.mallang.cart.domain.CartItemId;
+import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.member.domain.MemberId;
 import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.UUID;
 
-import static io.mallang.fixtures.CartFixture.*;
+import static io.mallang.fixtures.CartFixture.generateAddCartItemCommand;
+import static io.mallang.fixtures.CartFixture.generateCart;
+import static io.mallang.fixtures.CartFixture.generateCartWithItem;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
+import static io.mallang.fixtures.MemberFixture.generateMemberId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -80,19 +87,15 @@ class CartTest {
             assertThat(cart.getItems()).hasSize(2);
         }
 
-        @Test
-        void 수량이_0이면_예외가_발생한다() {
+        @ParameterizedTest
+        @ValueSource(ints = {0, -1})
+        void 수량이_0_이하이면_예외가_발생한다(int invalidQuantity) {
             Cart cart = generateCart();
 
-            assertThatThrownBy(() -> cart.addItem(generateAddCartItemCommand(0), generateIdGenerator()))
-                    .isInstanceOf(InvalidValueException.class);
-        }
+            AddCartItemCommand command = generateAddCartItemCommand(invalidQuantity);
+            IdGenerator idGenerator = generateIdGenerator();
 
-        @Test
-        void 수량이_음수이면_예외가_발생한다() {
-            Cart cart = generateCart();
-
-            assertThatThrownBy(() -> cart.addItem(generateAddCartItemCommand(-1), generateIdGenerator()))
+            assertThatThrownBy(() -> cart.addItem(command, idGenerator))
                     .isInstanceOf(InvalidValueException.class);
         }
     }
@@ -116,25 +119,19 @@ class CartTest {
         void 존재하지_않는_CartItemId로_수량을_변경하면_예외가_발생한다() {
             Cart cart = generateCart();
 
-            assertThatThrownBy(() -> cart.changeQuantity(generateNotExistCartItemId(), 1))
+            CartItemId notExistCartItemId = new CartItemId(UUID.randomUUID().toString());
+
+            assertThatThrownBy(() -> cart.changeQuantity(notExistCartItemId, 1))
                     .isInstanceOf(CartItemNotFoundException.class);
         }
 
-        @Test
-        void 변경_수량이_0이면_예외가_발생한다() {
+        @ParameterizedTest
+        @ValueSource(ints = {0, -1})
+        void 변경_수량이_0_이하이면_예외가_발생한다(int invalidQuantity) {
             Cart cart = generateCart();
             CartItemId itemId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
 
-            assertThatThrownBy(() -> cart.changeQuantity(itemId, 0))
-                    .isInstanceOf(InvalidValueException.class);
-        }
-
-        @Test
-        void 변경_수량이_음수이면_예외가_발생한다() {
-            Cart cart = generateCart();
-            CartItemId itemId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
-
-            assertThatThrownBy(() -> cart.changeQuantity(itemId, -1))
+            assertThatThrownBy(() -> cart.changeQuantity(itemId, invalidQuantity))
                     .isInstanceOf(InvalidValueException.class);
         }
     }
@@ -160,7 +157,9 @@ class CartTest {
         void 존재하지_않는_CartItemId로_제거하면_예외가_발생한다() {
             Cart cart = generateCart();
 
-            assertThatThrownBy(() -> cart.removeItem(generateNotExistCartItemId()))
+            CartItemId notExistCartItemId = new CartItemId(UUID.randomUUID().toString());
+
+            assertThatThrownBy(() -> cart.removeItem(notExistCartItemId))
                     .isInstanceOf(CartItemNotFoundException.class);
         }
 
@@ -186,7 +185,10 @@ class CartTest {
             CartItemId secondId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
             CartItemId thirdId = cart.addItem(generateAddCartItemCommand(), generateIdGenerator());
 
-            assertThatThrownBy(() -> cart.removeItems(List.of(firstId, generateNotExistCartItemId())))
+            CartItemId notExistCartItemId = new CartItemId(UUID.randomUUID().toString());
+            List<CartItemId> itemIds = List.of(firstId, notExistCartItemId);
+
+            assertThatThrownBy(() -> cart.removeItems(itemIds))
                     .isInstanceOf(CartItemNotFoundException.class);
 
             assertThat(cart.getItems())
@@ -233,14 +235,15 @@ class CartTest {
         @Test
         void 담긴_상품_ID_목록을_반환한다() {
             Cart cart = generateCart();
-            String productId1 = UUID.randomUUID().toString();
-            String productId2 = UUID.randomUUID().toString();
-            cart.addItem(new AddCartItemCommand(new ProductId(productId1), 1), generateIdGenerator());
-            cart.addItem(new AddCartItemCommand(new ProductId(productId2), 1), generateIdGenerator());
+
+            ProductId productId1 = new ProductId(UUID.randomUUID().toString());
+            ProductId productId2 = new ProductId(UUID.randomUUID().toString());
+            cart.addItem(new AddCartItemCommand(productId1, 1), generateIdGenerator());
+            cart.addItem(new AddCartItemCommand(productId2, 1), generateIdGenerator());
 
             List<ProductId> productIds = cart.getProductIds();
 
-            assertThat(productIds).containsExactlyInAnyOrder(new ProductId(productId1), new ProductId(productId2));
+            assertThat(productIds).containsExactlyInAnyOrder(productId1, productId2);
         }
 
         @Test

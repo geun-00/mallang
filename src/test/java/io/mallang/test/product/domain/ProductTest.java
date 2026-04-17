@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.mallang.assertions.ProductAssertions.isDerivedFrom;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
 import static io.mallang.fixtures.ProductFixture.generateAddProductImageCommand;
 import static io.mallang.fixtures.ProductFixture.generateDiscontinuedProduct;
-import static io.mallang.fixtures.ProductFixture.generateIdGenerator;
 import static io.mallang.fixtures.ProductFixture.generateModifyProductCommand;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.ProductFixture.generateProductCreateCommand;

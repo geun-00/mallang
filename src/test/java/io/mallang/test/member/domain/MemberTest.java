@@ -3,6 +3,7 @@ package io.mallang.test.member.domain;
 import io.mallang.annotations.DomainTest;
 import io.mallang.common.domain.port.ClockHolder;
 import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.fixtures.CommonFixture;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberPasswordEncoder;
 import io.mallang.member.domain.MemberStatus;
@@ -41,7 +42,7 @@ class MemberTest {
         void MemberRestoreCommand의_정보로_복원한다() {
             // given
             Member original = generateMemberWithShippingAddress(3);
-            original.withdraw(generateClockHolder());
+            original.withdraw(CommonFixture.generateClockHolder());
 
             RestoreMemberCommand restoreCommand = new RestoreMemberCommand(
                     original.getId(),
@@ -72,7 +73,7 @@ class MemberTest {
             CreateMemberCommand createCommand = generateCreateCommand();
 
             // when
-            Member member = create(createCommand, generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
+            Member member = create(createCommand, generatePasswordEncoder(), CommonFixture.generateIdGenerator(), CommonFixture.generateClockHolder());
 
             // then
             assertThat(member.isActive()).isTrue();
@@ -85,7 +86,7 @@ class MemberTest {
             MemberPasswordEncoder passwordEncoder = generatePasswordEncoder();
 
             // when
-            Member member = create(command, passwordEncoder, generateIdGenerator(), generateClockHolder());
+            Member member = create(command, passwordEncoder, CommonFixture.generateIdGenerator(), CommonFixture.generateClockHolder());
 
             // then
             assertThat(member).satisfies(isDerivedFrom(command, passwordEncoder));
@@ -94,10 +95,10 @@ class MemberTest {
         @Test
         void 회원을_생성하면_가입_시간이_기록된다() {
             // given
-            ClockHolder clockHolder = generateClockHolder();
+            ClockHolder clockHolder = CommonFixture.generateClockHolder();
 
             // when
-            Member member = create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), clockHolder);
+            Member member = create(generateCreateCommand(), generatePasswordEncoder(), CommonFixture.generateIdGenerator(), clockHolder);
 
             // then
             assertThat(member.getJoinedAt()).isEqualTo(clockHolder.now());
@@ -128,14 +129,14 @@ class MemberTest {
         @NullSource
         @ValueSource(strings = {"   "})
         void 식별자에_null이나_공백이_할당될_수_없다(String invalidId) {
-            assertThatThrownBy(() -> create(generateCreateCommand(), generatePasswordEncoder(), () -> invalidId, generateClockHolder()))
+            assertThatThrownBy(() -> create(generateCreateCommand(), generatePasswordEncoder(), () -> invalidId, CommonFixture.generateClockHolder()))
                     .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
         void 회원이_생성되면_식별자가_할당된다() {
             // given
-            Member member = Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
+            Member member = Member.create(generateCreateCommand(), generatePasswordEncoder(), CommonFixture.generateIdGenerator(), CommonFixture.generateClockHolder());
 
             // then
             assertThat(member.getId()).isNotNull();
@@ -149,7 +150,7 @@ class MemberTest {
             String rawPassword = createCommand.password();
 
             // when
-            Member member = Member.create(createCommand, generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
+            Member member = Member.create(createCommand, generatePasswordEncoder(), CommonFixture.generateIdGenerator(), CommonFixture.generateClockHolder());
 
             // then
             assertThat(member.getPassword().value()).isNotEqualTo(rawPassword);
@@ -172,7 +173,7 @@ class MemberTest {
         void 탈퇴_시_탈퇴_시간이_기록된다() {
             // given
             Member member = generateMember();
-            ClockHolder clockHolder = generateClockHolder();
+            ClockHolder clockHolder = CommonFixture.generateClockHolder();
             assertThat(member.getWithdrawnAt()).isNull();
 
             // when
@@ -188,7 +189,7 @@ class MemberTest {
             Member member = generateWithdrawnMember();
 
             // when & then
-            assertThatThrownBy(() -> member.withdraw(generateClockHolder()))
+            assertThatThrownBy(() -> member.withdraw(CommonFixture.generateClockHolder()))
                     .isInstanceOf(InvalidMemberStateException.class);
         }
 
@@ -220,8 +221,8 @@ class MemberTest {
             Member member = generateMember();
 
             // when
-            ShippingAddress shippingAddress1 = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
-            ShippingAddress shippingAddress2 = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress shippingAddress1 = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
+            ShippingAddress shippingAddress2 = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // then
             assertThat(member.getShippingAddresses()).hasSize(2);
@@ -234,7 +235,7 @@ class MemberTest {
             Member member = generateMember();
 
             // when
-            ShippingAddress shippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress shippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // then
             assertThat(shippingAddress.getId()).isNotNull();
@@ -249,7 +250,7 @@ class MemberTest {
             Member member = generateMember();
 
             // when
-            ShippingAddress shippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress shippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // then
             assertThat(shippingAddress.isDefault()).isTrue();
@@ -261,7 +262,7 @@ class MemberTest {
             Member member = generateMemberWithShippingAddress();
 
             // when
-            ShippingAddress shippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress shippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // then
             assertThat(shippingAddress.isDefault()).isFalse();
@@ -273,7 +274,7 @@ class MemberTest {
             Member member = generateMemberWithShippingAddress(5);
 
             // when & then
-            assertThatThrownBy(() -> member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator()))
+            assertThatThrownBy(() -> member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator()))
                     .isInstanceOf(ShippingAddressLimitException.class);
         }
 
@@ -283,7 +284,7 @@ class MemberTest {
             Member member = generateWithdrawnMember();
 
             // when & then
-            assertThatThrownBy(() -> member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator()))
+            assertThatThrownBy(() -> member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator()))
                     .isInstanceOf(InvalidMemberStateException.class);
         }
 
@@ -291,8 +292,8 @@ class MemberTest {
         void 기본_배송지를_변경하면_기존_기본_배송지는_해제된다() {
             // given
             Member member = generateMember();
-            ShippingAddress firstAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
-            ShippingAddress secondAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress firstAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
+            ShippingAddress secondAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // when
             member.setDefaultShippingAddress(secondAddress.getId());
@@ -306,8 +307,8 @@ class MemberTest {
         void 이미_기본_배송지인_배송지를_다시_기본으로_설정해도_정상_처리된다() {
             // given
             Member member = generateMember();
-            ShippingAddress firstAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
-            ShippingAddress secondAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress firstAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
+            ShippingAddress secondAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // when
             member.setDefaultShippingAddress(firstAddress.getId());
@@ -333,7 +334,7 @@ class MemberTest {
             // given
             Member member = generateMember();
             Member otherMember = generateMember();
-            ShippingAddress otherShippingAddress = otherMember.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress otherShippingAddress = otherMember.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // when & then
             assertThatThrownBy(() -> member.setDefaultShippingAddress(otherShippingAddress.getId()))
@@ -344,7 +345,7 @@ class MemberTest {
         void 배송지를_수정할_수_있다() {
             // given
             Member member = generateMember();
-            ShippingAddress originShippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress originShippingAddress = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
             ModifyShippingAddressCommand modifyCommand = generateModifyShippingAddressCommand();
 
             // when
@@ -361,7 +362,7 @@ class MemberTest {
         void 배송지_수정_시_기본_배송지_여부는_변경되지_않는다() {
             // given
             Member member = generateMemberWithShippingAddress();
-            ShippingAddress nonDefault = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress nonDefault = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // when
             ShippingAddress modified = member.modifyShippingAddress(nonDefault.getId(), generateModifyShippingAddressCommand());
@@ -386,7 +387,7 @@ class MemberTest {
             // given
             Member member = generateMemberWithShippingAddress();
             Member otherMember = generateMember();
-            ShippingAddress otherShippingAddress = otherMember.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress otherShippingAddress = otherMember.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // when & then
             assertThatThrownBy(() -> member.modifyShippingAddress(otherShippingAddress.getId(), generateModifyShippingAddressCommand()))
@@ -397,8 +398,8 @@ class MemberTest {
         void 배송지를_삭제할_수_있다() {
             // given
             Member member = generateMember();
-            ShippingAddress shippingAddress1 = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
-            ShippingAddress shippingAddress2 = member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress shippingAddress1 = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
+            ShippingAddress shippingAddress2 = member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // when
             member.removeShippingAddress(shippingAddress1.getId());
@@ -425,7 +426,7 @@ class MemberTest {
             // given
             Member member = generateMemberWithShippingAddress();
             Member otherMember = generateMember();
-            ShippingAddress otherShippingAddress = otherMember.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            ShippingAddress otherShippingAddress = otherMember.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
 
             // when & then
             assertThatThrownBy(() -> member.removeShippingAddress(otherShippingAddress.getId()))

@@ -6,14 +6,14 @@ import io.mallang.cart.application.required.query.LoadCartPort;
 import io.mallang.cart.domain.Cart;
 import io.mallang.cart.domain.CartItemId;
 import io.mallang.cart.domain.command.AddCartItemCommand;
-import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.mallang.assertions.CartAssertions.isSameAs;
 import static io.mallang.fixtures.CartFixture.generateCartWithItem;
-import static io.mallang.fixtures.CartFixture.generateIdGenerator;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
+import static io.mallang.fixtures.ProductFixture.generateProductId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @PortTest
@@ -33,7 +33,8 @@ class SaveCartPortTest {
 
         // then
         Cart loaded = loadCartPort.getByMemberId(cart.getMemberId());
-        assertThat(loaded).satisfies(isSameAs(cart));
+        assertThat(loaded).isNotNull()
+                          .satisfies(isSameAs(cart));
     }
 
     @Test
@@ -46,7 +47,10 @@ class SaveCartPortTest {
         saveCartPort.save(cart);
 
         cart.clear();
-        cart.addItem(new AddCartItemCommand(new ProductId("product-1"), 3), generateIdGenerator());
+        cart.addItem(new AddCartItemCommand(
+                generateProductId(),
+                3
+        ), generateIdGenerator());
 
         // when
         saveCartPort.save(cart);

@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.UUID;
+
 import static io.mallang.fixtures.CartFixture.generateCart;
 import static io.mallang.fixtures.CartFixture.generateCartWithItem;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +27,7 @@ class ClearCartUseCaseTest {
             @Autowired ClearCartUseCase clearCartUseCase
     ) {
         // given
-        var command = new ClearCartCommand("member-1");
+        var command = new ClearCartCommand("member-" + UUID.randomUUID());
 
         // when & then
         assertThatThrownBy(() -> clearCartUseCase.clear(command))

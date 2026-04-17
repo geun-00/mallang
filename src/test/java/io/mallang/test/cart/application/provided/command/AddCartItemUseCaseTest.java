@@ -20,7 +20,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.mallang.fixtures.CartFixture.*;
+import java.util.UUID;
+
+import static io.mallang.fixtures.CartFixture.generateAddItemToCartCommand;
+import static io.mallang.fixtures.CartFixture.generateCart;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
+import static io.mallang.fixtures.MemberFixture.generateMemberId;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.StockFixture.generateStock;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,10 +40,10 @@ class AddCartItemUseCaseTest {
             @Autowired AddCartItemUseCase addCartItemUseCase
     ) {
         // given
-        MemberId memberId = new MemberId("member-1");
+        MemberId memberId = generateMemberId();
         AddItemToCartCommand command = generateAddItemToCartCommand(
                 memberId.value(),
-                "product-1",
+                "product-" + UUID.randomUUID(),
                 2
         );
 
@@ -55,9 +60,10 @@ class AddCartItemUseCaseTest {
         // given
         Cart cart = generateCart();
         saveCartPort.save(cart);
+
         AddItemToCartCommand command = generateAddItemToCartCommand(
                 cart.getMemberId().value(),
-                "product-1",
+                "product-" + UUID.randomUUID(),
                 2
         );
 

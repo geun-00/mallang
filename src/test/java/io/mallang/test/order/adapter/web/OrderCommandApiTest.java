@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 
-import static io.mallang.fixtures.MemberFixture.generateClockHolder;
+import static io.mallang.fixtures.CommonFixture.generateClockHolder;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;

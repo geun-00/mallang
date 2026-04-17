@@ -12,18 +12,20 @@ import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
 import io.mallang.common.domain.exception.InvalidValueException;
-import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
-import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.exception.ProductNotFoundException;
 import io.mallang.stock.application.required.command.SaveStockPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.mallang.fixtures.CartFixture.*;
+import java.util.UUID;
+
+import static io.mallang.fixtures.CartFixture.generateCart;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.ProductFixture.generateProductId;
 import static io.mallang.fixtures.StockFixture.generateStock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,8 +40,8 @@ class ChangeCartItemQuantityUseCaseTest {
     ) {
         // given
         var command = new ChangeCartItemQuantityCommand(
-                new MemberId("member-1").value(),
-                "cart-item-1",
+                "member-" + UUID.randomUUID(),
+                "cart-item-" + UUID.randomUUID(),
                 2
         );
 
@@ -59,7 +61,7 @@ class ChangeCartItemQuantityUseCaseTest {
 
         var command = new ChangeCartItemQuantityCommand(
                 cart.getMemberId().value(),
-                generateNotExistCartItemId().value(),
+                "cart-item-" + UUID.randomUUID(),
                 2
         );
 
@@ -75,7 +77,10 @@ class ChangeCartItemQuantityUseCaseTest {
     ) {
         // given
         Cart cart = generateCart();
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(new ProductId("product-1"), 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(
+                new AddCartItemCommand(generateProductId(), 2),
+                generateIdGenerator()
+        );
         saveCartPort.save(cart);
 
         var command = new ChangeCartItemQuantityCommand(
@@ -99,7 +104,10 @@ class ChangeCartItemQuantityUseCaseTest {
         // given
         Cart cart = generateCart();
         Product product = generateProduct();
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(
+                new AddCartItemCommand(product.getId(), 2),
+                generateIdGenerator()
+        );
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
@@ -127,7 +135,10 @@ class ChangeCartItemQuantityUseCaseTest {
         // given
         Cart cart = generateCart();
         Product product = generateProduct();
-        CartItemId cartItemId = cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
+        CartItemId cartItemId = cart.addItem(
+                new AddCartItemCommand(product.getId(), 2),
+                generateIdGenerator()
+        );
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
