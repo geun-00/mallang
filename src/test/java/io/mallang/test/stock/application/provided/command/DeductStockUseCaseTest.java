@@ -65,7 +65,7 @@ class DeductStockUseCaseTest {
         // given
         Product product = generateProduct();
         saveProductPort.save(product);
-        saveStockPort.save(generateStock(product.getId(), 5));
+        saveStockPort.save(generateStock(product, 5));
 
         DeductStockCommand command = new DeductStockCommand(
                 generateSellerId().value(),
@@ -87,7 +87,7 @@ class DeductStockUseCaseTest {
         // given
         Product product = generateDiscontinuedProduct();
         saveProductPort.save(product);
-        saveStockPort.save(generateStock(product.getId(), 5));
+        saveStockPort.save(generateStock(product, 5));
 
         DeductStockCommand command = new DeductStockCommand(
                 product.getSellerId().value(),

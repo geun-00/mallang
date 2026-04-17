@@ -65,7 +65,7 @@ class AddStockUseCaseTest {
         // given
         Product product = generateProduct();
         saveProductPort.save(product);
-        saveStockPort.save(generateStock(product.getId(), 5));
+        saveStockPort.save(generateStock(product, 5));
 
         AddStockCommand command = new AddStockCommand(
                 generateSellerId().value(),
@@ -88,7 +88,7 @@ class AddStockUseCaseTest {
         Product product = generateDiscontinuedProduct();
         saveProductPort.save(product);
 
-        saveStockPort.save(generateStock(product.getId(), 5));
+        saveStockPort.save(generateStock(product, 5));
         AddStockCommand command = new AddStockCommand(
                 product.getSellerId().value(),
                 product.getId().value(),
