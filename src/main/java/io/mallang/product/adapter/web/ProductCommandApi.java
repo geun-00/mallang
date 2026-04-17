@@ -1,9 +1,7 @@
 package io.mallang.product.adapter.web;
 
 import io.mallang.common.adapter.web.auth.CurrentMemberId;
-import io.mallang.product.adapter.web.model.AddStockRequest;
 import io.mallang.product.adapter.web.model.CreateProductRequest;
-import io.mallang.product.adapter.web.model.DeductStockRequest;
 import io.mallang.product.adapter.web.model.UpdateProductRequest;
 import io.mallang.product.application.provided.command.*;
 import io.mallang.product.application.provided.command.model.*;
@@ -21,8 +19,6 @@ import java.util.List;
 @RequestMapping("/api/v1/products")
 public class ProductCommandApi {
 
-    private final AddStockUseCase addStockUseCase;
-    private final DeductStockUseCase deductStockUseCase;
     private final UpdateProductUseCase updateProductUseCase;
     private final RegisterProductUseCase registerProductUseCase;
     private final DiscontinueProductUseCase discontinueProductUseCase;
@@ -74,40 +70,6 @@ public class ProductCommandApi {
                         request.description(),
                         request.price(),
                         request.category()
-                )
-        );
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{productId}/stock/add")
-    public ResponseEntity<Void> addStock(
-            @PathVariable String productId,
-            @Valid @RequestBody AddStockRequest request,
-            @CurrentMemberId String memberId
-    ) {
-        addStockUseCase.addStock(
-                new AddStockCommand(
-                        memberId,
-                        productId,
-                        request.quantity()
-                )
-        );
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{productId}/stock/deduct")
-    public ResponseEntity<Void> deductStock(
-            @PathVariable String productId,
-            @Valid @RequestBody DeductStockRequest request,
-            @CurrentMemberId String memberId
-    ) {
-        deductStockUseCase.deductStock(
-                new DeductStockCommand(
-                        memberId,
-                        productId,
-                        request.quantity()
                 )
         );
 

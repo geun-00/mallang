@@ -1,7 +1,5 @@
 package io.mallang.fixtures;
 
-import io.mallang.common.domain.port.ClockHolder;
-import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.vo.Address;
 import io.mallang.common.domain.vo.Money;
 import io.mallang.common.domain.vo.Receiver;
@@ -16,27 +14,16 @@ import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static io.mallang.fixtures.CommonFixture.generateClockHolder;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
 import static io.mallang.order.adapter.web.model.CreateOrderRequest.CreateOrderItemRequest;
 
 public class OrderFixture {
-
-    // =====================================================================
-    // 테스트 도구 (Test Utilities)
-    // =====================================================================
-
-    public static IdGenerator generateIdGenerator() {
-        return () -> UUID.randomUUID().toString();
-    }
-
-    public static ClockHolder generateClockHolder() {
-        return () -> LocalDateTime.of(2024, 1, 1, 0, 0, 0);
-    }
 
     // =====================================================================
     // 웹 요청 모델 (Web Request Models)

@@ -15,7 +15,6 @@ import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.product.domain.ProductImageId;
 import io.mallang.product.domain.command.AddProductImageCommand;
-import io.mallang.product.domain.exception.NotProductSellerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,11 +66,7 @@ public class ProductImageCommandService implements AddProductImagesUseCase,
 
     private Product loadProductWithImagesAndValidateSeller(String productIdValue, String memberIdValue) {
         Product product = loadProductPort.getByIdWithImages(new ProductId(productIdValue));
-        MemberId requesterId = new MemberId(memberIdValue);
-
-        if (!product.isSeller(requesterId)) {
-            throw new NotProductSellerException(product.getId(), requesterId, product.getSellerId());
-        }
+        product.validateSeller(new MemberId(memberIdValue));
 
         return product;
     }

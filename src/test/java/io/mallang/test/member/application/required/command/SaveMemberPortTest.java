@@ -2,6 +2,7 @@ package io.mallang.test.member.application.required.command;
 
 import io.mallang.annotations.PortTest;
 import io.mallang.assertions.MemberAssertions;
+import io.mallang.fixtures.CommonFixture;
 import io.mallang.member.application.required.command.SaveMemberPort;
 import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
@@ -43,8 +44,8 @@ class SaveMemberPortTest {
         Member member = generateMember();
         saveMemberPort.save(member);
 
-        member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
-        member.withdraw(generateClockHolder());
+        member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
+        member.withdraw(CommonFixture.generateClockHolder());
 
         // when
         saveMemberPort.save(member);

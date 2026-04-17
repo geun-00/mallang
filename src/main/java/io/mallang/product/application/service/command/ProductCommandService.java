@@ -1,17 +1,28 @@
 package io.mallang.product.application.service.command;
 
+import io.mallang.common.application.event.EventPublisher;
 import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
-import io.mallang.product.application.provided.command.*;
-import io.mallang.product.application.provided.command.model.*;
+import io.mallang.product.application.provided.command.DiscontinueProductUseCase;
+import io.mallang.product.application.provided.command.RegisterProductUseCase;
+import io.mallang.product.application.provided.command.UpdateProductUseCase;
+import io.mallang.product.application.provided.command.model.DiscontinueProductCommand;
+import io.mallang.product.application.provided.command.model.ProductRegisteredEvent;
+import io.mallang.product.application.provided.command.model.RegisterProductCommand;
+import io.mallang.product.application.provided.command.model.RegisterProductResult;
+import io.mallang.product.application.provided.command.model.UpdateProductCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
-import io.mallang.product.domain.*;
+import io.mallang.product.domain.ImageUrl;
+import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductCategory;
+import io.mallang.product.domain.ProductDescription;
+import io.mallang.product.domain.ProductId;
+import io.mallang.product.domain.ProductName;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
 import io.mallang.product.domain.command.ModifyProductCommand;
-import io.mallang.product.domain.exception.NotProductSellerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +33,11 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class ProductCommandService implements RegisterProductUseCase,
-                                              AddStockUseCase,
-                                              DeductStockUseCase,
                                               UpdateProductUseCase,
                                               DiscontinueProductUseCase {
 
     private final IdGenerator idGenerator;
+    private final EventPublisher eventPublisher;
     private final LoadProductPort loadProductPort;
     private final SaveProductPort saveProductPort;
 
@@ -40,13 +50,11 @@ public class ProductCommandService implements RegisterProductUseCase,
                                                                        image.isThumbnail()
                                                                ))
                                                                .toList();
-
         Product product = Product.create(
                 new CreateProductCommand(
                         new ProductName(command.name()),
                         new ProductDescription(command.description()),
                         new Money(command.price()),
-                        new StockQuantity(command.stockQuantity()),
                         ProductCategory.from(command.category()),
                         imageCommands
                 ),
@@ -55,24 +63,9 @@ public class ProductCommandService implements RegisterProductUseCase,
         );
 
         saveProductPort.save(product);
+        eventPublisher.publish(new ProductRegisteredEvent(product.getId().value(), command.stockQuantity()));
 
         return new RegisterProductResult(product.getId().value());
-    }
-
-    @Override
-    public void addStock(AddStockCommand command) {
-        Product product = loadProductAndValidateSeller(command.productIdValue(), command.memberIdValue());
-
-        product.addStock(command.quantity());
-        saveProductPort.save(product);
-    }
-
-    @Override
-    public void deductStock(DeductStockCommand command) {
-        Product product = loadProductAndValidateSeller(command.productIdValue(), command.memberIdValue());
-
-        product.deductStock(command.quantity());
-        saveProductPort.save(product);
     }
 
     @Override
@@ -99,11 +92,7 @@ public class ProductCommandService implements RegisterProductUseCase,
 
     private Product loadProductAndValidateSeller(String productIdValue, String memberIdValue) {
         Product product = loadProductPort.getById(new ProductId(productIdValue));
-        MemberId requesterId = new MemberId(memberIdValue);
-
-        if (!product.isSeller(requesterId)) {
-            throw new NotProductSellerException(product.getId(), requesterId, product.getSellerId());
-        }
+        product.validateSeller(new MemberId(memberIdValue));
 
         return product;
     }

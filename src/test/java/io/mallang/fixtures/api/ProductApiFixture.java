@@ -30,20 +30,6 @@ public final class ProductApiFixture extends ApiFixture {
         );
     }
 
-    public ResponseEntity<Void> addStock(String productId, AddStockRequest request) {
-        return client().exchange(
-                RequestEntity.patch(PRODUCTS_API + "/" + productId + "/stock/add").body(request),
-                Void.class
-        );
-    }
-
-    public ResponseEntity<Void> deductStock(String productId, DeductStockRequest request) {
-        return client().exchange(
-                RequestEntity.patch(PRODUCTS_API + "/" + productId + "/stock/deduct").body(request),
-                Void.class
-        );
-    }
-
     public ResponseEntity<Void> discontinue(String productId) {
         return client().exchange(
                 RequestEntity.patch(PRODUCTS_API + "/" + productId + "/discontinue").build(),

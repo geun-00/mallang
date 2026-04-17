@@ -1,4 +1,4 @@
-package io.mallang.product.adapter.web.model;
+package io.mallang.stock.adapter.web.model;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

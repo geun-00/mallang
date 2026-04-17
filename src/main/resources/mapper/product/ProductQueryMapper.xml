@@ -4,47 +4,44 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.mallang.product.adapter.persistence.mybatis.ProductQueryMapper">
 
-    <sql id="productWhere">
-        <where>
-            <if test="sellerNickname != null and sellerNickname != ''">
-                and lower(m.nickname) like concat('%', lower(#{sellerNickname}), '%')
-            </if>
-            <if test="productName != null and productName != ''">
-                and lower(p.name) like concat('%', lower(#{productName}), '%')
-            </if>
-            <if test="minPrice != null">
-                and p.price &gt;= #{minPrice}
-            </if>
-            <if test="maxPrice != null">
-                and p.price &lt;= #{maxPrice}
-            </if>
-            <if test="category != null and category != ''">
-                and p.category = #{category}
-            </if>
-            <if test="lastProductId != null and lastProductId != ''">
-                and p.product_id &lt; #{lastProductId}
-            </if>
-        </where>
-    </sql>
-
     <select id="selectProducts" resultType="io.mallang.product.adapter.persistence.mybatis.model.ProductListRow">
-        select
-            p.product_id as productId,
-            p.seller_id as sellerIdValue,
-            m.nickname as sellerNickname,
+        SELECT
+            p.product_id AS productId,
+            p.seller_id AS sellerIdValue,
+            m.nickname AS sellerNickname,
             p.name,
             p.price,
-            p.stock_quantity as stockQuantity,
+            s.quantity AS stockQuantity,
             p.status,
             p.category,
-            pi.image_url as thumbnailImageUrl
-        from products p
-        join members m on m.member_id = p.seller_id
-        left join product_images pi on pi.product_id = p.product_id
-                                  and pi.is_thumbnail = true
-        <include refid="productWhere"/>
-        order by p.product_id desc
-        limit #{limit}
+            pi.image_url AS thumbnailImageUrl
+        FROM products p
+        JOIN members m ON m.member_id = p.seller_id
+        JOIN stocks s ON s.product_id = p.product_id
+        LEFT JOIN product_images pi ON pi.product_id = p.product_id
+                                   AND pi.is_thumbnail = true
+        <where>
+            <if test="sellerNickname != null and sellerNickname != ''">
+                AND lower(m.nickname) LIKE concat('%', lower(#{sellerNickname}), '%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND lower(p.name) LIKE concat('%', lower(#{productName}), '%')
+            </if>
+            <if test="minPrice != null">
+                AND p.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND p.price &lt;= #{maxPrice}
+            </if>
+            <if test="category != null and category != ''">
+                AND p.category = #{category}
+            </if>
+            <if test="lastProductId != null and lastProductId != ''">
+                AND p.product_id &lt; #{lastProductId}
+            </if>
+        </where>
+        ORDER BY p.product_id DESC
+        LIMIT #{limit}
     </select>
 
     <select id="selectProductDetailRows" resultType="io.mallang.product.adapter.persistence.mybatis.model.ProductDetailRow">
@@ -55,7 +52,7 @@
             p.name,
             p.description,
             p.price,
-            p.stock_quantity    AS stockQuantity,
+            s.quantity           AS stockQuantity,
             p.status,
             p.category,
             pi.product_image_id AS imageId,
@@ -64,12 +61,12 @@
         FROM
             products p
                 JOIN members m ON m.member_id = p.seller_id
+                JOIN stocks s ON s.product_id = p.product_id
                 LEFT JOIN product_images pi ON pi.product_id = p.product_id
         WHERE
             p.product_id = #{productIdValue}
         ORDER BY
             pi.is_thumbnail DESC,
             pi.product_image_id;
-
     </select>
 </mapper>

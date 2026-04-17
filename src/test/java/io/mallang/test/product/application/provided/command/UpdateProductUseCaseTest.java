@@ -31,7 +31,7 @@ class UpdateProductUseCaseTest {
     ) {
         // given
         MemberId sellerId = generateSellerId();
-        Product before = generateProduct(sellerId, 5);
+        Product before = generateProduct(sellerId);
         saveProductPort.save(before);
 
         UpdateProductCommand command = new UpdateProductCommand(
@@ -57,7 +57,7 @@ class UpdateProductUseCaseTest {
             @Autowired SaveProductPort saveProductPort
     ) {
         // given
-        Product product = generateProduct(5);
+        Product product = generateProduct();
         saveProductPort.save(product);
 
         UpdateProductCommand command = new UpdateProductCommand(

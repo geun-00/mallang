@@ -16,6 +16,7 @@ import io.mallang.member.domain.Member;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
+import io.mallang.stock.application.required.command.SaveStockPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,12 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
+import java.util.UUID;
 
-import static io.mallang.fixtures.CartFixture.generateIdGenerator;
-import static io.mallang.fixtures.CartFixture.generateNotExistCartItemId;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.StockFixture.generateStock;
 import static io.mallang.fixtures.api.ApiFixture.CART_ITEMS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
@@ -96,7 +98,8 @@ class CartCommandApiTest {
                                                  .substring((CART_ITEMS_API + "/").length());
                 Cart loaded = loadCartPort.getByMemberId(member.getId());
 
-                assertThat(loaded.getItems()).extracting(item -> item.getId().value()).contains(cartItemIdValue);
+                assertThat(loaded.getItems()).extracting(item -> item.getId().value())
+                                             .contains(cartItemIdValue);
             }
         }
 
@@ -137,11 +140,13 @@ class CartCommandApiTest {
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 var request = new AddCartItemRequest(product.getId().value(), 6);
 
@@ -205,7 +210,7 @@ class CartCommandApiTest {
 
                 ResponseEntity<Void> response = fixture.cart()
                                                        .changeCartItemQuantity(
-                                                               generateNotExistCartItemId().value(),
+                                                               new CartItemId(UUID.randomUUID().toString()).value(),
                                                                request
                                                        );
 
@@ -245,12 +250,14 @@ class CartCommandApiTest {
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
 
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 String cartItemId = fixture.cart().addCartItemThenGetId(product.getId().value(), 2);
                 var request = new ChangeCartItemQuantityRequest(6);
@@ -309,7 +316,7 @@ class CartCommandApiTest {
             ) {
                 fixture.auth().createMemberThenLogin();
 
-                ResponseEntity<Void> response = fixture.cart().removeCartItem(generateNotExistCartItemId().value());
+                ResponseEntity<Void> response = fixture.cart().removeCartItem(new CartItemId(UUID.randomUUID().toString()).value());
 
                 assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
             }

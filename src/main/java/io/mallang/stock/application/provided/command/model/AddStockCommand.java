@@ -1,4 +1,4 @@
-package io.mallang.product.application.provided.command.model;
+package io.mallang.stock.application.provided.command.model;
 
 public record AddStockCommand(
         String memberIdValue,

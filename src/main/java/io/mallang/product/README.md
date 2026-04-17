@@ -7,19 +7,14 @@ _Aggregate Root_
 
 #### 행위 & 규칙
 - 상품 생성 : `static create(ProductCreateCommand command, MemberId sellerId, IdGenerator idGenerator)`
-  - 재고가 1 이상이면 `ON_SALE`, 0이면 `SOLD_OUT` 상태로 생성
+  - 생성 시 `ON_SALE` 상태로 생성
   - 생성 시 식별자(`id`) 할당
   - 이미지가 있는 경우 대표 이미지는 반드시 하나여야 한다
   - 대표 이미지는 `thumbnailImage`에, 나머지는 `images`에 저장
-- 재고 추가 : `addStock(quantity)`
-  - `DISCONTINUED` 상태인 상품은 재고를 추가할 수 없다
-  - 재고 추가 후 수량이 1 이상이 되면 자동으로 `ON_SALE` 전환
-- 재고 차감 : `deductStock(quantity)`
-  - `DISCONTINUED` 상태인 상품은 재고를 차감할 수 없다
-  - 보유 재고보다 많은 수량을 차감할 수 없다
-  - 재고 차감 후 수량이 0이 되면 자동으로 `SOLD_OUT` 전환
 - 상품 정보 수정 : `modify(ModifyProductCommand command)`
   - `DISCONTINUED` 상태인 상품은 수정할 수 없다
+- 주문 가능 여부 확인 : `validateOrderable()`
+  - `DISCONTINUED` 상태인 상품은 주문할 수 없다
 - 판매 중단 : `discontinue()`
   - 이미 `DISCONTINUED` 상태인 상품은 중단할 수 없다
   - `DISCONTINUED`는 불가역 상태로 복구 불가
@@ -41,7 +36,6 @@ _Aggregate Root_
 | `name` | ProductName (VO) | 상품명 |
 | `description` | ProductDescription (VO) | 상품 설명 |
 | `price` | Money (VO) | 가격 |
-| `stockQuantity` | StockQuantity (VO) | 재고 수량 |
 | `status` | ProductStatus | 상품 상태 |
 | `category` | ProductCategory | 상품 카테고리 |
 | `productImages` | ProductImages (VO) | 이미지 묶음 |
@@ -54,7 +48,6 @@ _Enum_
 | 값 | 설명 |
 |----|------|
 | `ON_SALE` | 판매 중 |
-| `SOLD_OUT` | 품절 (재고 = 0) |
 | `DISCONTINUED` | 판매 중단 (불가역) |
 
 ---
@@ -126,16 +119,6 @@ _Value Object — `domain.common.vo` 참조_
 
 ---
 
-### 재고 수량 (StockQuantity)
-_Value Object_
-
-#### 속성 & 규칙
-| 속성 | 타입 | 규칙 |
-|------|------|------|
-| `value` | int | 음수 불가 (0 허용 — 품절 상태 표현) |
-
----
-
 ### 이미지 URL (ImageUrl)
 _Value Object_
 
@@ -166,10 +149,6 @@ _Value Object_
 
 - [x] 금액은 null 또는 음수가 아니어야 한다
 - [x] 금액이 0 이상이면 정상 생성된다
-### StockQuantity
-
-- [x] 수량은 null 또는 음수가 아니어야 한다
-- [x] 수량이 0 이상이면 정상 생성된다
 
 ### ImageUrl
 
@@ -181,20 +160,10 @@ _Value Object_
 
 #### 상품 생성
 - [x] 유효한 정보로 상품을 생성하면 식별자가 할당된다
-- [x] 유효한 정보로 상품을 생성하면 상품명, 설명, 가격, 재고 수량, 카테고리가 저장된다
+- [x] 유효한 정보로 상품을 생성하면 상품명, 설명, 가격, 카테고리가 저장된다
 - [x] 이미지와 함께 상품을 생성하면 대표이미지와 이미지목록이 저장된다
 - [x] 이미지 없이 상품을 생성하면 대표이미지와 이미지목록이 비어있다
-- [x] 재고가 1 이상이면 ON_SALE 상태로 생성된다
-- [x] 재고가 0이면 SOLD_OUT 상태로 생성된다
-
-#### 재고 관리
-- [x] 재고를 추가하면 수량이 증가한다
-- [x] 재고를 차감하면 수량이 감소한다
-- [x] 재고 차감 후 0이 되면 SOLD_OUT 상태가 된다
-- [x] 재고 추가 후 1 이상이 되면 ON_SALE 상태가 된다
-- [x] 재고 차감 시 보유 재고보다 많은 수량을 차감하면 예외가 발생한다
-- [x] `DISCONTINUED` 상품은 재고를 추가할 수 없다
-- [x] `DISCONTINUED` 상품은 재고를 차감할 수 없다
+- [x] 상품은 ON_SALE 상태로 생성된다
 
 #### 상품 정보 수정
 - [x] 상품 정보를 수정할 수 있다

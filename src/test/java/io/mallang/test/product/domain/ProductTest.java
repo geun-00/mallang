@@ -1,14 +1,19 @@
 package io.mallang.test.product.domain;
 
 import io.mallang.annotations.DomainTest;
-import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.exception.InvalidValueException;
+import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.member.domain.MemberId;
-import io.mallang.product.domain.*;
+import io.mallang.product.domain.ImageUrl;
+import io.mallang.product.domain.Product;
+import io.mallang.product.domain.ProductImage;
+import io.mallang.product.domain.ProductImageId;
+import io.mallang.product.domain.ProductStatus;
 import io.mallang.product.domain.command.AddProductImageCommand;
 import io.mallang.product.domain.command.CreateProductCommand;
 import io.mallang.product.domain.command.CreateProductImageCommand;
 import io.mallang.product.domain.command.ModifyProductCommand;
+import io.mallang.product.domain.exception.NotProductSellerException;
 import io.mallang.product.domain.exception.ProductImageNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,9 +22,18 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.mallang.assertions.ProductAssertions.isDerivedFrom;
-import static io.mallang.fixtures.ProductFixture.*;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
+import static io.mallang.fixtures.ProductFixture.generateAddProductImageCommand;
+import static io.mallang.fixtures.ProductFixture.generateDiscontinuedProduct;
+import static io.mallang.fixtures.ProductFixture.generateModifyProductCommand;
+import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.ProductFixture.generateProductCreateCommand;
+import static io.mallang.fixtures.ProductFixture.generateProductCreateCommandWithImages;
+import static io.mallang.fixtures.ProductFixture.generateProductWithImages;
+import static io.mallang.fixtures.ProductFixture.generateSellerId;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DomainTest
@@ -39,7 +53,7 @@ class ProductTest {
         }
 
         @Test
-        void 유효한_정보로_상품을_생성하면_상품명_설명_가격_재고_수량_카테고리가_저장된다() {
+        void 유효한_정보로_상품을_생성하면_상품명_설명_가격_카테고리가_저장된다() {
             CreateProductCommand createCommand = generateProductCreateCommand();
             IdGenerator idGenerator = generateIdGenerator();
 
@@ -49,17 +63,10 @@ class ProductTest {
         }
 
         @Test
-        void 재고가_1_이상이면_ON_SALE_상태로_생성된다() {
-            Product product = generateProduct(1);
+        void 상품은_ON_SALE_상태로_생성된다() {
+            Product product = generateProduct();
 
             assertThat(product.getStatus()).isEqualTo(ProductStatus.ON_SALE);
-        }
-
-        @Test
-        void 재고가_0이면_SOLD_OUT_상태로_생성된다() {
-            Product product = generateProduct(0);
-
-            assertThat(product.getStatus()).isEqualTo(ProductStatus.SOLD_OUT);
         }
     }
 
@@ -67,103 +74,19 @@ class ProductTest {
     class 판매자_판별 {
 
         @Test
-        void 판매자_본인이면_isSeller가_true를_반환한다() {
+        void 판매자_본인이면_예외가_발생하지_않는다() {
             MemberId sellerId = generateSellerId();
             Product product = Product.create(generateProductCreateCommand(), sellerId, generateIdGenerator());
 
-            assertThat(product.isSeller(sellerId)).isTrue();
+            assertThatCode(() -> product.validateSeller(sellerId)).doesNotThrowAnyException();
         }
 
         @Test
-        void 판매자가_아니면_isSeller가_false를_반환한다() {
+        void 판매자가_아니면_NotProductSellerException_예외가_발생한다() {
             Product product = Product.create(generateProductCreateCommand(), generateSellerId(), generateIdGenerator());
 
-            assertThat(product.isSeller(generateSellerId())).isFalse();
-        }
-    }
-
-    @Nested
-    class 재고 {
-
-        @Test
-        void 재고를_추가하면_수량이_증가한다() {
-            Product product = generateProduct();
-            int oldStockQuantity = product.getStockQuantity().value();
-
-            product.addStock(3);
-
-            assertThat(product.getStockQuantity().value()).isEqualTo(oldStockQuantity + 3);
-        }
-
-        @Test
-        void 재고를_차감하면_수량이_감소한다() {
-            Product product = generateProduct();
-            int oldStockQuantity = product.getStockQuantity().value();
-
-            product.deductStock(3);
-
-            assertThat(product.getStockQuantity().value()).isEqualTo(oldStockQuantity - 3);
-        }
-
-        @Test
-        void 재고_차감_후_0이_되면_SOLD_OUT_상태가_된다() {
-            Product product = generateProduct(3);
-
-            product.deductStock(3);
-
-            assertThat(product.getStockQuantity().value()).isZero();
-            assertThat(product.getStatus()).isEqualTo(ProductStatus.SOLD_OUT);
-        }
-
-        @Test
-        void 재고_추가_후_1_이상이_되면_ON_SALE_상태가_된다() {
-            Product product = generateProduct(0);
-
-            product.addStock(1);
-
-            assertThat(product.getStockQuantity().value()).isEqualTo(1);
-            assertThat(product.getStatus()).isEqualTo(ProductStatus.ON_SALE);
-        }
-
-        @Test
-        void 재고_차감_시_보유_재고보다_많은_수량을_차감하면_예외가_발생한다() {
-            Product product = generateProduct(2);
-
-            assertThatThrownBy(() -> product.deductStock(3))
-                    .isInstanceOf(InvalidValueException.class);
-        }
-
-        @Test
-        void 확인_대상_수량이_재고보다_많으면_예외가_발생한다() {
-            Product product = generateProduct(2);
-
-            assertThatThrownBy(() -> product.validateEnoughStock(3))
-                    .isInstanceOf(InvalidValueException.class);
-        }
-
-        @Test
-        void 충분한_재고가_있으면_확인만_하고_재고는_변하지_않는다() {
-            Product product = generateProduct(5);
-
-            product.validateEnoughStock(3);
-
-            assertThat(product.getStockQuantity().value()).isEqualTo(5);
-        }
-
-        @Test
-        void DISCONTINUED_상품은_재고를_추가할_수_없다() {
-            Product product = generateDiscontinuedProduct();
-
-            assertThatThrownBy(() -> product.addStock(1))
-                    .isInstanceOf(InvalidValueException.class);
-        }
-
-        @Test
-        void DISCONTINUED_상품은_재고를_차감할_수_없다() {
-            Product product = generateDiscontinuedProduct();
-
-            assertThatThrownBy(() -> product.deductStock(1))
-                    .isInstanceOf(InvalidValueException.class);
+            MemberId otherSellerId = generateSellerId();
+            assertThatThrownBy(() -> product.validateSeller(otherSellerId)).isInstanceOf(NotProductSellerException.class);
         }
     }
 

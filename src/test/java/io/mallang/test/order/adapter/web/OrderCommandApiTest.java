@@ -15,6 +15,7 @@ import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderId;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
+import io.mallang.stock.application.required.command.SaveStockPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,10 +25,11 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 
-import static io.mallang.fixtures.MemberFixture.generateClockHolder;
+import static io.mallang.fixtures.CommonFixture.generateClockHolder;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.StockFixture.generateStock;
 import static io.mallang.fixtures.api.ApiFixture.ORDERS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -47,11 +49,13 @@ class OrderCommandApiTest {
             @Test
             void 올바르게_요청하면_201_Created_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
                 CreateOrderRequest request = generateCreateOrderRequest(product.getId().value(), 2);
 
                 ResponseEntity<Void> response = fixture.order().createOrder(request);
@@ -62,11 +66,13 @@ class OrderCommandApiTest {
             @Test
             void 올바르게_요청하면_식별자가_포함된_Location_헤더를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
                 CreateOrderRequest request = generateCreateOrderRequest(product.getId().value(), 2);
 
                 ResponseEntity<Void> response = fixture.order().createOrder(request);
@@ -81,11 +87,13 @@ class OrderCommandApiTest {
             void 올바르게_요청하면_Location_헤더의_식별자로_주문을_조회할_수_있다(
                     @Autowired FixtureSession fixture,
                     @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort,
                     @Autowired LoadOrderPort loadOrderPort
             ) {
                 fixture.auth().createMemberThenLogin();
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
                 CreateOrderRequest request = generateCreateOrderRequest(product.getId().value(), 2);
 
                 String orderIdValue = fixture.order().createOrderThenGetId(request);
@@ -129,11 +137,13 @@ class OrderCommandApiTest {
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
                 CreateOrderRequest request = generateCreateOrderRequest(product.getId().value(), 6);
 
                 ResponseEntity<Void> response = fixture.order().createOrder(request);
@@ -150,7 +160,8 @@ class OrderCommandApiTest {
                     @Autowired FixtureSession fixture,
                     @Autowired LoadMemberPort loadMemberPort,
                     @Autowired SaveMemberPort saveMemberPort,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 MemberCreateRequest memberRequest = generateCreateRequest();
                 fixture.member().registerMember(memberRequest);
@@ -161,8 +172,9 @@ class OrderCommandApiTest {
 
                 fixture.auth().login(memberRequest.email(), memberRequest.password());
 
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
                 CreateOrderRequest request = generateCreateOrderRequest(product.getId().value(), 1);
 
                 ResponseEntity<Void> response = fixture.order().createOrder(request);
@@ -182,12 +194,14 @@ class OrderCommandApiTest {
             @Test
             void 올바르게_요청하면_204_No_Content_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
 
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 CreateOrderRequest request = generateCreateOrderRequest(product.getId().value(), 2);
                 String orderId = fixture.order().createOrderThenGetId(request);
@@ -204,12 +218,14 @@ class OrderCommandApiTest {
             @Test
             void 인증되지_않은_요청이면_401_Unauthorized_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
 
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 String orderId = fixture.order().createOrderThenGetId(generateCreateOrderRequest(product.getId().value(), 2));
 
@@ -245,13 +261,15 @@ class OrderCommandApiTest {
             void 취소할_수_없는_상태의_주문이면_400_Bad_Request_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
                     @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort,
                     @Autowired LoadOrderPort loadOrderPort,
                     @Autowired SaveOrderPort saveOrderPort
             ) {
                 fixture.auth().createMemberThenLogin();
 
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 String orderId = fixture.order().createOrderThenGetId(generateCreateOrderRequest(product.getId().value(), 2));
 
@@ -273,14 +291,16 @@ class OrderCommandApiTest {
             void 본인_주문이_아니면_403_Forbidden_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
                     @Autowired FixtureSessionFactory fixtureSessionFactory,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 FixtureSession anotherFixture = fixtureSessionFactory.create();
 
                 fixture.auth().createMemberThenLogin();
 
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 String orderId = fixture.order().createOrderThenGetId(generateCreateOrderRequest(product.getId().value(), 2));
 

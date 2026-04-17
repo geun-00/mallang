@@ -11,12 +11,15 @@ import io.mallang.cart.domain.CartItemId;
 import io.mallang.cart.domain.command.AddCartItemCommand;
 import io.mallang.cart.domain.exception.CartItemNotFoundException;
 import io.mallang.cart.domain.exception.CartNotFoundException;
-import io.mallang.product.domain.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.mallang.fixtures.CartFixture.*;
+import java.util.UUID;
+
+import static io.mallang.fixtures.CartFixture.generateCart;
+import static io.mallang.fixtures.CommonFixture.generateIdGenerator;
+import static io.mallang.fixtures.ProductFixture.generateProductId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -29,7 +32,10 @@ class RemoveCartItemUseCaseTest {
             @Autowired RemoveCartItemUseCase removeCartItemUseCase
     ) {
         // given
-        var command = new RemoveCartItemCommand("member-1", "cart-item-1");
+        var command = new RemoveCartItemCommand(
+                "member-" + UUID.randomUUID(),
+                "cart-item-" + UUID.randomUUID()
+        );
 
         // when & then
         assertThatThrownBy(() -> removeCartItemUseCase.removeItem(command))
@@ -47,7 +53,7 @@ class RemoveCartItemUseCaseTest {
 
         var command = new RemoveCartItemCommand(
                 cart.getMemberId().value(),
-                generateNotExistCartItemId().value()
+                "cart-item-" + UUID.randomUUID()
         );
 
         // when & then
@@ -63,8 +69,14 @@ class RemoveCartItemUseCaseTest {
     ) {
         // given
         Cart cart = generateCart();
-        CartItemId firstItemId = cart.addItem(new AddCartItemCommand(new ProductId("product-1"), 1), generateIdGenerator());
-        CartItemId secondItemId = cart.addItem(new AddCartItemCommand(new ProductId("product-2"), 2), generateIdGenerator());
+        CartItemId firstItemId = cart.addItem(
+                new AddCartItemCommand(generateProductId(), 1),
+                generateIdGenerator()
+        );
+        CartItemId secondItemId = cart.addItem(
+                new AddCartItemCommand(generateProductId(), 2),
+                generateIdGenerator()
+        );
         saveCartPort.save(cart);
 
         var command = new RemoveCartItemCommand(

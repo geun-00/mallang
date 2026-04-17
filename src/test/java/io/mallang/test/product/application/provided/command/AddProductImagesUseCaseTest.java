@@ -1,7 +1,6 @@
 package io.mallang.test.product.application.provided.command;
 
 import io.mallang.annotations.UseCaseTest;
-import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.provided.command.AddProductImagesUseCase;
 import io.mallang.product.application.provided.command.model.AddProductImagesCommand;
 import io.mallang.product.application.required.command.SaveProductPort;
@@ -31,13 +30,12 @@ class AddProductImagesUseCaseTest {
             @Autowired LoadProductPort loadProductPort
     ) {
         // given
-        MemberId sellerId = generateSellerId();
-        Product before = generateProduct(sellerId, 5);
-        saveProductPort.save(before);
+        Product product = generateProduct();
+        saveProductPort.save(product);
 
         AddProductImagesCommand command = new AddProductImagesCommand(
-                sellerId.value(),
-                before.getId().value(),
+                product.getSellerId().value(),
+                product.getId().value(),
                 List.of("https://test.com/image1.jpg", "https://test.com/image2.jpg")
         );
 
@@ -45,12 +43,12 @@ class AddProductImagesUseCaseTest {
         addProductImagesUseCase.addImages(command);
 
         // then
-        Product after = loadProductPort.getByIdWithImages(before.getId());
+        Product loaded = loadProductPort.getByIdWithImages(product.getId());
 
-        assertThat(after.getThumbnailImage()).isNotNull();
-        assertThat(after.getImages()).hasSize(command.imageUrls().size() - 1);
-        assertThat(after.getThumbnailImage().imageUrl().value()).isEqualTo(command.imageUrls().getFirst());
-        assertThat(after.getImages())
+        assertThat(loaded.getThumbnailImage()).isNotNull();
+        assertThat(loaded.getImages()).hasSize(command.imageUrls().size() - 1);
+        assertThat(loaded.getThumbnailImage().imageUrl().value()).isEqualTo(command.imageUrls().getFirst());
+        assertThat(loaded.getImages())
                 .extracting(image -> image.imageUrl().value())
                 .containsExactly(command.imageUrls().get(1));
     }
@@ -61,7 +59,7 @@ class AddProductImagesUseCaseTest {
             @Autowired SaveProductPort saveProductPort
     ) {
         // given
-        Product product = generateProduct(5);
+        Product product = generateProduct();
         saveProductPort.save(product);
 
         AddProductImagesCommand command = new AddProductImagesCommand(

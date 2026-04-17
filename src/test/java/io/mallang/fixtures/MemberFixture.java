@@ -1,7 +1,5 @@
 package io.mallang.fixtures;
 
-import io.mallang.common.domain.port.ClockHolder;
-import io.mallang.common.domain.port.IdGenerator;
 import io.mallang.common.domain.vo.Address;
 import io.mallang.common.domain.vo.Receiver;
 import io.mallang.member.adapter.web.model.MemberCreateRequest;
@@ -14,7 +12,6 @@ import io.mallang.member.domain.command.AddShippingAddressCommand;
 import io.mallang.member.domain.command.CreateMemberCommand;
 import io.mallang.member.domain.command.ModifyShippingAddressCommand;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class MemberFixture {
@@ -41,14 +38,6 @@ public class MemberFixture {
                 return (rawPassword.toUpperCase() + "encoded").equals(hashedPassword);
             }
         };
-    }
-
-    public static IdGenerator generateIdGenerator() {
-        return () -> UUID.randomUUID().toString();
-    }
-
-    public static ClockHolder generateClockHolder() {
-        return () -> LocalDateTime.of(2024, 1, 1, 0, 0, 0);
     }
 
     // =====================================================================
@@ -136,7 +125,7 @@ public class MemberFixture {
     // =====================================================================
 
     public static Member generateMember() {
-        return Member.create(generateCreateCommand(), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
+        return Member.create(generateCreateCommand(), generatePasswordEncoder(), CommonFixture.generateIdGenerator(), CommonFixture.generateClockHolder());
     }
 
     public static Member generateMemberWithNickname(String nickname) {
@@ -147,13 +136,13 @@ public class MemberFixture {
                         new Nickname(nickname)
                 ),
                 generatePasswordEncoder(),
-                generateIdGenerator(),
-                generateClockHolder()
+                CommonFixture.generateIdGenerator(),
+                CommonFixture.generateClockHolder()
         );
     }
 
     public static Member generateMember(String password) {
-        return Member.create(generateCreateCommand(password), generatePasswordEncoder(), generateIdGenerator(), generateClockHolder());
+        return Member.create(generateCreateCommand(password), generatePasswordEncoder(), CommonFixture.generateIdGenerator(), CommonFixture.generateClockHolder());
     }
 
     // =====================================================================
@@ -181,20 +170,20 @@ public class MemberFixture {
     public static Member generateMemberWithShippingAddress(int count) {
         Member member = generateMember();
         for (int i = 0; i < count; i++) {
-            member.addShippingAddress(generateAddShippingAddressCommand(), generateIdGenerator());
+            member.addShippingAddress(generateAddShippingAddressCommand(), CommonFixture.generateIdGenerator());
         }
         return member;
     }
 
     public static Member generateWithdrawnMember() {
         Member member = generateMember();
-        member.withdraw(generateClockHolder());
+        member.withdraw(CommonFixture.generateClockHolder());
         return member;
     }
 
     public static Member generateWithdrawnMemberWithShippingAddress() {
         Member member = generateMemberWithShippingAddress();
-        member.withdraw(generateClockHolder());
+        member.withdraw(CommonFixture.generateClockHolder());
         return member;
     }
 
