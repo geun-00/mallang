@@ -16,6 +16,7 @@ import io.mallang.member.domain.Member;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
+import io.mallang.stock.application.required.command.SaveStockPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import static io.mallang.fixtures.CartFixture.generateIdGenerator;
 import static io.mallang.fixtures.CartFixture.generateNotExistCartItemId;
 import static io.mallang.fixtures.MemberFixture.generateCreateRequest;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.StockFixture.generateStock;
 import static io.mallang.fixtures.api.ApiFixture.CART_ITEMS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
@@ -137,11 +139,13 @@ class CartCommandApiTest {
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 var request = new AddCartItemRequest(product.getId().value(), 6);
 
@@ -245,12 +249,14 @@ class CartCommandApiTest {
             @Test
             void 도메인_규칙을_위반하면_400_Bad_Request_상태코드를_반환한다(
                     @Autowired FixtureSession fixture,
-                    @Autowired SaveProductPort saveProductPort
+                    @Autowired SaveProductPort saveProductPort,
+                    @Autowired SaveStockPort saveStockPort
             ) {
                 fixture.auth().createMemberThenLogin();
 
-                Product product = generateProduct(5);
+                Product product = generateProduct();
                 saveProductPort.save(product);
+                saveStockPort.save(generateStock(product, 5));
 
                 String cartItemId = fixture.cart().addCartItemThenGetId(product.getId().value(), 2);
                 var request = new ChangeCartItemQuantityRequest(6);

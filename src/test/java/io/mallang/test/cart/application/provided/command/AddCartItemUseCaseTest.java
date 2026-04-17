@@ -15,12 +15,14 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.exception.ProductNotFoundException;
+import io.mallang.stock.application.required.command.SaveStockPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.mallang.fixtures.CartFixture.*;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.StockFixture.generateStock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -68,16 +70,18 @@ class AddCartItemUseCaseTest {
     void 재고보다_많은_수량을_장바구니에_담을_수_없다(
             @Autowired AddCartItemUseCase addCartItemUseCase,
             @Autowired SaveCartPort saveCartPort,
-            @Autowired SaveProductPort saveProductPort
+            @Autowired SaveProductPort saveProductPort,
+            @Autowired SaveStockPort saveStockPort
     ) {
         // given
         Cart cart = generateCart();
-        Product product = generateProduct(4);
+        Product product = generateProduct();
 
         cart.addItem(new AddCartItemCommand(product.getId(), 2), generateIdGenerator());
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
+        saveStockPort.save(generateStock(product, 4));
 
         AddItemToCartCommand command = generateAddItemToCartCommand(
                 cart.getMemberId().value(),
@@ -95,7 +99,8 @@ class AddCartItemUseCaseTest {
             @Autowired AddCartItemUseCase addCartItemUseCase,
             @Autowired SaveCartPort saveCartPort,
             @Autowired LoadCartPort loadCartPort,
-            @Autowired SaveProductPort saveProductPort
+            @Autowired SaveProductPort saveProductPort,
+            @Autowired SaveStockPort saveStockPort
     ) {
         // given
         Cart cart = generateCart();
@@ -103,6 +108,7 @@ class AddCartItemUseCaseTest {
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
+        saveStockPort.save(generateStock(product, 10));
 
         AddItemToCartCommand command = generateAddItemToCartCommand(
                 cart.getMemberId().value(),
@@ -128,7 +134,8 @@ class AddCartItemUseCaseTest {
             @Autowired AddCartItemUseCase addCartItemUseCase,
             @Autowired SaveCartPort saveCartPort,
             @Autowired LoadCartPort loadCartPort,
-            @Autowired SaveProductPort saveProductPort
+            @Autowired SaveProductPort saveProductPort,
+            @Autowired SaveStockPort saveStockPort
     ) {
         // given
         Cart cart = generateCart();
@@ -138,6 +145,7 @@ class AddCartItemUseCaseTest {
 
         saveCartPort.save(cart);
         saveProductPort.save(product);
+        saveStockPort.save(generateStock(product, 10));
 
         AddItemToCartCommand command = generateAddItemToCartCommand(
                 cart.getMemberId().value(),

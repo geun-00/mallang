@@ -18,8 +18,10 @@ import io.mallang.order.domain.OrderStatus;
 import io.mallang.order.domain.exception.NotOrdererException;
 import io.mallang.order.domain.exception.OrderNotFoundException;
 import io.mallang.product.application.required.command.SaveProductPort;
-import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
+import io.mallang.stock.application.required.command.SaveStockPort;
+import io.mallang.stock.application.required.query.LoadStockPort;
+import io.mallang.stock.domain.Stock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static io.mallang.fixtures.MemberFixture.generateMember;
-import static io.mallang.fixtures.OrderFixture.*;
+import static io.mallang.fixtures.OrderFixture.generateCanceledOrder;
+import static io.mallang.fixtures.OrderFixture.generateCreateOrderCommand;
+import static io.mallang.fixtures.OrderFixture.generateOrder;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
+import static io.mallang.fixtures.StockFixture.generateStock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -40,6 +45,7 @@ class CancelOrderUseCaseTest {
     void 주문_취소_성공_시_변경사항이_저장된다(
             @Autowired SaveMemberPort saveMemberPort,
             @Autowired SaveProductPort saveProductPort,
+            @Autowired SaveStockPort saveStockPort,
             @Autowired CreateOrderUseCase createOrderUseCase,
             @Autowired CancelOrderUseCase cancelOrderUseCase,
             @Autowired LoadOrderPort loadOrderPort
@@ -48,8 +54,9 @@ class CancelOrderUseCaseTest {
         Member member = generateMember();
         saveMemberPort.save(member);
 
-        Product product = generateProduct(5);
+        Product product = generateProduct();
         saveProductPort.save(product);
+        saveStockPort.save(generateStock(product, 5));
 
         CreateOrderCommand createCommand = generateCreateOrderCommand(
                 member.getId(),
@@ -70,7 +77,8 @@ class CancelOrderUseCaseTest {
     void 주문_취소_성공_시_차감된_재고가_복구된다(
             @Autowired SaveMemberPort saveMemberPort,
             @Autowired SaveProductPort saveProductPort,
-            @Autowired LoadProductPort loadProductPort,
+            @Autowired SaveStockPort saveStockPort,
+            @Autowired LoadStockPort loadStockPort,
             @Autowired CreateOrderUseCase createOrderUseCase,
             @Autowired CancelOrderUseCase cancelOrderUseCase
     ) {
@@ -78,8 +86,9 @@ class CancelOrderUseCaseTest {
         Member member = generateMember();
         saveMemberPort.save(member);
 
-        Product product = generateProduct(5);
+        Product product = generateProduct();
         saveProductPort.save(product);
+        saveStockPort.save(generateStock(product, 5));
 
         CreateOrderCommand createCommand = generateCreateOrderCommand(
                 member.getId(),
@@ -93,8 +102,8 @@ class CancelOrderUseCaseTest {
         cancelOrderUseCase.cancel(cancelCommand);
 
         // then
-        Product restored = loadProductPort.getById(product.getId());
-        assertThat(restored.getStockQuantity().value()).isEqualTo(5);
+        Stock restored = loadStockPort.getByProductId(product.getId());
+        assertThat(restored.getQuantity().value()).isEqualTo(5);
     }
 
     @Test
@@ -113,6 +122,7 @@ class CancelOrderUseCaseTest {
     void 주문자가_아니면_예외가_발생한다(
             @Autowired SaveMemberPort saveMemberPort,
             @Autowired SaveProductPort saveProductPort,
+            @Autowired SaveStockPort saveStockPort,
             @Autowired CreateOrderUseCase createOrderUseCase,
             @Autowired CancelOrderUseCase cancelOrderUseCase
     ) {
@@ -122,8 +132,9 @@ class CancelOrderUseCaseTest {
         saveMemberPort.save(orderer);
         saveMemberPort.save(otherMember);
 
-        Product product = generateProduct(5);
+        Product product = generateProduct();
         saveProductPort.save(product);
+        saveStockPort.save(generateStock(product, 5));
 
         CreateOrderCommand createCommand = generateCreateOrderCommand(
                 orderer.getId(),

@@ -22,10 +22,12 @@ import io.mallang.order.domain.OrderItem;
 import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.PlaceOrderItemCommand;
 import io.mallang.order.domain.exception.NotOrdererException;
-import io.mallang.product.application.required.command.SaveProductPort;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
+import io.mallang.stock.application.required.command.SaveStockPort;
+import io.mallang.stock.application.required.query.LoadStockPort;
+import io.mallang.stock.domain.Stock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,8 +49,9 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     private final LoadOrderPort loadOrderPort;
     private final LoadMemberPort loadMemberPort;
     private final LoadProductPort loadProductPort;
+    private final LoadStockPort loadStockPort;
     private final SaveOrderPort saveOrderPort;
-    private final SaveProductPort saveProductPort;
+    private final SaveStockPort saveStockPort;
 
     @Override
     public CreateOrderResult place(CreateOrderCommand command) {
@@ -56,12 +59,14 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
 
         Map<String, Integer> quantitiesByProductId = aggregateQuantities(command.items());
         Map<String, Product> orderProducts = loadProductsById(quantitiesByProductId.keySet());
+        Map<String, Stock> orderStocks = loadStocksByProductId(quantitiesByProductId.keySet());
 
-        deductStocks(orderProducts, quantitiesByProductId);
+        validateOrderableProducts(orderProducts);
+        deductStocks(orderStocks, quantitiesByProductId);
 
         Order order = createOrder(command, member, orderProducts);
 
-        saveProducts(orderProducts.values());
+        saveStocks(orderStocks.values());
         saveOrder(order);
 
         return new CreateOrderResult(order.getId().value());
@@ -87,13 +92,17 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                     ));
     }
 
+    private void validateOrderableProducts(Map<String, Product> productsById) {
+        productsById.values().forEach(Product::validateOrderable);
+    }
+
     private void deductStocks(
-            Map<String, Product> productsById,
+            Map<String, Stock> stocksByProductId,
             Map<String, Integer> quantitiesByProductId
     ) {
         quantitiesByProductId.forEach((productId, quantity) -> {
-            Product product = productsById.get(productId);
-            product.deductStock(quantity);
+            Stock stock = stocksByProductId.get(productId);
+            stock.deduct(quantity);
         });
     }
 
@@ -138,11 +147,11 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         order.cancel();
 
         Map<String, Integer> quantitiesByProductId = aggregateOrderItemQuantities(order.getItems());
-        Map<String, Product> productsById = loadProductsById(quantitiesByProductId.keySet());
+        Map<String, Stock> stocksByProductId = loadStocksByProductId(quantitiesByProductId.keySet());
 
-        restoreStocks(productsById, quantitiesByProductId);
+        restoreStocks(stocksByProductId, quantitiesByProductId);
 
-        saveProducts(productsById.values());
+        saveStocks(stocksByProductId.values());
         saveOrder(order);
     }
 
@@ -157,12 +166,12 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     }
 
     private void restoreStocks(
-            Map<String, Product> productsById,
+            Map<String, Stock> stocksByProductId,
             Map<String, Integer> quantitiesByProductId
     ) {
         quantitiesByProductId.forEach((productId, quantity) -> {
-            Product product = productsById.get(productId);
-            product.addStock(quantity);
+            Stock stock = stocksByProductId.get(productId);
+            stock.add(quantity);
         });
     }
 
@@ -178,11 +187,26 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                                       product -> product,
                                       (left, right) -> left,
                                       LinkedHashMap::new
-                              ));
+                               ));
     }
 
-    private void saveProducts(Iterable<Product> products) {
-        products.forEach(saveProductPort::save);
+    private Map<String, Stock> loadStocksByProductId(Set<String> productIds) {
+        List<ProductId> ids = productIds.stream()
+                                        .map(ProductId::new)
+                                        .toList();
+
+        return loadStockPort.getAllByProductIds(ids)
+                            .stream()
+                            .collect(toMap(
+                                    stock -> stock.getProductId().value(),
+                                    stock -> stock,
+                                    (left, right) -> left,
+                                    LinkedHashMap::new
+                            ));
+    }
+
+    private void saveStocks(Iterable<Stock> stocks) {
+        stocks.forEach(saveStockPort::save);
     }
 
     private void saveOrder(Order order) {
