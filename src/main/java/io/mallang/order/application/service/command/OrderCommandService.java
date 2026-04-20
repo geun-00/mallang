@@ -58,10 +58,9 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         Member member = getOrderableMember(command.memberIdValue());
 
         Map<String, Integer> quantitiesByProductId = aggregateQuantities(command.items());
-        Map<String, Product> orderProducts = loadProductsById(quantitiesByProductId.keySet());
+        Map<String, Product> orderProducts = loadOrderableProductsById(quantitiesByProductId.keySet());
         Map<String, Stock> orderStocks = loadStocksByProductId(quantitiesByProductId.keySet());
 
-        validateOrderableProducts(orderProducts);
         deductStocks(orderStocks, quantitiesByProductId);
 
         Order order = createOrder(command, member, orderProducts);
@@ -90,10 +89,6 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                             Integer::sum,
                             LinkedHashMap::new
                     ));
-    }
-
-    private void validateOrderableProducts(Map<String, Product> productsById) {
-        productsById.values().forEach(Product::validateOrderable);
     }
 
     private void deductStocks(
@@ -175,19 +170,22 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         });
     }
 
-    private Map<String, Product> loadProductsById(Set<String> productIds) {
+    private Map<String, Product> loadOrderableProductsById(Set<String> productIds) {
         List<ProductId> ids = productIds.stream()
                                         .map(ProductId::new)
                                         .toList();
 
-        return loadProductPort.getAllByIds(ids)
-                              .stream()
-                              .collect(toMap(
-                                      product -> product.getId().value(),
-                                      product -> product,
-                                      (left, right) -> left,
-                                      LinkedHashMap::new
-                               ));
+        LinkedHashMap<String, Product> productsById = loadProductPort.getAllByIds(ids)
+                                                                .stream()
+                                                                .collect(toMap(
+                                                                        product -> product.getId().value(),
+                                                                        product -> product,
+                                                                        (left, right) -> left,
+                                                                        LinkedHashMap::new
+                                                                ));
+        productsById.values().forEach(Product::validateOrderable);
+
+        return productsById;
     }
 
     private Map<String, Stock> loadStocksByProductId(Set<String> productIds) {
