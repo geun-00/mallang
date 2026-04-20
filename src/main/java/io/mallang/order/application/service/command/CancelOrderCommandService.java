@@ -8,7 +8,6 @@ import io.mallang.order.application.required.query.LoadOrderPort;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderId;
 import io.mallang.order.domain.OrderItem;
-import io.mallang.order.domain.exception.NotOrdererException;
 import io.mallang.product.domain.ProductId;
 import io.mallang.stock.application.required.command.SaveStockPort;
 import io.mallang.stock.application.required.query.LoadStockForUpdatePort;
@@ -37,13 +36,7 @@ public class CancelOrderCommandService implements CancelOrderUseCase {
     @Override
     public void cancel(CancelOrderCommand command) {
         Order order = loadOrderPort.getById(new OrderId(command.orderIdValue()));
-        MemberId requesterId = new MemberId(command.memberIdValue());
-
-        if (!order.isOrderer(requesterId)) {
-            throw new NotOrdererException(order.getId(), requesterId, order.getMemberId());
-        }
-
-        order.cancel();
+        order.cancelBy(new MemberId(command.memberIdValue()));
 
         Map<String, Integer> quantitiesByProductId = aggregateOrderItemQuantities(order.getItems());
         Map<String, Stock> stocksByProductId = loadStocksByProductId(quantitiesByProductId.keySet());

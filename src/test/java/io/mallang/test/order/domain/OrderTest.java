@@ -133,25 +133,13 @@ class OrderTest {
     }
 
     @Nested
-    class 주문자_판별 {
-
-        @Test
-        void 주문자인지_확인할_수_있다() {
-            Order order = generateOrder();
-
-            assertThat(order.isOrderer(order.getMemberId())).isTrue();
-            assertThat(order.isOrderer(new MemberId("other-member-id"))).isFalse();
-        }
-    }
-
-    @Nested
     class 취소 {
 
         @Test
         void PAYMENT_WAITING_상태에서_주문을_취소하면_CANCELED_상태가_된다() {
             Order order = generateOrder();
 
-            order.cancel();
+            order.cancelBy(order.getMemberId());
 
             assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
         }
@@ -161,7 +149,7 @@ class OrderTest {
             Order order = generateOrder();
             order.nextStatus(); // PREPARING
 
-            order.cancel();
+            order.cancelBy(order.getMemberId());
 
             assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
         }
@@ -172,7 +160,8 @@ class OrderTest {
             order.nextStatus(); // PREPARING
             order.nextStatus(); // SHIPPED
 
-            assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
+            MemberId ordererId = order.getMemberId();
+            assertThatThrownBy(() -> order.cancelBy(ordererId)).isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -182,7 +171,8 @@ class OrderTest {
             order.nextStatus(); // SHIPPED
             order.nextStatus(); // DELIVERING
 
-            assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
+            MemberId ordererId = order.getMemberId();
+            assertThatThrownBy(() -> order.cancelBy(ordererId)).isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -193,14 +183,16 @@ class OrderTest {
             order.nextStatus(); // DELIVERING
             order.nextStatus(); // DELIVERY_COMPLETED
 
-            assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
+            MemberId ordererId = order.getMemberId();
+            assertThatThrownBy(() -> order.cancelBy(ordererId)).isInstanceOf(InvalidValueException.class);
         }
 
         @Test
         void 이미_취소된_주문은_다시_취소할_수_없다() {
             Order order = generateCanceledOrder();
 
-            assertThatThrownBy(order::cancel).isInstanceOf(InvalidValueException.class);
+            MemberId ordererId = order.getMemberId();
+            assertThatThrownBy(() -> order.cancelBy(ordererId)).isInstanceOf(InvalidValueException.class);
         }
     }
 }

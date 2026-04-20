@@ -41,7 +41,7 @@ class SaveOrderPortTest {
         // given
         Order order = generateOrder();
         saveOrderPort.save(order);
-        order.cancel();
+        order.cancelBy(order.getMemberId());
 
         // when
         saveOrderPort.save(order);

@@ -1,12 +1,13 @@
 package io.mallang.order.domain;
 
+import io.mallang.common.domain.exception.InvalidValueException;
 import io.mallang.common.domain.port.ClockHolder;
 import io.mallang.common.domain.port.IdGenerator;
-import io.mallang.common.domain.exception.InvalidValueException;
 import io.mallang.common.domain.vo.Money;
 import io.mallang.member.domain.MemberId;
 import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.RestoreOrderCommand;
+import io.mallang.order.domain.exception.NotOrdererException;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -71,23 +72,30 @@ public class Order {
         return order;
     }
 
-    public void cancel() {
-        if (!status.isCancelable()) {
-            throw new InvalidValueException("취소할 수 없는 주문입니다.");
-        }
-
-        this.status = OrderStatus.CANCELED;
-    }
-
     public void nextStatus() {
         this.status = status.next();
     }
 
-    public boolean isOrderer(MemberId memberId) {
-        return this.memberId.equals(memberId);
-    }
-
     public List<OrderItem> getItems() {
         return items.toList();
+    }
+
+    public void cancelBy(MemberId requesterId) {
+        validateOrderer(requesterId);
+        validateCancelable();
+
+        this.status = OrderStatus.CANCELED;
+    }
+
+    private void validateOrderer(MemberId requesterId) {
+        if (!memberId.equals(requesterId)) {
+            throw new NotOrdererException(id, requesterId, memberId);
+        }
+    }
+
+    private void validateCancelable() {
+        if (!status.isCancelable()) {
+            throw new InvalidValueException("취소할 수 없는 주문입니다.");
+        }
     }
 }
