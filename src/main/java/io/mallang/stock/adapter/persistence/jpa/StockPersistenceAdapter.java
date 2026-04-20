@@ -56,6 +56,12 @@ public class StockPersistenceAdapter implements SaveStockPort,
         return foundStocks;
     }
 
+    private List<String> toIdValues(List<ProductId> productIds) {
+        return productIds.stream()
+                         .map(ProductId::value)
+                         .toList();
+    }
+
     @Override
     public Stock getByProductIdForUpdate(ProductId productId) {
         return stockJpaRepository.findByIdForUpdate(productId.value())
@@ -65,12 +71,27 @@ public class StockPersistenceAdapter implements SaveStockPort,
 
     @Override
     public List<Stock> getAllByProductIdsForUpdate(List<ProductId> productIds) {
-        return List.of();
+        List<String> sortedIdValues = toSortedIdValues(productIds);
+
+        List<Stock> foundStocks = stockJpaRepository.findAllByIdForUpdate(sortedIdValues)
+                                                    .stream()
+                                                    .map(StockJpaEntity::toDomain)
+                                                    .toList();
+
+        Set<String> foundProductIds = foundStocks.stream()
+                                                 .map(stock -> stock.getProductId().value())
+                                                 .collect(toSet());
+
+        validateAllStocksFound(productIds, foundProductIds);
+
+        return foundStocks;
     }
 
-    private List<String> toIdValues(List<ProductId> productIds) {
+    private List<String> toSortedIdValues(List<ProductId> productIds) {
         return productIds.stream()
                          .map(ProductId::value)
+                         .distinct()
+                         .sorted()
                          .toList();
     }
 

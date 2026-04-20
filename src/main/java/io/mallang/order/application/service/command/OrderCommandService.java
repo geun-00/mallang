@@ -26,7 +26,7 @@ import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
 import io.mallang.stock.application.required.command.SaveStockPort;
-import io.mallang.stock.application.required.query.LoadStockPort;
+import io.mallang.stock.application.required.query.LoadStockForUpdatePort;
 import io.mallang.stock.domain.Stock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
     private final LoadOrderPort loadOrderPort;
     private final LoadMemberPort loadMemberPort;
     private final LoadProductPort loadProductPort;
-    private final LoadStockPort loadStockPort;
+    private final LoadStockForUpdatePort loadStockForUpdatePort;
     private final SaveOrderPort saveOrderPort;
     private final SaveStockPort saveStockPort;
 
@@ -195,14 +195,14 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
                                         .map(ProductId::new)
                                         .toList();
 
-        return loadStockPort.getAllByProductIds(ids)
-                            .stream()
-                            .collect(toMap(
-                                    stock -> stock.getProductId().value(),
-                                    stock -> stock,
-                                    (left, right) -> left,
-                                    LinkedHashMap::new
-                            ));
+        return loadStockForUpdatePort.getAllByProductIdsForUpdate(ids)
+                                     .stream()
+                                     .collect(toMap(
+                                             stock -> stock.getProductId().value(),
+                                             stock -> stock,
+                                             (left, right) -> left,
+                                             LinkedHashMap::new
+                                     ));
     }
 
     private void saveStocks(Iterable<Stock> stocks) {
