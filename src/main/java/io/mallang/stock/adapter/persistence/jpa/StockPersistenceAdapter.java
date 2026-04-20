@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -35,56 +36,28 @@ public class StockPersistenceAdapter implements SaveStockPort,
 
     @Override
     public Stock getByProductId(ProductId productId) {
-        return stockJpaRepository.findById(productId.value())
-                                 .map(StockJpaEntity::toDomain)
-                                 .orElseThrow(() -> new StockNotFoundException(productId));
+        return toStock(productId, stockJpaRepository.findById(productId.value()));
     }
 
     @Override
     public List<Stock> getAllByProductIds(List<ProductId> productIds) {
-        List<Stock> foundStocks = stockJpaRepository.findAllById(toIdValues(productIds))
-                                                    .stream()
-                                                    .map(StockJpaEntity::toDomain)
-                                                    .toList();
+        return toStocks(productIds, stockJpaRepository.findAllById(toIdValues(productIds)));
+    }
 
-        Set<String> foundProductIds = foundStocks.stream()
-                                                 .map(stock -> stock.getProductId().value())
-                                                 .collect(toSet());
+    @Override
+    public Stock getByProductIdForUpdate(ProductId productId) {
+        return toStock(productId, stockJpaRepository.findByIdForUpdate(productId.value()));
+    }
 
-        validateAllStocksFound(productIds, foundProductIds);
-
-        return foundStocks;
+    @Override
+    public List<Stock> getAllByProductIdsForUpdate(List<ProductId> productIds) {
+        return toStocks(productIds, stockJpaRepository.findAllByIdForUpdate(toSortedIdValues(productIds)));
     }
 
     private List<String> toIdValues(List<ProductId> productIds) {
         return productIds.stream()
                          .map(ProductId::value)
                          .toList();
-    }
-
-    @Override
-    public Stock getByProductIdForUpdate(ProductId productId) {
-        return stockJpaRepository.findByIdForUpdate(productId.value())
-                                 .map(StockJpaEntity::toDomain)
-                                 .orElseThrow(() -> new StockNotFoundException(productId));
-    }
-
-    @Override
-    public List<Stock> getAllByProductIdsForUpdate(List<ProductId> productIds) {
-        List<String> sortedIdValues = toSortedIdValues(productIds);
-
-        List<Stock> foundStocks = stockJpaRepository.findAllByIdForUpdate(sortedIdValues)
-                                                    .stream()
-                                                    .map(StockJpaEntity::toDomain)
-                                                    .toList();
-
-        Set<String> foundProductIds = foundStocks.stream()
-                                                 .map(stock -> stock.getProductId().value())
-                                                 .collect(toSet());
-
-        validateAllStocksFound(productIds, foundProductIds);
-
-        return foundStocks;
     }
 
     private List<String> toSortedIdValues(List<ProductId> productIds) {
@@ -95,12 +68,30 @@ public class StockPersistenceAdapter implements SaveStockPort,
                          .toList();
     }
 
+    private Stock toStock(ProductId productId, Optional<StockJpaEntity> entity) {
+        return entity.map(StockJpaEntity::toDomain)
+                     .orElseThrow(() -> new StockNotFoundException(productId));
+    }
+
+    private List<Stock> toStocks(List<ProductId> productIds, List<StockJpaEntity> entities) {
+        List<Stock> foundStocks = entities.stream()
+                                          .map(StockJpaEntity::toDomain)
+                                          .toList();
+
+        Set<String> foundProductIds = foundStocks.stream()
+                                                 .map(stock -> stock.getProductId().value())
+                                                 .collect(toSet());
+
+        validateAllStocksFound(productIds, foundProductIds);
+
+        return foundStocks;
+    }
+
     private void validateAllStocksFound(List<ProductId> targetProductIds, Set<String> foundProductIds) {
         List<ProductId> missingProductIds = targetProductIds.stream()
                                                             .distinct()
                                                             .filter(productId -> !foundProductIds.contains(productId.value()))
                                                             .toList();
-
         if (missingProductIds.isEmpty()) {
             return;
         }
