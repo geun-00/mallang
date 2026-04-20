@@ -16,17 +16,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import static io.mallang.fixtures.ProductFixture.generateDiscontinuedProduct;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.ProductFixture.generateSellerId;
 import static io.mallang.fixtures.StockFixture.generateStock;
+import static io.mallang.test.support.concurrency.ConcurrentTestExecutor.executeConcurrently;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -148,38 +142,12 @@ class AddStockUseCaseTest {
                     1
             );
 
-            ExecutorService executorService = Executors.newFixedThreadPool(requestCount);
-            CountDownLatch startLatch = new CountDownLatch(1);
-            CountDownLatch doneLatch = new CountDownLatch(requestCount);
-            Queue<Throwable> failures = new ConcurrentLinkedQueue<>();
+            // when
+            executeConcurrently(requestCount, () -> addStockUseCase.addStock(command));
 
-            try {
-                for (int i = 0; i < requestCount; i++) {
-                    executorService.execute(() -> {
-                        try {
-                            startLatch.await();
-                            addStockUseCase.addStock(command);
-                        } catch (Throwable throwable) {
-                            failures.add(throwable);
-                        } finally {
-                            doneLatch.countDown();
-                        }
-                    });
-                }
-
-                // when
-                startLatch.countDown();
-
-                // then
-                assertThat(doneLatch.await(10, TimeUnit.SECONDS)).isTrue();
-                assertThat(failures).isEmpty();
-
-                Stock after = loadStockPort.getByProductId(product.getId());
-                assertThat(after.getQuantity().value()).isEqualTo(initialQuantity + requestCount);
-            } finally {
-                executorService.shutdownNow();
-                executorService.close();
-            }
+            // then
+            Stock after = loadStockPort.getByProductId(product.getId());
+            assertThat(after.getQuantity().value()).isEqualTo(initialQuantity + requestCount);
         }
     }
 }

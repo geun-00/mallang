@@ -25,12 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static io.mallang.assertions.OrderAssertions.isCreatedFrom;
 import static io.mallang.fixtures.MemberFixture.generateMember;
@@ -38,6 +32,7 @@ import static io.mallang.fixtures.MemberFixture.generateWithdrawnMember;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderCommand;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.StockFixture.generateStock;
+import static io.mallang.test.support.concurrency.ConcurrentTestExecutor.executeConcurrently;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -216,38 +211,12 @@ class CreateOrderUseCaseTest {
                     List.of(new CreateOrderItemCommand(product.getId().value(), 1))
             );
 
-            ExecutorService executorService = Executors.newFixedThreadPool(requestCount);
-            CountDownLatch startLatch = new CountDownLatch(1);
-            CountDownLatch doneLatch = new CountDownLatch(requestCount);
-            Queue<Throwable> failures = new ConcurrentLinkedQueue<>();
+            // when
+            executeConcurrently(requestCount, () -> createOrderUseCase.place(command));
 
-            try {
-                for (int i = 0; i < requestCount; i++) {
-                    executorService.execute(() -> {
-                        try {
-                            startLatch.await();
-                            createOrderUseCase.place(command);
-                        } catch (Throwable throwable) {
-                            failures.add(throwable);
-                        } finally {
-                            doneLatch.countDown();
-                        }
-                    });
-                }
-
-                // when
-                startLatch.countDown();
-
-                // then
-                assertThat(doneLatch.await(10, TimeUnit.SECONDS)).isTrue();
-                assertThat(failures).isEmpty();
-
-                Stock after = loadStockPort.getByProductId(product.getId());
-                assertThat(after.getQuantity().value()).isEqualTo(initialQuantity - requestCount);
-            } finally {
-                executorService.shutdownNow();
-                executorService.close();
-            }
+            // then
+            Stock after = loadStockPort.getByProductId(product.getId());
+            assertThat(after.getQuantity().value()).isEqualTo(initialQuantity - requestCount);
         }
     }
 }
