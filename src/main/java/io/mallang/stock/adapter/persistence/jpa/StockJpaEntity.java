@@ -9,11 +9,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-// TODO : 재고 동시성 제어
 @Entity
 @Table(name = "stocks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,9 +23,6 @@ public class StockJpaEntity extends BaseEntity {
 
     @Column(nullable = false)
     private Integer quantity;
-
-    @Version
-    private Long version;
 
     private StockJpaEntity(String productId, Integer quantity) {
         this.productId = productId;

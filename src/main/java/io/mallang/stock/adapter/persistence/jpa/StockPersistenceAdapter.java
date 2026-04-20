@@ -2,6 +2,7 @@ package io.mallang.stock.adapter.persistence.jpa;
 
 import io.mallang.product.domain.ProductId;
 import io.mallang.stock.application.required.command.SaveStockPort;
+import io.mallang.stock.application.required.query.LoadStockForUpdatePort;
 import io.mallang.stock.application.required.query.LoadStockPort;
 import io.mallang.stock.domain.Stock;
 import io.mallang.stock.domain.exception.StockNotFoundException;
@@ -16,7 +17,9 @@ import static java.util.stream.Collectors.toSet;
 
 @Repository
 @RequiredArgsConstructor
-public class StockPersistenceAdapter implements SaveStockPort, LoadStockPort {
+public class StockPersistenceAdapter implements SaveStockPort,
+                                                LoadStockPort,
+                                                LoadStockForUpdatePort {
 
     private final StockJpaRepository stockJpaRepository;
 
@@ -51,6 +54,18 @@ public class StockPersistenceAdapter implements SaveStockPort, LoadStockPort {
         validateAllStocksFound(productIds, foundProductIds);
 
         return foundStocks;
+    }
+
+    @Override
+    public Stock getByProductIdForUpdate(ProductId productId) {
+        return stockJpaRepository.findByIdForUpdate(productId.value())
+                                 .map(StockJpaEntity::toDomain)
+                                 .orElseThrow(() -> new StockNotFoundException(productId));
+    }
+
+    @Override
+    public List<Stock> getAllByProductIdsForUpdate(List<ProductId> productIds) {
+        return List.of();
     }
 
     private List<String> toIdValues(List<ProductId> productIds) {

@@ -153,14 +153,12 @@ class DeductStockUseCaseTest {
             CountDownLatch doneLatch = new CountDownLatch(requestCount);
             Queue<Throwable> failures = new ConcurrentLinkedQueue<>();
 
-            StockCommandFacade commandFacade = new StockCommandFacade(deductStockUseCase);
-
             try {
                 for (int i = 0; i < requestCount; i++) {
                     executorService.execute(() -> {
                         try {
                             startLatch.await();
-                            commandFacade.deductStock(command);
+                            deductStockUseCase.deductStock(command);
                         } catch (Throwable throwable) {
                             failures.add(throwable);
                         } finally {

@@ -9,7 +9,7 @@ import io.mallang.stock.application.provided.command.DeductStockUseCase;
 import io.mallang.stock.application.provided.command.model.AddStockCommand;
 import io.mallang.stock.application.provided.command.model.DeductStockCommand;
 import io.mallang.stock.application.required.command.SaveStockPort;
-import io.mallang.stock.application.required.query.LoadStockPort;
+import io.mallang.stock.application.required.query.LoadStockForUpdatePort;
 import io.mallang.stock.domain.Stock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StockCommandService implements AddStockUseCase, DeductStockUseCase {
 
-    private final LoadProductPort loadProductPort;
-    private final LoadStockPort loadStockPort;
     private final SaveStockPort saveStockPort;
+    private final LoadProductPort loadProductPort;
+    private final LoadStockForUpdatePort loadStockForUpdatePort;
 
     @Override
     public void addStock(AddStockCommand command) {
@@ -52,7 +52,7 @@ public class StockCommandService implements AddStockUseCase, DeductStockUseCase 
     }
 
     private Stock loadStock(Product product) {
-        return loadStockPort.getByProductId(product.getId());
+        return loadStockForUpdatePort.getByProductIdForUpdate(product.getId());
     }
 
     private void saveStock(Stock stock) {
