@@ -8,20 +8,14 @@ import io.mallang.member.application.required.query.LoadMemberPort;
 import io.mallang.member.domain.Member;
 import io.mallang.member.domain.MemberId;
 import io.mallang.member.domain.exception.NotOrderableMemberException;
-import io.mallang.order.application.provided.command.CancelOrderUseCase;
 import io.mallang.order.application.provided.command.CreateOrderUseCase;
-import io.mallang.order.application.provided.command.model.CancelOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderItemCommand;
 import io.mallang.order.application.provided.command.model.CreateOrderResult;
 import io.mallang.order.application.required.command.SaveOrderPort;
-import io.mallang.order.application.required.query.LoadOrderPort;
 import io.mallang.order.domain.Order;
-import io.mallang.order.domain.OrderId;
-import io.mallang.order.domain.OrderItem;
 import io.mallang.order.domain.command.PlaceOrderCommand;
 import io.mallang.order.domain.command.PlaceOrderItemCommand;
-import io.mallang.order.domain.exception.NotOrdererException;
 import io.mallang.product.application.required.query.LoadProductPort;
 import io.mallang.product.domain.Product;
 import io.mallang.product.domain.ProductId;
@@ -42,11 +36,10 @@ import static java.util.stream.Collectors.toMap;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCase {
+public class CreateOrderCommandService implements CreateOrderUseCase {
 
     private final IdGenerator idGenerator;
     private final ClockHolder clockHolder;
-    private final LoadOrderPort loadOrderPort;
     private final LoadMemberPort loadMemberPort;
     private final LoadProductPort loadProductPort;
     private final LoadStockForUpdatePort loadStockForUpdatePort;
@@ -130,59 +123,19 @@ public class OrderCommandService implements CreateOrderUseCase, CancelOrderUseCa
         );
     }
 
-    @Override
-    public void cancel(CancelOrderCommand command) {
-        Order order = loadOrderPort.getById(new OrderId(command.orderIdValue()));
-        MemberId requesterId = new MemberId(command.memberIdValue());
-
-        if (!order.isOrderer(requesterId)) {
-            throw new NotOrdererException(order.getId(), requesterId, order.getMemberId());
-        }
-
-        order.cancel();
-
-        Map<String, Integer> quantitiesByProductId = aggregateOrderItemQuantities(order.getItems());
-        Map<String, Stock> stocksByProductId = loadStocksByProductId(quantitiesByProductId.keySet());
-
-        restoreStocks(stocksByProductId, quantitiesByProductId);
-
-        saveStocks(stocksByProductId.values());
-        saveOrder(order);
-    }
-
-    private Map<String, Integer> aggregateOrderItemQuantities(List<OrderItem> items) {
-        return items.stream()
-                    .collect(toMap(
-                            item -> item.getProductId().value(),
-                            OrderItem::getQuantity,
-                            Integer::sum,
-                            LinkedHashMap::new
-                    ));
-    }
-
-    private void restoreStocks(
-            Map<String, Stock> stocksByProductId,
-            Map<String, Integer> quantitiesByProductId
-    ) {
-        quantitiesByProductId.forEach((productId, quantity) -> {
-            Stock stock = stocksByProductId.get(productId);
-            stock.add(quantity);
-        });
-    }
-
     private Map<String, Product> loadOrderableProductsById(Set<String> productIds) {
         List<ProductId> ids = productIds.stream()
                                         .map(ProductId::new)
                                         .toList();
 
         LinkedHashMap<String, Product> productsById = loadProductPort.getAllByIds(ids)
-                                                                .stream()
-                                                                .collect(toMap(
-                                                                        product -> product.getId().value(),
-                                                                        product -> product,
-                                                                        (left, right) -> left,
-                                                                        LinkedHashMap::new
-                                                                ));
+                                                                     .stream()
+                                                                     .collect(toMap(
+                                                                             product -> product.getId().value(),
+                                                                             product -> product,
+                                                                             (left, right) -> left,
+                                                                             LinkedHashMap::new
+                                                                     ));
         productsById.values().forEach(Product::validateOrderable);
 
         return productsById;
