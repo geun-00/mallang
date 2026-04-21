@@ -2,7 +2,25 @@ plugins {
     java
     id("org.springframework.boot") version "3.5.11"
     id("io.spring.dependency-management") version "1.1.7"
+    jacoco
 }
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+val jacocoExcludes = listOf(
+    "io/mallang/MallangApplication.class",
+    "io/mallang/P6SpyFormatter.class",
+    "io/mallang/adapter/config/**",
+    "io/mallang/adapter/web/GlobalExceptionHandler.class",
+    "**/adapter/web/model/**",
+    "**/application/provided/**/model/**",
+    "**/application/shared/query/SliceResult.class",
+    "**/*JpaRepository.class",
+    "**/domain/exception/**",
+    "**/domain/common/exception/**"
+)
 
 group = "io"
 version = "0.0.1-SNAPSHOT"
@@ -61,4 +79,66 @@ tasks.withType<Test> {
 
 tasks.jar {
     enabled = false
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    classDirectories.setFrom(
+        files(sourceSets.main.get().output.asFileTree.matching {
+            exclude(jacocoExcludes)
+        })
+    )
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+
+        // 리포트 출력 경로 설정
+        html.outputLocation.set(
+            layout.buildDirectory.dir("reports/jacoco/test/html")
+        )
+        xml.outputLocation.set(
+            layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+        )
+    }
+}
+
+// 커버리지 검증
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.jacocoTestReport)
+
+    classDirectories.setFrom(
+        files(sourceSets.main.get().output.asFileTree.matching {
+            exclude(jacocoExcludes)
+        })
+    )
+
+    violationRules {
+        rule {
+            element = "BUNDLE"
+
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.70".toBigDecimal()
+            }
+
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.60".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
 }
