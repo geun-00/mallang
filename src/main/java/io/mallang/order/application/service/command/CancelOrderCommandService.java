@@ -4,7 +4,7 @@ import io.mallang.member.domain.MemberId;
 import io.mallang.order.application.provided.command.CancelOrderUseCase;
 import io.mallang.order.application.provided.command.model.CancelOrderCommand;
 import io.mallang.order.application.required.command.SaveOrderPort;
-import io.mallang.order.application.required.query.LoadOrderPort;
+import io.mallang.order.application.required.query.LoadOrderForUpdatePort;
 import io.mallang.order.domain.Order;
 import io.mallang.order.domain.OrderId;
 import io.mallang.order.domain.OrderItem;
@@ -28,14 +28,14 @@ import static java.util.stream.Collectors.toMap;
 @RequiredArgsConstructor
 public class CancelOrderCommandService implements CancelOrderUseCase {
 
-    private final LoadOrderPort loadOrderPort;
+    private final LoadOrderForUpdatePort loadOrderForUpdatePort;
     private final LoadStockForUpdatePort loadStockForUpdatePort;
     private final SaveOrderPort saveOrderPort;
     private final SaveStockPort saveStockPort;
 
     @Override
     public void cancel(CancelOrderCommand command) {
-        Order order = loadOrderPort.getById(new OrderId(command.orderIdValue()));
+        Order order = loadOrderForUpdatePort.getByIdForUpdate(new OrderId(command.orderIdValue()));
         order.cancelBy(new MemberId(command.memberIdValue()));
 
         Map<String, Integer> quantitiesByProductId = aggregateOrderItemQuantities(order.getItems());

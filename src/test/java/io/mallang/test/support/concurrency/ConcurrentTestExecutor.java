@@ -20,14 +20,35 @@ public final class ConcurrentTestExecutor {
     }
 
     public static void executeConcurrently(int requestCount, Runnable task) throws InterruptedException {
-        executeConcurrently(requestCount, ignored -> task.run());
+        assertThat(executeConcurrentlyAndCollectFailures(requestCount, task)).isEmpty();
     }
 
     public static <T> void executeConcurrently(List<T> items, Consumer<T> task) throws InterruptedException {
-        executeConcurrently(items.size(), index -> task.accept(items.get(index)));
+        assertThat(executeConcurrentlyAndCollectFailures(items, task)).isEmpty();
     }
 
     public static void executeConcurrently(int requestCount, IntConsumer task) throws InterruptedException {
+        assertThat(executeConcurrentlyAndCollectFailures(requestCount, task)).isEmpty();
+    }
+
+    public static Queue<Throwable> executeConcurrentlyAndCollectFailures(
+            int requestCount,
+            Runnable task
+    ) throws InterruptedException {
+        return executeConcurrentlyAndCollectFailures(requestCount, ignored -> task.run());
+    }
+
+    public static <T> Queue<Throwable> executeConcurrentlyAndCollectFailures(
+            List<T> items,
+            Consumer<T> task
+    ) throws InterruptedException {
+        return executeConcurrentlyAndCollectFailures(items.size(), index -> task.accept(items.get(index)));
+    }
+
+    public static Queue<Throwable> executeConcurrentlyAndCollectFailures(
+            int requestCount,
+            IntConsumer task
+    ) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(requestCount);
         CountDownLatch startLatch = new CountDownLatch(1);
         CountDownLatch doneLatch = new CountDownLatch(requestCount);
@@ -52,7 +73,7 @@ public final class ConcurrentTestExecutor {
             startLatch.countDown();
 
             assertThat(doneLatch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue();
-            assertThat(failures).isEmpty();
+            return failures;
         } finally {
             executorService.shutdownNow();
             executorService.close();
