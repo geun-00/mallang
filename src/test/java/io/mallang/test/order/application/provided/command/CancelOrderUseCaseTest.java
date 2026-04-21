@@ -23,10 +23,13 @@ import io.mallang.stock.application.required.command.SaveStockPort;
 import io.mallang.stock.application.required.query.LoadStockPort;
 import io.mallang.stock.domain.Stock;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 import static io.mallang.fixtures.MemberFixture.generateMember;
 import static io.mallang.fixtures.OrderFixture.generateCanceledOrder;
@@ -34,6 +37,8 @@ import static io.mallang.fixtures.OrderFixture.generateCreateOrderCommand;
 import static io.mallang.fixtures.OrderFixture.generateOrder;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.StockFixture.generateStock;
+import static io.mallang.test.support.concurrency.ConcurrentTestExecutor.executeConcurrently;
+import static io.mallang.test.support.concurrency.ConcurrentTestExecutor.executeConcurrentlyAndCollectFailures;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -179,5 +184,90 @@ class CancelOrderUseCaseTest {
         // when & then
         assertThatThrownBy(() -> cancelOrderUseCase.cancel(command))
                 .isInstanceOf(InvalidValueException.class);
+    }
+
+    @Nested
+    class 동시성 {
+
+        @Test
+        void 동시에_주문을_취소해도_최종_재고_수량이_정확하다(
+                @Autowired SaveMemberPort saveMemberPort,
+                @Autowired SaveProductPort saveProductPort,
+                @Autowired SaveStockPort saveStockPort,
+                @Autowired LoadStockPort loadStockPort,
+                @Autowired CreateOrderUseCase createOrderUseCase,
+                @Autowired CancelOrderUseCase cancelOrderUseCase
+        ) throws InterruptedException {
+            // given
+            int initialQuantity = 50;
+            int requestCount = 30;
+
+            Member member = generateMember();
+            saveMemberPort.save(member);
+
+            Product product = generateProduct();
+            saveProductPort.save(product);
+            saveStockPort.save(generateStock(product, initialQuantity));
+
+            CreateOrderCommand createCommand = generateCreateOrderCommand(
+                    member.getId(),
+                    List.of(new CreateOrderItemCommand(product.getId().value(), 1))
+            );
+
+            List<CancelOrderCommand> cancelCommands = new ArrayList<>();
+            for (int i = 0; i < requestCount; i++) {
+                CreateOrderResult result = createOrderUseCase.place(createCommand);
+                cancelCommands.add(new CancelOrderCommand(result.orderId(), member.getId().value()));
+            }
+
+            // when
+            executeConcurrently(cancelCommands, cancelOrderUseCase::cancel);
+
+            // then
+            Stock after = loadStockPort.getByProductId(product.getId());
+            assertThat(after.getQuantity().value()).isEqualTo(initialQuantity);
+        }
+
+        @Test
+        void 동일한_주문을_동시에_취소해도_재고는_한_번만_복구된다(
+                @Autowired SaveMemberPort saveMemberPort,
+                @Autowired SaveProductPort saveProductPort,
+                @Autowired SaveStockPort saveStockPort,
+                @Autowired LoadStockPort loadStockPort,
+                @Autowired CreateOrderUseCase createOrderUseCase,
+                @Autowired CancelOrderUseCase cancelOrderUseCase
+        ) throws InterruptedException {
+            // given
+            int initialQuantity = 50;
+            int orderQuantity = 2;
+            int requestCount = 10;
+
+            Member member = generateMember();
+            saveMemberPort.save(member);
+
+            Product product = generateProduct();
+            saveProductPort.save(product);
+            saveStockPort.save(generateStock(product, initialQuantity));
+
+            CreateOrderCommand createCommand = generateCreateOrderCommand(
+                    member.getId(),
+                    List.of(new CreateOrderItemCommand(product.getId().value(), orderQuantity))
+            );
+            CreateOrderResult result = createOrderUseCase.place(createCommand);
+            CancelOrderCommand cancelCommand = new CancelOrderCommand(result.orderId(), member.getId().value());
+
+            // when
+            Queue<Throwable> failures = executeConcurrentlyAndCollectFailures(
+                    requestCount,
+                    () -> cancelOrderUseCase.cancel(cancelCommand)
+            );
+
+            // then
+            assertThat(failures).hasSize(requestCount - 1)
+                                .allSatisfy(failure -> assertThat(failure).isInstanceOf(InvalidValueException.class));
+
+            Stock after = loadStockPort.getByProductId(product.getId());
+            assertThat(after.getQuantity().value()).isEqualTo(initialQuantity);
+        }
     }
 }

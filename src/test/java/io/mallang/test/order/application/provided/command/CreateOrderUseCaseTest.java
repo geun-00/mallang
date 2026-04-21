@@ -20,6 +20,7 @@ import io.mallang.stock.application.required.command.SaveStockPort;
 import io.mallang.stock.application.required.query.LoadStockPort;
 import io.mallang.stock.domain.Stock;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +32,7 @@ import static io.mallang.fixtures.MemberFixture.generateWithdrawnMember;
 import static io.mallang.fixtures.OrderFixture.generateCreateOrderCommand;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.StockFixture.generateStock;
+import static io.mallang.test.support.concurrency.ConcurrentTestExecutor.executeConcurrently;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -180,5 +182,41 @@ class CreateOrderUseCaseTest {
         // when & then
         assertThatThrownBy(() -> createOrderUseCase.place(command))
                 .isInstanceOf(NotOrderableMemberException.class);
+    }
+
+    @Nested
+    class 동시성 {
+
+        @Test
+        void 동시에_주문을_생성해도_최종_재고_수량이_정확하다(
+                @Autowired SaveMemberPort saveMemberPort,
+                @Autowired SaveProductPort saveProductPort,
+                @Autowired SaveStockPort saveStockPort,
+                @Autowired LoadStockPort loadStockPort,
+                @Autowired CreateOrderUseCase createOrderUseCase
+        ) throws InterruptedException {
+            // given
+            int initialQuantity = 50;
+            int requestCount = 30;
+
+            Member member = generateMember();
+            saveMemberPort.save(member);
+
+            Product product = generateProduct();
+            saveProductPort.save(product);
+            saveStockPort.save(generateStock(product, initialQuantity));
+
+            CreateOrderCommand command = generateCreateOrderCommand(
+                    member.getId(),
+                    List.of(new CreateOrderItemCommand(product.getId().value(), 1))
+            );
+
+            // when
+            executeConcurrently(requestCount, () -> createOrderUseCase.place(command));
+
+            // then
+            Stock after = loadStockPort.getByProductId(product.getId());
+            assertThat(after.getQuantity().value()).isEqualTo(initialQuantity - requestCount);
+        }
     }
 }

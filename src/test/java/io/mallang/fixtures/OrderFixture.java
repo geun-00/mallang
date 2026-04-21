@@ -134,12 +134,12 @@ public class OrderFixture {
 
     public static Order generateCanceledOrder() {
         Order order = generateOrder();
-        order.cancel();
+        order.cancelBy(order.getMemberId());
         return order;
     }
     public static Order generateCanceledOrder(MemberId memberId, Product product, int quantity) {
         Order order = generateOrder(memberId, product, quantity);
-        order.cancel();
+        order.cancelBy(memberId);
         return order;
     }
 

@@ -12,6 +12,7 @@ import io.mallang.stock.application.required.command.SaveStockPort;
 import io.mallang.stock.application.required.query.LoadStockPort;
 import io.mallang.stock.domain.Stock;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +20,7 @@ import static io.mallang.fixtures.ProductFixture.generateDiscontinuedProduct;
 import static io.mallang.fixtures.ProductFixture.generateProduct;
 import static io.mallang.fixtures.ProductFixture.generateSellerId;
 import static io.mallang.fixtures.StockFixture.generateStock;
+import static io.mallang.test.support.concurrency.ConcurrentTestExecutor.executeConcurrently;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -114,5 +116,38 @@ class AddStockUseCaseTest {
         // when & then
         assertThatThrownBy(() -> addStockUseCase.addStock(command))
                 .isInstanceOf(ProductNotFoundException.class);
+    }
+
+    @Nested
+    class 동시성 {
+
+        @Test
+        void 동시에_재고를_추가해도_최종_수량이_정확하다(
+                @Autowired AddStockUseCase addStockUseCase,
+                @Autowired SaveProductPort saveProductPort,
+                @Autowired SaveStockPort saveStockPort,
+                @Autowired LoadStockPort loadStockPort
+        ) throws InterruptedException {
+            // given
+            int initialQuantity = 50;
+            int requestCount = 30;
+
+            Product product = generateProduct();
+            saveProductPort.save(product);
+            saveStockPort.save(generateStock(product, initialQuantity));
+
+            AddStockCommand command = new AddStockCommand(
+                    product.getSellerId().value(),
+                    product.getId().value(),
+                    1
+            );
+
+            // when
+            executeConcurrently(requestCount, () -> addStockUseCase.addStock(command));
+
+            // then
+            Stock after = loadStockPort.getByProductId(product.getId());
+            assertThat(after.getQuantity().value()).isEqualTo(initialQuantity + requestCount);
+        }
     }
 }

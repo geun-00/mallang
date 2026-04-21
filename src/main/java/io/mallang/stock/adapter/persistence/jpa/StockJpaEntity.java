@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-// TODO : 재고 동시성 제어
 @Entity
 @Table(name = "stocks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
